@@ -1,0 +1,93 @@
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3">
+                    <h2 class="mb-0 text-center">Preferencias de Notificaciones</h2>
+                </div>
+
+                <div class="card-body">
+                    <div *ngIf="loadingPreferences" class="text-center py-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <div *ngIf="success" class="alert alert-success">
+                        ¡Preferencias actualizadas correctamente!
+                    </div>
+
+                    <form *ngIf="!loadingPreferences" (ngSubmit)="savePreferences()">
+                        <div class="mb-4">
+                            <h5 class="mb-3">Notificaciones por Email</h5>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="receiveReminderEmails"
+                                    [(ngModel)]="preferences.receiveReminderEmails" name="receiveReminderEmails">
+                                <label class="form-check-label" for="receiveReminderEmails">
+                                    Recordatorios de Eventos
+                                </label>
+                                <div class="form-text">Recibe emails recordándote eventos próximos a los que asistirás
+                                </div>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="receiveWeeklyNewsletter"
+                                    [(ngModel)]="preferences.receiveWeeklyNewsletter" name="receiveWeeklyNewsletter">
+                                <label class="form-check-label" for="receiveWeeklyNewsletter">
+                                    Boletín Semanal
+                                </label>
+                                <div class="form-text">Recibe un resumen semanal con próximos eventos que podrían
+                                    interesarte</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">Notificaciones Push</h5>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="receiveEventPush"
+                                    [(ngModel)]="preferences.receiveEventPush" name="receiveEventPush">
+                                <label class="form-check-label" for="receiveEventPush">
+                                    Eventos
+                                </label>
+                                <div class="form-text">Recibe notificaciones sobre nuevos eventos destacados</div>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="receiveArtistPush"
+                                    [(ngModel)]="preferences.receiveArtistPush" name="receiveArtistPush">
+                                <label class="form-check-label" for="receiveArtistPush">
+                                    Artistas Seguidos
+                                </label>
+                                <div class="form-text">Recibe notificaciones cuando un artista que sigues anuncia un
+                                    nuevo evento</div>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="receiveAvailabilityPush"
+                                    [(ngModel)]="preferences.receiveAvailabilityPush" name="receiveAvailabilityPush">
+                                <label class="form-check-label" for="receiveAvailabilityPush">
+                                    Disponibilidad de Entradas
+                                </label>
+                                <div class="form-text">Recibe notificaciones cuando quedan pocas entradas para un evento
+                                    que te interesa</div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary" [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                Guardar Preferencias
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

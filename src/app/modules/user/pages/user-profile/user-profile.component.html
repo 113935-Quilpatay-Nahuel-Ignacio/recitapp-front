@@ -1,0 +1,140 @@
+<!-- src/app/modules/user/pages/user-profile/user-profile.component.html -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3">
+                    <h2 class="mb-0 text-center">Modificar Perfil de Usuario</h2>
+                </div>
+                <div class="card-body">
+                    <div *ngIf="loading && !user" class="text-center py-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <div *ngIf="success" class="alert alert-success">
+                        ¡Perfil actualizado correctamente!
+                    </div>
+
+                    <form *ngIf="user" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" formControlName="email" class="form-control"
+                                [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
+                            <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                                <div *ngIf="f['email'].errors['required']">El email es obligatorio</div>
+                                <div *ngIf="f['email'].errors['email']">El formato del email no es válido</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">Nombre</label>
+                            <input type="text" formControlName="firstName" class="form-control"
+                                [ngClass]="{ 'is-invalid': submitted && f['firstName'].errors }" />
+                            <div *ngIf="submitted && f['firstName'].errors" class="invalid-feedback">
+                                <div *ngIf="f['firstName'].errors['required']">El nombre es obligatorio</div>
+                                <div *ngIf="f['firstName'].errors['minlength']">El nombre debe tener al menos 2
+                                    caracteres</div>
+                                <div *ngIf="f['firstName'].errors['maxlength']">El nombre no puede exceder los 100
+                                    caracteres</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Apellido</label>
+                            <input type="text" formControlName="lastName" class="form-control"
+                                [ngClass]="{ 'is-invalid': submitted && f['lastName'].errors }" />
+                            <div *ngIf="submitted && f['lastName'].errors" class="invalid-feedback">
+                                <div *ngIf="f['lastName'].errors['required']">El apellido es obligatorio</div>
+                                <div *ngIf="f['lastName'].errors['minlength']">El apellido debe tener al menos 2
+                                    caracteres</div>
+                                <div *ngIf="f['lastName'].errors['maxlength']">El apellido no puede exceder los 100
+                                    caracteres</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="country" class="form-label">País</label>
+                            <input type="text" formControlName="country" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="city" class="form-label">Ciudad</label>
+                            <input type="text" formControlName="city" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Nueva Contraseña (dejar vacío para mantener la
+                                actual)</label>
+                            <input type="password" formControlName="password" class="form-control"
+                                [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
+                            <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+                                <div *ngIf="f['password'].errors['minlength']">La contraseña debe tener al menos 6
+                                    caracteres</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
+                            <input type="password" formControlName="confirmPassword" class="form-control"
+                                [ngClass]="{ 'is-invalid': submitted && f['confirmPassword'].errors }" />
+                            <div *ngIf="submitted && f['confirmPassword'].errors" class="invalid-feedback">
+                                <div *ngIf="f['confirmPassword'].errors['passwordMismatch']">Las contraseñas no
+                                    coinciden</div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary" [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                Guardar Cambios
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" routerLink="/">Cancelar</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-5 pt-4 border-top">
+                        <h3 class="h5 text-danger">Eliminar cuenta</h3>
+                        <p class="text-muted">Esta acción no se puede deshacer. Todos tus datos se eliminarán
+                            permanentemente.</p>
+                        <button type="button" class="btn btn-danger" (click)="openDeleteModal()">
+                            Eliminar mi cuenta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para confirmar eliminación (usando clases de Bootstrap) -->
+<div class="modal fade" [class.show]="showDeleteModal" [class.d-block]="showDeleteModal" tabindex="-1"
+    [class.modal-backdrop-show]="showDeleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.</p>
+                <div *ngIf="deletionError" class="alert alert-danger">
+                    {{ deletionError }}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Cancelar</button>
+                <button type="button" class="btn btn-danger" [disabled]="deletionLoading" (click)="deleteAccount()">
+                    <span *ngIf="deletionLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    Eliminar cuenta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showDeleteModal" *ngIf="showDeleteModal"></div>

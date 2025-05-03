@@ -1,0 +1,13 @@
+.modal-backdrop-show {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+  &.d-block {
+    display: block;
+  }
+
+  &.show {
+    opacity: 1;
+  }
+}

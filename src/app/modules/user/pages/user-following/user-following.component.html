@@ -1,0 +1,119 @@
+<!-- src/app/modules/user/pages/user-following/user-following.component.html -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3">
+                    <h2 class="mb-0 text-center">Mis Seguimientos</h2>
+                </div>
+
+                <div class="card-body">
+                    <!-- Tabs para alternar entre artistas y recintos -->
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link" [class.active]="activeTab === 'artists'"
+                                (click)="setActiveTab('artists')" href="javascript:void(0)">
+                                <i class="bi bi-music-note"></i> Artistas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [class.active]="activeTab === 'venues'" (click)="setActiveTab('venues')"
+                                href="javascript:void(0)">
+                                <i class="bi bi-building"></i> Recintos
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab content para artistas -->
+                    <div [hidden]="activeTab !== 'artists'">
+                        <div *ngIf="loading.artists" class="text-center py-5">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="error.artists" class="alert alert-danger">
+                            {{ error.artists }}
+                        </div>
+
+                        <div *ngIf="!loading.artists && followedArtists.length === 0" class="text-center py-5">
+                            <p class="text-muted mb-4">No sigues a ningún artista. Explora la sección de artistas para
+                                encontrar tus favoritos.</p>
+                            <button class="btn btn-primary" routerLink="/artists">Explorar Artistas</button>
+                        </div>
+
+                        <div *ngIf="followedArtists.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <div class="col" *ngFor="let artist of followedArtists">
+                                <div class="card h-100 shadow-sm">
+                                    <img *ngIf="artist.artistImage" [src]="artist.artistImage" class="card-img-top"
+                                        alt="{{ artist.artistName }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary" style="cursor: pointer;"
+                                            (click)="navigateToArtist(artist.artistId)">
+                                            {{ artist.artistName }}
+                                        </h5>
+                                        <p class="card-text text-muted">
+                                            <small>Siguiendo desde {{ artist.followDate | date:'dd/MM/yyyy' }}</small>
+                                        </p>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                (click)="unfollowArtist(artist.artistId)">
+                                                Dejar de seguir
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab content para recintos/venues -->
+                    <div [hidden]="activeTab !== 'venues'">
+                        <div *ngIf="loading.venues" class="text-center py-5">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="error.venues" class="alert alert-danger">
+                            {{ error.venues }}
+                        </div>
+
+                        <div *ngIf="!loading.venues && followedVenues.length === 0" class="text-center py-5">
+                            <p class="text-muted mb-4">No sigues a ningún recinto. Explora la sección de recintos para
+                                encontrar tus favoritos.</p>
+                            <button class="btn btn-primary" routerLink="/venues">Explorar Recintos</button>
+                        </div>
+
+                        <div *ngIf="followedVenues.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <div class="col" *ngFor="let venue of followedVenues">
+                                <div class="card h-100 shadow-sm">
+                                    <img *ngIf="venue.venueImage" [src]="venue.venueImage" class="card-img-top"
+                                        alt="{{ venue.venueName }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary" style="cursor: pointer;"
+                                            (click)="navigateToVenue(venue.venueId)">
+                                            {{ venue.venueName }}
+                                        </h5>
+                                        <p class="card-text text-muted">
+                                            <small>Siguiendo desde {{ venue.followDate | date:'dd/MM/yyyy' }}</small>
+                                        </p>
+                                        <p class="card-text">
+                                            <i class="bi bi-geo-alt"></i> {{ venue.venueAddress }}
+                                        </p>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                (click)="unfollowVenue(venue.venueId)">
+                                                Dejar de seguir
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
