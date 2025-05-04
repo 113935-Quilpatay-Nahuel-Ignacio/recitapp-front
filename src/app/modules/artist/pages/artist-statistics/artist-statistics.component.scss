@@ -1,0 +1,75 @@
+.statistics-container {
+  .stats-card {
+    height: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .display-5 {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+  }
+
+  .rounded-circle {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin: 0 auto;
+  }
+
+  .card {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+
+    .card-header {
+      background-color: rgba(0, 0, 0, 0.03);
+      border-bottom: none;
+      padding: 1rem 1.5rem;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  .list-group-item {
+    padding: 1rem 1.5rem;
+    border-left: none;
+    border-right: none;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    .bi {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+  .statistics-container {
+    .rounded-circle {
+      width: 120px;
+      height: 120px;
+    }
+
+    .stats-card {
+      .display-5 {
+        font-size: 2rem;
+      }
+    }
+  }
+}

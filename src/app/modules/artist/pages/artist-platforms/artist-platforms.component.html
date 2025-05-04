@@ -1,0 +1,191 @@
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0" *ngIf="artist">Plataformas de {{ artist.name }}</h2>
+                        <h2 class="mb-0" *ngIf="!artist">Plataformas del artista</h2>
+                    </div>
+                    <div>
+                        <a [routerLink]="['/artists', artistId]" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver al perfil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div *ngIf="loading && !platformsForm.dirty" class="text-center py-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <div *ngIf="success" class="alert alert-success">
+                        <i class="bi bi-check-circle-fill me-2"></i> Plataformas actualizadas correctamente
+                    </div>
+
+                    <form [formGroup]="platformsForm" (ngSubmit)="onSubmit()" *ngIf="artist">
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    Conecta a {{ artist.name }} con sus perfiles en las principales plataformas
+                                    musicales.
+                                    Esto ayudará a los fans a encontrar su música y seguirlos en diferentes redes.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="spotifyUrl" class="form-label d-flex align-items-center">
+                                <span class="platform-icon bg-success text-white me-2">
+                                    <i class="bi bi-spotify"></i>
+                                </span>
+                                Perfil de Spotify
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">https://</span>
+                                <input type="text" id="spotifyUrl" formControlName="spotifyUrl" class="form-control"
+                                    placeholder="open.spotify.com/artist/...">
+                            </div>
+                            <div *ngIf="submitted && getUrlError('spotifyUrl')" class="text-danger mt-1">
+                                {{ getUrlError('spotifyUrl') }}
+                            </div>
+                            <small class="form-text text-muted">Ejemplo:
+                                open.spotify.com/artist/2YZYGDhYF6Tpjz3V2GVzfG</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="youtubeUrl" class="form-label d-flex align-items-center">
+                                <span class="platform-icon bg-danger text-white me-2">
+                                    <i class="bi bi-youtube"></i>
+                                </span>
+                                Canal de YouTube
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">https://</span>
+                                <input type="text" id="youtubeUrl" formControlName="youtubeUrl" class="form-control"
+                                    placeholder="youtube.com/c/...">
+                            </div>
+                            <div *ngIf="submitted && getUrlError('youtubeUrl')" class="text-danger mt-1">
+                                {{ getUrlError('youtubeUrl') }}
+                            </div>
+                            <small class="form-text text-muted">Ejemplo: youtube.com/c/artistaoficial</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="soundcloudUrl" class="form-label d-flex align-items-center">
+                                <span class="platform-icon bg-warning text-white me-2">
+                                    <i class="bi bi-soundwave"></i>
+                                </span>
+                                Perfil de SoundCloud
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">https://</span>
+                                <input type="text" id="soundcloudUrl" formControlName="soundcloudUrl"
+                                    class="form-control" placeholder="soundcloud.com/...">
+                            </div>
+                            <div *ngIf="submitted && getUrlError('soundcloudUrl')" class="text-danger mt-1">
+                                {{ getUrlError('soundcloudUrl') }}
+                            </div>
+                            <small class="form-text text-muted">Ejemplo: soundcloud.com/artistaoficial</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="instagramUrl" class="form-label d-flex align-items-center">
+                                <span class="platform-icon bg-primary text-white me-2">
+                                    <i class="bi bi-instagram"></i>
+                                </span>
+                                Perfil de Instagram
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">https://</span>
+                                <input type="text" id="instagramUrl" formControlName="instagramUrl" class="form-control"
+                                    placeholder="instagram.com/...">
+                            </div>
+                            <div *ngIf="submitted && getUrlError('instagramUrl')" class="text-danger mt-1">
+                                {{ getUrlError('instagramUrl') }}
+                            </div>
+                            <small class="form-text text-muted">Ejemplo: instagram.com/artistaoficial</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="bandcampUrl" class="form-label d-flex align-items-center">
+                                <span class="platform-icon bg-info text-white me-2">
+                                    <i class="bi bi-music-note"></i>
+                                </span>
+                                Perfil de Bandcamp
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">https://</span>
+                                <input type="text" id="bandcampUrl" formControlName="bandcampUrl" class="form-control"
+                                    placeholder="artistaoficial.bandcamp.com">
+                            </div>
+                            <div *ngIf="submitted && getUrlError('bandcampUrl')" class="text-danger mt-1">
+                                {{ getUrlError('bandcampUrl') }}
+                            </div>
+                            <small class="form-text text-muted">Ejemplo: artistaoficial.bandcamp.com</small>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary" [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                Guardar plataformas
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                [routerLink]="['/artists', artistId]">Cancelar</button>
+                        </div>
+                    </form>
+
+                    <!-- Preview section -->
+                    <div *ngIf="artist && (f['spotifyUrl'].value || f['youtubeUrl'].value || f['soundcloudUrl'].value || f['instagramUrl'].value || f['bandcampUrl'].value)"
+                        class="mt-5">
+                        <h4 class="mb-3">Vista previa de plataformas</h4>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap justify-content-center gap-3">
+                                    <a *ngIf="f['spotifyUrl'].value" [href]="'https://' + f['spotifyUrl'].value"
+                                        target="_blank" class="btn btn-success">
+                                        <i class="bi bi-spotify me-2"></i> Spotify
+                                    </a>
+                                    <a *ngIf="f['youtubeUrl'].value" [href]="'https://' + f['youtubeUrl'].value"
+                                        target="_blank" class="btn btn-danger">
+                                        <i class="bi bi-youtube me-2"></i> YouTube
+                                    </a>
+                                    <a *ngIf="f['soundcloudUrl'].value" [href]="'https://' + f['soundcloudUrl'].value"
+                                        target="_blank" class="btn btn-warning">
+                                        <i class="bi bi-soundwave me-2"></i> SoundCloud
+                                    </a>
+                                    <a *ngIf="f['instagramUrl'].value" [href]="'https://' + f['instagramUrl'].value"
+                                        target="_blank" class="btn btn-primary">
+                                        <i class="bi bi-instagram me-2"></i> Instagram
+                                    </a>
+                                    <a *ngIf="f['bandcampUrl'].value" [href]="'https://' + f['bandcampUrl'].value"
+                                        target="_blank" class="btn btn-info">
+                                        <i class="bi bi-music-note me-2"></i> Bandcamp
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .platform-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+</style>

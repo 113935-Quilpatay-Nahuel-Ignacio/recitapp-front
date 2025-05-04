@@ -113,4 +113,8 @@ export class ArtistService {
   getAllGenres(): Observable<MusicGenre[]> {
     return this.http.get<MusicGenre[]>(`${environment.apiUrl}/genres`);
   }
+
+  getArtistById(id: number): Observable<Artist> {
+    return this.http.get<Artist>(`${this.baseUrl}/${id}`);
+  }
 }

@@ -1,0 +1,84 @@
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0" *ngIf="artist">Conciertos de {{ artist.name }}</h2>
+                        <h2 class="mb-0" *ngIf="!artist">Conciertos del artista</h2>
+                    </div>
+                    <div>
+                        <a [routerLink]="['/artists', artistId]" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left"></i> Volver al perfil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <div *ngIf="loading" class="text-center py-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="h5 mb-0">
+                            {{ includePastEvents ? 'Todos los conciertos' : 'Próximos conciertos' }}
+                        </h3>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="includePastEvents"
+                                [(ngModel)]="includePastEvents" (change)="togglePastEvents()">
+                            <label class="form-check-label" for="includePastEvents">
+                                Incluir conciertos pasados
+                            </label>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!loading && events.length === 0" class="text-center py-5">
+                        <p class="text-muted mb-3">No se encontraron conciertos para este artista.</p>
+                        <a [routerLink]="['/events/new']" class="btn btn-primary">Crear un nuevo evento</a>
+                    </div>
+
+                    <div *ngIf="!loading && events.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
+                        <div class="col" *ngFor="let event of events">
+                            <div class="card h-100 shadow-sm">
+                                <div *ngIf="event.flyerImage" class="event-image-container">
+                                    <img [src]="event.flyerImage" class="card-img-top" [alt]="event.name">
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title">{{ event.name }}</h5>
+                                        <span class="badge" [ngClass]="getStatusClass(event.statusName)">
+                                            {{ event.statusName }}
+                                        </span>
+                                    </div>
+                                    <p class="card-text text-muted mb-2">
+                                        <i class="bi bi-geo-alt me-1"></i> {{ event.venueName }}
+                                    </p>
+                                    <p class="card-text mb-2">
+                                        <i class="bi bi-calendar-event me-1"></i> {{ formatDate(event.startDateTime) }}
+                                    </p>
+                                    <p class="card-text" *ngIf="event.description">
+                                        {{ event.description.length > 100 ? event.description.substring(0, 100) + '...'
+                                        : event.description }}
+                                    </p>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-end">
+                                        <a [routerLink]="['/events', event.id]" class="btn btn-outline-primary btn-sm">
+                                            Ver detalles
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

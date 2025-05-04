@@ -1,0 +1,97 @@
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3">
+                    <h2 class="mb-0 text-center">Editar Artista</h2>
+                </div>
+                <div class="card-body">
+                    <div *ngIf="loading && !artistForm.dirty" class="text-center py-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <div *ngIf="success" class="alert alert-success">
+                        ¡Artista actualizado correctamente!
+                    </div>
+
+                    <form [formGroup]="artistForm" (ngSubmit)="onSubmit()">
+                        <!-- Información básica -->
+                        <h4 class="mb-3">Información Básica</h4>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre del Artista *</label>
+                            <input type="text" formControlName="name" class="form-control"
+                                [ngClass]="{ 'is-invalid': submitted && f['name'].errors }" />
+                            <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                                <div *ngIf="f['name'].errors['required']">El nombre del artista es obligatorio</div>
+                                <div *ngIf="f['name'].errors['maxlength']">El nombre no puede exceder los 100 caracteres
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="profileImage" class="form-label">URL de Imagen de Perfil</label>
+                            <input type="text" formControlName="profileImage" class="form-control" />
+                            <small class="form-text text-muted">URL de una imagen que represente al artista</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="biography" class="form-label">Biografía</label>
+                            <textarea formControlName="biography" class="form-control" rows="5"></textarea>
+                        </div>
+
+                        <!-- Plataformas -->
+                        <h4 class="mt-4 mb-3">Plataformas</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="spotifyUrl" class="form-label">Spotify URL</label>
+                                <input type="text" formControlName="spotifyUrl" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="youtubeUrl" class="form-label">YouTube URL</label>
+                                <input type="text" formControlName="youtubeUrl" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="soundcloudUrl" class="form-label">SoundCloud URL</label>
+                                <input type="text" formControlName="soundcloudUrl" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="instagramUrl" class="form-label">Instagram URL</label>
+                                <input type="text" formControlName="instagramUrl" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bandcampUrl" class="form-label">Bandcamp URL</label>
+                            <input type="text" formControlName="bandcampUrl" class="form-control" />
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button (click)="updatePlatforms()" type="button" class="btn btn-outline-primary"
+                                [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                Actualizar solo plataformas
+                            </button>
+                            <button type="submit" class="btn btn-primary" [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                Guardar cambios
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                [routerLink]="['/artists', artistId]">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

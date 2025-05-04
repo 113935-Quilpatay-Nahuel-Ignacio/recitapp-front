@@ -1,0 +1,46 @@
+.event-image-container {
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+}
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+
+    .event-image-container img {
+      transform: scale(1.05);
+    }
+  }
+
+  .badge {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+  }
+}
+
+// Make sure dates and locations have consistent styling
+.card-text {
+  .bi {
+    width: 16px;
+    text-align: center;
+    margin-right: 5px;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+  .event-image-container {
+    height: 150px;
+  }
+}
