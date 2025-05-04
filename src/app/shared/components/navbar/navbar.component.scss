@@ -1,0 +1,47 @@
+/* src/app/shared/components/navbar/navbar.component.scss */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  border: none;
+  padding: 0.5rem 0;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1.5rem;
+  transition: background-color 0.2s ease;
+
+  &:hover,
+  &:focus {
+    background-color: rgba(13, 110, 253, 0.1);
+  }
+
+  &:active {
+    background-color: rgba(13, 110, 253, 0.2);
+  }
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0;
+}
+
+// Mejora para mostrar claramente que los ítems del dropdown son seleccionables
+.dropdown-toggle::after {
+  transition: transform 0.2s ease;
+}
+
+.dropdown.show .dropdown-toggle::after {
+  transform: rotate(180deg);
+}
+
+// Ajuste para dispositivos pequeños
+@media (max-width: 991.98px) {
+  .dropdown-menu {
+    border: none;
+    box-shadow: none;
+    padding-left: 1rem;
+  }
+}

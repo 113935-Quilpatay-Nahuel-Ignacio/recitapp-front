@@ -1,1 +1,104 @@
-<p>artist-list works!</p>
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center mb-4">Artistas</h1>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-5">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Buscar por nombre..."
+                                    [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
+                                <button class="btn btn-outline-primary" type="button" (click)="onSearch()">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <select class="form-select" [(ngModel)]="selectedGenreId" (change)="onGenreChange()">
+                                <option [ngValue]="null">Todos los géneros</option>
+                                <option *ngFor="let genre of genres" [ngValue]="genre.id">
+                                    {{ genre.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="showInactiveToggle"
+                                    [(ngModel)]="showInactive" (change)="toggleShowInactive()">
+                                <label class="form-check-label" for="showInactiveToggle">
+                                    Mostrar inactivos
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-1 text-end">
+                            <button class="btn btn-outline-secondary" (click)="clearFilters()"
+                                *ngIf="searchTerm || selectedGenreId">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add new artist button (admin only) -->
+            <div class="d-flex justify-content-end mb-4">
+                <button class="btn btn-primary" routerLink="/artists/new">
+                    <i class="bi bi-plus-lg me-2"></i>Nuevo Artista
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+    </div>
+
+    <div *ngIf="!loading && artists.length === 0" class="text-center py-5">
+        <p class="text-muted mb-4">No se encontraron artistas con los criterios seleccionados.</p>
+        <button class="btn btn-outline-primary" (click)="clearFilters()">
+            Limpiar filtros
+        </button>
+    </div>
+
+    <div *ngIf="!loading && artists.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        <div class="col" *ngFor="let artist of paginatedArtists">
+            <app-artist-card [artist]="artist" (click)="navigateToArtist(artist.id)">
+            </app-artist-card>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && totalPages > 1" class="d-flex justify-content-center mt-4">
+        <nav aria-label="Navegación de páginas">
+            <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                    <button class="page-link" (click)="changePage(currentPage - 1)">
+                        <span aria-hidden="true">&laquo;</span>
+                    </button>
+                </li>
+                <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                    [class.active]="currentPage === i + 1">
+                    <button class="page-link" (click)="changePage(i + 1)">
+                        {{ i + 1 }}
+                    </button>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <button class="page-link" (click)="changePage(currentPage + 1)">
+                        <span aria-hidden="true">&raquo;</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+<!-- src/app/shared/components/navbar/navbar.component.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" routerLink="/">Recitapp</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+            aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/artists" routerLinkActive="active">Artistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/events" routerLinkActive="active">Eventos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/venues" routerLinkActive="active">Recintos</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav">
+                <!-- Menú desplegable Mi Cuenta -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Mi cuenta
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" routerLink="/user/profile">Perfil</a></li>
+                        <li><a class="dropdown-item" routerLink="/user/purchases">Mis compras</a></li>
+                        <li><a class="dropdown-item" routerLink="/user/following">Mis seguimientos</a></li>
+                        <li><a class="dropdown-item" routerLink="/user/notifications">Notificaciones</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" routerLink="/user/register">Registro</a></li>
+                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú desplegable Admin -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" routerLink="/admin/genres">Géneros Musicales</a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/users">Usuarios</a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/dashboard">Dashboard</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

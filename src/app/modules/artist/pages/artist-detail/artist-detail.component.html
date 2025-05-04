@@ -1,1 +1,273 @@
-<p>artist-detail works!</p>
+<!-- src/app/modules/artist/pages/artist-detail/artist-detail.component.html -->
+<div class="container py-4">
+    <!-- Loading state -->
+    <div *ngIf="loading.artist" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="error.artist" class="alert alert-danger">
+        {{ error.artist }}
+    </div>
+
+    <!-- Artist Details -->
+    <div *ngIf="artist && !loading.artist">
+        <div class="row mb-4">
+            <!-- Artist Image -->
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card shadow-sm h-100">
+                    <img [src]="artist.profileImage || defaultImage" class="card-img-top" [alt]="artist.name"
+                        (error)="onImageError($event)">
+
+                    <div class="card-body">
+                        <!-- Social Media Links -->
+                        <div
+                            *ngIf="artist.spotifyUrl || artist.youtubeUrl || artist.soundcloudUrl || artist.instagramUrl || artist.bandcampUrl">
+                            <h6 class="mb-3">Escuchar en:</h6>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a *ngIf="artist.spotifyUrl" [href]="artist.spotifyUrl" target="_blank"
+                                    class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-spotify me-2"></i>Spotify
+                                </a>
+                                <a *ngIf="artist.youtubeUrl" [href]="artist.youtubeUrl" target="_blank"
+                                    class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-youtube me-2"></i>YouTube
+                                </a>
+                                <a *ngIf="artist.soundcloudUrl" [href]="artist.soundcloudUrl" target="_blank"
+                                    class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-cloud me-2"></i>SoundCloud
+                                </a>
+                                <a *ngIf="artist.instagramUrl" [href]="artist.instagramUrl" target="_blank"
+                                    class="btn btn-sm btn-outline-purple">
+                                    <i class="bi bi-instagram me-2"></i>Instagram
+                                </a>
+                                <a *ngIf="artist.bandcampUrl" [href]="artist.bandcampUrl" target="_blank"
+                                    class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-music-note-beamed me-2"></i>Bandcamp
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Follow button for regular users -->
+                        <div *ngIf="!isAdmin" class="mt-3">
+                            <app-follow-artist-button [artistId]="artistId" [userId]="userId"
+                                (followStatusChanged)="onFollowStatusChanged($event)">
+                            </app-follow-artist-button>
+                        </div>
+
+                        <!-- Admin actions -->
+                        <div *ngIf="isAdmin" class="mt-3">
+                            <h6 class="mb-2">Acciones de Administrador:</h6>
+                            <div class="d-flex flex-column gap-2">
+                                <button class="btn btn-sm btn-primary" (click)="editArtist()">
+                                    <i class="bi bi-pencil me-2"></i>Editar artista
+                                </button>
+                                <button class="btn btn-sm" [class.btn-warning]="artist.active"
+                                    [class.btn-success]="!artist.active" (click)="deactivateArtist()">
+                                    <i class="bi" [class.bi-x-circle]="artist.active"
+                                        [class.bi-check-circle]="!artist.active"></i>
+                                    {{ artist.active ? 'Desactivar' : 'Activar' }} artista
+                                </button>
+                                <button class="btn btn-sm btn-danger" (click)="deleteArtist()">
+                                    <i class="bi bi-trash me-2"></i>Eliminar artista
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artist Info -->
+            <div class="col-md-8">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="h2 mb-0">{{ artist.name }}</h1>
+                            <span *ngIf="!artist.active" class="badge bg-danger">Inactivo</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Tabs Navigation -->
+                        <ul class="nav nav-tabs mb-3">
+                            <li class="nav-item">
+                                <a class="nav-link" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')"
+                                    href="javascript:void(0)">
+                                    Información
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" [class.active]="activeTab === 'events'"
+                                    (click)="setActiveTab('events')" href="javascript:void(0)">
+                                    Conciertos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" [class.active]="activeTab === 'stats'"
+                                    (click)="setActiveTab('stats')" href="javascript:void(0)">
+                                    Estadísticas
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- Info Tab -->
+                        <div *ngIf="activeTab === 'info'">
+                            <div *ngIf="artist.biography" class="mb-4">
+                                <h4 class="mb-3">Biografía</h4>
+                                <p>{{ artist.biography }}</p>
+                            </div>
+
+                            <div *ngIf="artist.genres && artist.genres.length > 0" class="mb-4">
+                                <h4 class="mb-3">Géneros Musicales</h4>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span *ngFor="let genre of artist.genres" class="badge bg-secondary">
+                                        {{ genre.name }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="mb-3">Información Adicional</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Fecha de registro</span>
+                                        <span>{{ artist.registrationDate | date:'dd/MM/yyyy' }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Última actualización</span>
+                                        <span>{{ artist.updatedAt | date:'dd/MM/yyyy' }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Seguidores</span>
+                                        <span class="badge bg-primary rounded-pill">{{ artist.followerCount }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Conciertos futuros</span>
+                                        <span class="badge bg-success rounded-pill">{{ artist.upcomingEventsCount
+                                            }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Conciertos pasados</span>
+                                        <span class="badge bg-secondary rounded-pill">{{ artist.pastEventsCount
+                                            }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Events Tab -->
+                        <div *ngIf="activeTab === 'events'">
+                            <!-- Loading state -->
+                            <div *ngIf="loading.events" class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+
+                            <!-- Error message -->
+                            <div *ngIf="error.events" class="alert alert-danger">
+                                {{ error.events }}
+                            </div>
+
+                            <!-- No events message -->
+                            <div *ngIf="!loading.events && events.length === 0" class="text-center py-3">
+                                <p class="text-muted">No hay conciertos programados para este artista.</p>
+                            </div>
+
+                            <!-- Events List -->
+                            <div *ngIf="!loading.events && events.length > 0">
+                                <h4 class="mb-3">Próximos Conciertos</h4>
+                                <div class="list-group mb-4">
+                                    <a *ngFor="let event of events | slice:0:5" [routerLink]="['/events', event.id]"
+                                        class="list-group-item list-group-item-action"
+                                        [class.list-group-item-success]="isFutureEvent(event)"
+                                        [class.list-group-item-secondary]="!isFutureEvent(event)">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">{{ event.name }}</h5>
+                                            <small>{{ event.startDateTime | date:'dd/MM/yyyy HH:mm' }}</small>
+                                        </div>
+                                        <p class="mb-1">{{ event.venueName }}</p>
+                                        <small>{{ event.statusName }}</small>
+                                    </a>
+                                </div>
+
+                                <div *ngIf="events.length > 5" class="text-center">
+                                    <a [routerLink]="['/events']" [queryParams]="{artistId: artistId}"
+                                        class="btn btn-outline-primary">
+                                        Ver todos los conciertos
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Tab -->
+                        <div *ngIf="activeTab === 'stats'">
+                            <!-- Loading state -->
+                            <div *ngIf="loading.stats" class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+
+                            <!-- Error message -->
+                            <div *ngIf="error.stats" class="alert alert-danger">
+                                {{ error.stats }}
+                            </div>
+
+                            <!-- Statistics content -->
+                            <div *ngIf="!loading.stats && artistStats">
+                                <h4 class="mb-3">Estadísticas</h4>
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title">Seguidores</h5>
+                                                <h2 class="display-4">{{ artistStats.totalFollowers }}</h2>
+                                                <p *ngIf="artistStats.followerGrowthRate" class="text-muted">
+                                                    <i class="bi"
+                                                        [class.bi-arrow-up-circle-fill]="artistStats.followerGrowthRate > 0"
+                                                        [class.bi-arrow-down-circle-fill]="artistStats.followerGrowthRate < 0"
+                                                        [class.text-success]="artistStats.followerGrowthRate > 0"
+                                                        [class.text-danger]="artistStats.followerGrowthRate < 0"></i>
+                                                    {{ artistStats.followerGrowthRate | number:'1.1-1' }}% en el último
+                                                    mes
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title">Total de Conciertos</h5>
+                                                <h2 class="display-4">{{ artistStats.totalEvents }}</h2>
+                                                <p class="text-muted">
+                                                    {{ artistStats.upcomingEvents }} próximos /
+                                                    {{ artistStats.pastEvents }} pasados
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-muted mt-3 text-center small">
+                                    Última actualización: {{ artistStats.lastUpdateDate | date:'dd/MM/yyyy HH:mm' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back button -->
+    <div class="d-flex justify-content-start mt-4">
+        <button class="btn btn-outline-secondary" routerLink="/artists">
+            <i class="bi bi-arrow-left me-2"></i>Volver a la lista de artistas
+        </button>
+    </div>
+</div>

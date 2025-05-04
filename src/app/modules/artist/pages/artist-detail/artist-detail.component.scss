@@ -1,0 +1,33 @@
+.card-img-top {
+  height: 250px;
+  object-fit: cover;
+}
+
+.badge.bg-purple {
+  background-color: #833ab4;
+}
+
+.nav-tabs {
+  .nav-link {
+    cursor: pointer;
+
+    &.active {
+      font-weight: 500;
+    }
+  }
+}
+
+.list-group-item-action {
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateX(5px);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .card-img-top {
+    height: 200px;
+  }
+}

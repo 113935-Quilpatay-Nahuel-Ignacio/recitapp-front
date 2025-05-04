@@ -1,1 +1,38 @@
-<p>artist-card works!</p>
+<div class="card h-100 shadow-sm artist-card" [class.artist-inactive]="!artist.active">
+    <div class="position-relative">
+        <img [src]="artist.profileImage || defaultImage" class="card-img-top" [alt]="artist.name"
+            (error)="onImageError($event)">
+
+        <div *ngIf="!artist.active" class="inactive-badge">
+            <span class="badge bg-danger">Inactivo</span>
+        </div>
+
+        <div *ngIf="artist.spotifyUrl || artist.youtubeUrl || artist.soundcloudUrl || artist.instagramUrl"
+            class="social-media-icons">
+            <a *ngIf="artist.spotifyUrl" [href]="artist.spotifyUrl" target="_blank" class="social-icon spotify">
+                <i class="bi bi-spotify"></i>
+            </a>
+            <a *ngIf="artist.youtubeUrl" [href]="artist.youtubeUrl" target="_blank" class="social-icon youtube">
+                <i class="bi bi-youtube"></i>
+            </a>
+            <a *ngIf="artist.soundcloudUrl" [href]="artist.soundcloudUrl" target="_blank"
+                class="social-icon soundcloud">
+                <i class="bi bi-cloud"></i>
+            </a>
+            <a *ngIf="artist.instagramUrl" [href]="artist.instagramUrl" target="_blank" class="social-icon instagram">
+                <i class="bi bi-instagram"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <h5 class="card-title mb-2">{{ artist.name }}</h5>
+        <p class="card-text text-truncate" *ngIf="artist.biography">{{ artist.biography }}</p>
+    </div>
+
+    <div class="card-footer bg-transparent border-top-0">
+        <button class="btn btn-outline-primary w-100" [routerLink]="['/artists', artist.id]">
+            Ver Detalle
+        </button>
+    </div>
+</div>

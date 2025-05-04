@@ -1,0 +1,86 @@
+.artist-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: calc(0.25rem - 1px);
+    border-top-right-radius: calc(0.25rem - 1px);
+  }
+
+  .inactive-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.65rem;
+    }
+  }
+
+  .social-media-icons {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    gap: 8px;
+
+    .social-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      &.spotify {
+        background-color: #1db954;
+      }
+
+      &.youtube {
+        background-color: #ff0000;
+      }
+
+      &.soundcloud {
+        background-color: #ff7700;
+      }
+
+      &.instagram {
+        background: linear-gradient(
+          45deg,
+          #405de6,
+          #5851db,
+          #833ab4,
+          #c13584,
+          #e1306c,
+          #fd1d1d
+        );
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+.artist-inactive {
+  opacity: 0.7;
+
+  .card-title {
+    text-decoration: line-through;
+  }
+}
