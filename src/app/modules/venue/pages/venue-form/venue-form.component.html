@@ -1,0 +1,311 @@
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3">
+                    <h2 class="mb-0 text-center">{{ isEditMode ? 'Editar Recinto' : 'Registrar Nuevo Recinto' }}</h2>
+                </div>
+
+                <div class="card-body">
+                    <!-- Loading spinner -->
+                    <div *ngIf="loading && !venueForm.dirty" class="text-center py-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+
+                    <!-- Error message -->
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <!-- Success message -->
+                    <div *ngIf="success" class="alert alert-success">
+                        {{ isEditMode ? 'Recinto actualizado correctamente. Redirigiendo...'
+                        : 'Recinto registrado correctamente. Redirigiendo...' }}
+                    </div>
+
+                    <!-- Venue form -->
+                    <form [formGroup]="venueForm" (ngSubmit)="onSubmit()">
+                        <!-- Tabs for form sections -->
+                        <ul class="nav nav-tabs mb-4" id="formTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="basic-tab" data-bs-toggle="tab"
+                                    data-bs-target="#basic" type="button" role="tab" aria-controls="basic"
+                                    aria-selected="true">
+                                    Información Básica
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="additional-tab" data-bs-toggle="tab"
+                                    data-bs-target="#additional" type="button" role="tab" aria-controls="additional"
+                                    aria-selected="false">
+                                    Información Adicional
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="sections-tab" data-bs-toggle="tab"
+                                    data-bs-target="#sections" type="button" role="tab" aria-controls="sections"
+                                    aria-selected="false">
+                                    Secciones
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab content -->
+                        <div class="tab-content" id="formTabsContent">
+                            <!-- Basic Information Tab -->
+                            <div class="tab-pane fade show active" id="basic" role="tabpanel"
+                                aria-labelledby="basic-tab">
+                                <div class="row g-3">
+                                    <!-- Nombre -->
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label">Nombre del Recinto *</label>
+                                        <input type="text" class="form-control" id="name" formControlName="name"
+                                            [ngClass]="{'is-invalid': submitted && f['name'].errors}">
+                                        <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                                            <div *ngIf="f['name'].errors['required']">El nombre del recinto es
+                                                obligatorio</div>
+                                            <div *ngIf="f['name'].errors['maxlength']">El nombre no puede exceder los
+                                                100 caracteres</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Capacidad Total -->
+                                    <div class="col-md-6">
+                                        <label for="totalCapacity" class="form-label">Capacidad Total</label>
+                                        <input type="number" class="form-control" id="totalCapacity"
+                                            formControlName="totalCapacity"
+                                            [ngClass]="{'is-invalid': submitted && hasError(f['totalCapacity'], 'min')}">
+                                        <div *ngIf="submitted && hasError(f['totalCapacity'], 'min')"
+                                            class="invalid-feedback">
+                                            <div>La capacidad debe ser mayor a cero</div>
+                                        </div>
+                                        <small class="form-text text-muted">Se actualizará automáticamente según las
+                                            secciones</small>
+                                    </div>
+
+                                    <!-- Dirección -->
+                                    <div class="col-12">
+                                        <label for="address" class="form-label">Dirección *</label>
+                                        <input type="text" class="form-control" id="address" formControlName="address"
+                                            [ngClass]="{'is-invalid': submitted && f['address'].errors}">
+                                        <div *ngIf="submitted && f['address'].errors" class="invalid-feedback">
+                                            <div *ngIf="f['address'].errors['required']">La dirección es obligatoria
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Google Maps URL -->
+                                    <div class="col-md-6">
+                                        <label for="googleMapsUrl" class="form-label">URL de Google Maps</label>
+                                        <input type="text" class="form-control" id="googleMapsUrl"
+                                            formControlName="googleMapsUrl">
+                                        <small class="form-text text-muted">Ejemplo:
+                                            https://maps.app.goo.gl/abcdefg</small>
+                                    </div>
+
+                                    <!-- Coordenadas -->
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="latitude" class="form-label">Latitud</label>
+                                                <input type="number" class="form-control" id="latitude"
+                                                    formControlName="latitude" step="0.0000001" placeholder="-31.4135">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="longitude" class="form-label">Longitud</label>
+                                                <input type="number" class="form-control" id="longitude"
+                                                    formControlName="longitude" step="0.0000001" placeholder="-64.1810">
+                                            </div>
+                                        </div>
+                                        <div class="d-grid mt-2">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                (click)="validateCoordinates()">
+                                                <i class="bi bi-geo-alt me-1"></i> Validar coordenadas
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Information Tab -->
+                            <div class="tab-pane fade" id="additional" role="tabpanel" aria-labelledby="additional-tab">
+                                <div class="row g-3">
+                                    <!-- Descripción -->
+                                    <div class="col-12">
+                                        <label for="description" class="form-label">Descripción</label>
+                                        <textarea class="form-control" id="description" formControlName="description"
+                                            rows="4"></textarea>
+                                    </div>
+
+                                    <!-- URL Imagen -->
+                                    <div class="col-12">
+                                        <label for="image" class="form-label">URL de Imagen</label>
+                                        <input type="text" class="form-control" id="image" formControlName="image">
+                                        <small class="form-text text-muted">URL de una imagen que represente al
+                                            recinto</small>
+
+                                        <!-- Image preview -->
+                                        <div *ngIf="f['image'].value" class="mt-2">
+                                            <img [src]="f['image'].value" class="img-thumbnail"
+                                                style="max-height: 200px;" alt="Vista previa">
+                                        </div>
+                                    </div>
+
+                                    <!-- Social links -->
+                                    <div class="col-md-6">
+                                        <label for="instagramUrl" class="form-label">URL de Instagram</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-primary text-white">
+                                                <i class="bi bi-instagram"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="instagramUrl"
+                                                formControlName="instagramUrl"
+                                                placeholder="https://instagram.com/venue">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="webUrl" class="form-label">URL del Sitio Web</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="bi bi-globe"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="webUrl" formControlName="webUrl"
+                                                placeholder="https://ejemplo.com">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sections Tab -->
+                            <div class="tab-pane fade" id="sections" role="tabpanel" aria-labelledby="sections-tab">
+                                <!-- Section explanation -->
+                                <div class="alert alert-info mb-3">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    Las secciones permiten organizar las diferentes áreas del recinto (ejm. campo,
+                                    platea, palcos) y definir
+                                    su capacidad y precio base.
+                                </div>
+
+                                <!-- Sections form array -->
+                                <div formArrayName="sections">
+                                    <div *ngFor="let section of sections.controls; let i = index" [formGroupName]="i"
+                                        class="card mb-3">
+                                        <div
+                                            class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">Sección #{{ i + 1 }}</h5>
+                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                (click)="removeSection(i)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-3">
+                                                <!-- Nombre de sección -->
+                                                <div class="col-md-6">
+                                                    <label [for]="'sectionName-' + i" class="form-label">Nombre
+                                                        *</label>
+                                                    <input type="text" class="form-control" [id]="'sectionName-' + i"
+                                                        formControlName="name"
+                                                        [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'name')?.errors}">
+                                                    <div *ngIf="submitted && getSectionControl(section, 'name')?.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="hasError(getSectionControl(section, 'name'), 'required')">
+                                                            El nombre de la sección es obligatorio
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Capacidad -->
+                                                <div class="col-md-6">
+                                                    <label [for]="'sectionCapacity-' + i" class="form-label">Capacidad
+                                                        *</label>
+                                                    <input type="number" class="form-control"
+                                                        [id]="'sectionCapacity-' + i" formControlName="capacity"
+                                                        [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'capacity')?.errors}">
+                                                    <div *ngIf="submitted && getSectionControl(section, 'capacity')?.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="hasError(getSectionControl(section, 'capacity'), 'required')">
+                                                            La capacidad es obligatoria
+                                                        </div>
+                                                        <div
+                                                            *ngIf="hasError(getSectionControl(section, 'capacity'), 'min')">
+                                                            La capacidad debe ser mayor a cero
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Precio base -->
+                                                <div class="col-md-6">
+                                                    <label [for]="'sectionBasePrice-' + i" class="form-label">Precio
+                                                        Base</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" class="form-control"
+                                                            [id]="'sectionBasePrice-' + i" formControlName="basePrice"
+                                                            [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'basePrice')?.errors}">
+                                                    </div>
+                                                    <div *ngIf="submitted && getSectionControl(section, 'basePrice')?.errors"
+                                                        class="invalid-feedback">
+                                                        <div
+                                                            *ngIf="hasError(getSectionControl(section, 'basePrice'), 'min')">
+                                                            El precio base no puede ser negativo
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Estado -->
+                                                <div class="col-md-6">
+                                                    <label class="form-label d-block">Estado</label>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            [id]="'sectionActive-' + i" formControlName="active">
+                                                        <label class="form-check-label"
+                                                            [for]="'sectionActive-' + i">Sección activa</label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Descripción -->
+                                                <div class="col-12">
+                                                    <label [for]="'sectionDescription-' + i"
+                                                        class="form-label">Descripción</label>
+                                                    <textarea class="form-control" [id]="'sectionDescription-' + i"
+                                                        formControlName="description" rows="2"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Add section button -->
+                                    <div class="d-grid">
+                                        <button type="button" class="btn btn-outline-primary" (click)="addSection()">
+                                            <i class="bi bi-plus-circle me-2"></i> Agregar Sección
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form actions -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-outline-secondary" (click)="resetForm()">
+                                Limpiar Formulario
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" [routerLink]="['/venues']">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary" [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                {{ isEditMode ? 'Actualizar Recinto' : 'Registrar Recinto' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

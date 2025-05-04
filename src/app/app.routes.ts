@@ -37,6 +37,7 @@ import { PaymentFormComponent } from './modules/transaction/pages/payment-form/p
 
 // Notification module
 import { NotificationCenterComponent } from './modules/notification/pages/notification-center/notification-center.component';
+import { VenueFormComponent } from './modules/venue/pages/venue-form/venue-form.component';
 
 export const routes: Routes = [
   // Default route
@@ -84,6 +85,12 @@ export const routes: Routes = [
 
   // Admin routes
   { path: 'admin/genres', component: MusicGenreAdminComponent },
+
+  // Rutas para venues (recintos)
+  { path: 'venues/new', component: VenueFormComponent },
+  { path: 'venues/:id/edit', component: VenueFormComponent },
+  { path: 'venues/:id', component: VenueDetailComponent },
+  { path: 'venues', component: VenueListComponent },
 
   // Wildcard route for 404
   { path: '**', redirectTo: '/events' },

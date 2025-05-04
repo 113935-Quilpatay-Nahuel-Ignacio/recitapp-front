@@ -1,1 +1,315 @@
-<p>venue-detail works!</p>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Loading spinner -->
+            <div *ngIf="loading.venue && !venue" class="text-center py-5">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+
+            <!-- Error message -->
+            <div *ngIf="error.venue" class="alert alert-danger">
+                {{ error.venue }}
+            </div>
+
+            <!-- Venue detail card -->
+            <div *ngIf="venue" class="card shadow">
+                <!-- Header with venue name and actions -->
+                <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">{{ venue.name }}</h2>
+                    <div class="d-flex gap-2">
+                        <!-- Follow button -->
+                        <app-follow-venue-button *ngIf="venue.active" [venueId]="venueId" [userId]="userId"
+                            (followStatusChanged)="onFollowStatusChanged($event)">
+                        </app-follow-venue-button>
+
+                        <!-- Admin actions dropdown -->
+                        <div class="dropdown" *ngIf="isAdmin">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                id="adminActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-gear"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminActionsDropdown">
+                                <li>
+                                    <a class="dropdown-item" [routerLink]="['/venues', venueId, 'edit']">
+                                        <i class="bi bi-pencil me-2"></i> Editar
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-warning" href="javascript:void(0)"
+                                        (click)="confirmDeactivate()" *ngIf="venue.active">
+                                        <i class="bi bi-slash-circle me-2"></i> Desactivar
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inactive warning banner -->
+                <div *ngIf="venue && !venue.active" class="alert alert-warning border-0 rounded-0 mb-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Este recinto se encuentra actualmente inactivo y no es visible para el público general.
+                </div>
+
+                <!-- Tab navigation -->
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link" [class.active]="currentTab === 'info'" (click)="setTab('info')"
+                                href="javascript:void(0)">
+                                <i class="bi bi-info-circle me-1"></i> Información
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [class.active]="currentTab === 'events'" (click)="setTab('events')"
+                                href="javascript:void(0)">
+                                <i class="bi bi-calendar-event me-1"></i> Eventos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [class.active]="currentTab === 'sections'" (click)="setTab('sections')"
+                                href="javascript:void(0)">
+                                <i class="bi bi-grid-3x3 me-1"></i> Secciones
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab content -->
+                    <div [ngSwitch]="currentTab">
+                        <!-- Info tab -->
+                        <div *ngSwitchCase="'info'">
+                            <div class="row">
+                                <!-- Left column with image and key details -->
+                                <div class="col-lg-5 mb-4">
+                                    <!-- Venue image -->
+                                    <div class="text-center mb-4">
+                                        <img *ngIf="venue.image" [src]="venue.image" class="img-fluid rounded shadow-sm"
+                                            alt="{{ venue.name }}">
+                                        <div *ngIf="!venue.image"
+                                            class="venue-placeholder bg-light d-flex align-items-center justify-content-center rounded">
+                                            <i class="bi bi-building display-1 text-muted"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address and map link -->
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Ubicación</h5>
+                                            <p class="card-text">
+                                                <i class="bi bi-geo-alt text-primary me-2"></i>
+                                                {{ venue.address }}
+                                            </p>
+                                            <button class="btn btn-outline-primary w-100"
+                                                (click)="navigateToGoogleMaps()">
+                                                <i class="bi bi-map me-2"></i>Ver en Google Maps
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Social links -->
+                                    <div class="card" *ngIf="venue.instagramUrl || venue.webUrl">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Redes sociales</h5>
+                                            <div class="d-flex gap-2">
+                                                <a *ngIf="venue.instagramUrl" [href]="venue.instagramUrl"
+                                                    target="_blank" class="btn btn-outline-primary">
+                                                    <i class="bi bi-instagram me-1"></i> Instagram
+                                                </a>
+                                                <a *ngIf="venue.webUrl" [href]="venue.webUrl" target="_blank"
+                                                    class="btn btn-outline-info">
+                                                    <i class="bi bi-globe me-1"></i> Sitio web
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right column with details -->
+                                <div class="col-lg-7">
+                                    <!-- Main info card -->
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Información general</h5>
+
+                                            <div class="mb-3">
+                                                <span class="text-muted">Capacidad total:</span>
+                                                <span class="ms-2 fw-medium">{{ formatCapacity(venue.totalCapacity)
+                                                    }}</span>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <span class="text-muted">Fecha de registro:</span>
+                                                <span class="ms-2">{{ formatDate(venue.registrationDate) }}</span>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <span class="text-muted">Última actualización:</span>
+                                                <span class="ms-2">{{ formatDate(venue.updatedAt) }}</span>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <span class="text-muted">Estado:</span>
+                                                <span class="ms-2 badge"
+                                                    [ngClass]="venue.active ? 'bg-success' : 'bg-danger'">
+                                                    {{ venue.active ? 'Activo' : 'Inactivo' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Description card -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Descripción</h5>
+                                            <p class="card-text" *ngIf="venue.description">{{ venue.description }}</p>
+                                            <p class="card-text text-muted" *ngIf="!venue.description">No hay
+                                                descripción disponible para este recinto.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Events tab -->
+                        <div *ngSwitchCase="'events'">
+                            <!-- Loading spinner -->
+                            <div *ngIf="loading.events" class="text-center py-4">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Cargando eventos...</span>
+                                </div>
+                            </div>
+
+                            <!-- Error message -->
+                            <div *ngIf="error.events" class="alert alert-danger">
+                                {{ error.events }}
+                            </div>
+
+                            <!-- No events message -->
+                            <div *ngIf="!loading.events && upcomingEvents.length === 0" class="text-center py-4">
+                                <p class="text-muted mb-3">No hay eventos próximos programados en este recinto.</p>
+                                <a *ngIf="isAdmin" [routerLink]="['/events/new']" [queryParams]="{venueId: venueId}"
+                                    class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-2"></i>Registrar nuevo evento
+                                </a>
+                            </div>
+
+                            <!-- Events list -->
+                            <div *ngIf="!loading.events && upcomingEvents.length > 0"
+                                class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col" *ngFor="let event of upcomingEvents">
+                                    <div class="card h-100 shadow-sm">
+                                        <div *ngIf="event.flyerImage" class="event-image-container">
+                                            <img [src]="event.flyerImage" class="card-img-top" [alt]="event.name">
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h5 class="card-title">{{ event.name }}</h5>
+                                                <span class="badge" [ngClass]="getStatusClass(event.statusName)">
+                                                    {{ event.statusName }}
+                                                </span>
+                                            </div>
+                                            <p class="card-text mb-2">
+                                                <i class="bi bi-person me-1"></i> {{ event.mainArtistName ?
+                                                event.mainArtistName : 'Varios artistas' }}
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <i class="bi bi-calendar-event me-1"></i> {{
+                                                formatDate(event.startDateTime) }}
+                                            </p>
+                                            <p class="card-text" *ngIf="event.description">
+                                                {{ event.description.length > 100 ? event.description.substring(0, 100)
+                                                + '...' : event.description }}
+                                            </p>
+                                        </div>
+                                        <div class="card-footer bg-transparent">
+                                            <div class="d-flex justify-content-end">
+                                                <a [routerLink]="['/events', event.id]"
+                                                    class="btn btn-outline-primary btn-sm">
+                                                    Ver detalles
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add event button for admins -->
+                            <div *ngIf="isAdmin && !loading.events && upcomingEvents.length > 0"
+                                class="mt-4 text-center">
+                                <a [routerLink]="['/events/new']" [queryParams]="{venueId: venueId}"
+                                    class="btn btn-outline-primary">
+                                    <i class="bi bi-plus-circle me-2"></i>Registrar nuevo evento
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Sections tab -->
+                        <div *ngSwitchCase="'sections'">
+                            <!-- Loading spinner -->
+                            <div *ngIf="loading.sections" class="text-center py-4">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Cargando secciones...</span>
+                                </div>
+                            </div>
+
+                            <!-- Error message -->
+                            <div *ngIf="error.sections" class="alert alert-danger">
+                                {{ error.sections }}
+                            </div>
+
+                            <!-- No sections message -->
+                            <div *ngIf="!loading.sections && sections.length === 0" class="text-center py-4">
+                                <p class="text-muted">No hay secciones definidas para este recinto.</p>
+                            </div>
+
+                            <!-- Sections list -->
+                            <div *ngIf="!loading.sections && sections.length > 0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Capacidad</th>
+                                                <th>Precio Base</th>
+                                                <th>Estado</th>
+                                                <th>Descripción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let section of sections">
+                                                <td>{{ section.name }}</td>
+                                                <td>{{ formatCapacity(section.capacity) }}</td>
+                                                <td>{{ section.basePrice ? '$' + section.basePrice : 'No definido' }}
+                                                </td>
+                                                <td>
+                                                    <span class="badge"
+                                                        [ngClass]="section.active ? 'bg-success' : 'bg-danger'">
+                                                        {{ section.active ? 'Activa' : 'Inactiva' }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ section.description || 'Sin descripción' }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Edit sections button for admins -->
+                            <div *ngIf="isAdmin" class="mt-4 text-center">
+                                <a [routerLink]="['/venues', venueId, 'edit']" [fragment]="'sections'"
+                                    class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil me-2"></i>Gestionar secciones
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
