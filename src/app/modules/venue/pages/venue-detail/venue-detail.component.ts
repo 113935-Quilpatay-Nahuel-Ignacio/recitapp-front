@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { VenueService } from '../../services/venue.service';
-import { Venue, VenueSection } from '../../models/venue';
+import { Venue, VenueSection, VenueStatistics } from '../../models/venue';
 import { EventDTO } from '../../../event/models/event';
 import { UserService } from '../../../user/services/user.service';
 import { FollowVenueButtonComponent } from '../../../user/components/follow-venue-button/follow-venue-button.component';
@@ -19,19 +19,22 @@ export class VenueDetailComponent implements OnInit {
   venue: Venue | null = null;
   sections: VenueSection[] = [];
   upcomingEvents: EventDTO[] = [];
+  venueStats: VenueStatistics | null = null;
   loading = {
     venue: false,
     sections: false,
     events: false,
+    stats: false,
   };
   error = {
     venue: '',
     sections: '',
     events: '',
+    stats: '',
   };
   userId = 2; // For demo purposes, hardcoded user ID
   isAdmin = true; // For demo purposes, hardcoded admin status
-  currentTab: 'info' | 'events' | 'sections' = 'info';
+  currentTab: 'info' | 'events' | 'sections' | 'stats' = 'info';
 
   constructor(
     private route: ActivatedRoute,
@@ -42,12 +45,31 @@ export class VenueDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
-      const id = params.get('id');
-      if (id) {
-        this.venueId = +id;
-        this.loadVenueDetails();
-        this.loadVenueSections();
-        this.loadUpcomingEvents();
+      const idParam = params.get('id');
+      if (idParam) {
+        const numericId = Number(idParam);
+        if (!isNaN(numericId)) {
+          this.venueId = numericId;
+          this.loadVenueDetails();
+          this.loadVenueSections();
+          this.loadUpcomingEvents();
+          this.loadVenueStatistics();
+        } else {
+          // ID inválido en la ruta, mostrar error y no cargar datos
+          console.error('Invalid ID parameter in route for VenueDetail:', idParam);
+          this.error.venue = 'El ID del recinto en la URL no es válido.';
+          this.error.sections = 'ID de recinto inválido para cargar secciones.';
+          this.error.events = 'ID de recinto inválido para cargar eventos.';
+          this.error.stats = 'ID de recinto inválido para cargar estadísticas.';
+          // Considerar redirigir a una página de error o a la lista de recintos
+          // this.router.navigate(['/venues']); 
+        }
+      } else {
+        // No hay ID en la ruta, esto no debería pasar para un componente de detalle
+        console.error('No ID parameter found in route for VenueDetail');
+        this.error.venue = 'No se especificó un ID de recinto en la URL.';
+        this.error.stats = 'No se especificó un ID de recinto para cargar estadísticas.';
+        // this.router.navigate(['/venues']); 
       }
     });
   }
@@ -103,7 +125,24 @@ export class VenueDetailComponent implements OnInit {
     });
   }
 
-  setTab(tab: 'info' | 'events' | 'sections'): void {
+  loadVenueStatistics(): void {
+    this.loading.stats = true;
+    this.error.stats = '';
+
+    this.venueService.getVenueStatistics(this.venueId).subscribe({
+      next: (stats) => {
+        this.venueStats = stats;
+        this.loading.stats = false;
+      },
+      error: (err) => {
+        this.error.stats =
+          err.error?.message || 'Error al cargar las estadísticas del recinto';
+        this.loading.stats = false;
+      },
+    });
+  }
+
+  setTab(tab: 'info' | 'events' | 'sections' | 'stats'): void {
     this.currentTab = tab;
   }
 
@@ -174,6 +213,35 @@ export class VenueDetailComponent implements OnInit {
     });
   }
 
+  confirmActivate(): void {
+    if (
+      confirm(
+        `¿Estás seguro de que deseas activar el recinto ${this.venue?.name}?`
+      )
+    ) {
+      this.activateVenue();
+    }
+  }
+
+  activateVenue(): void {
+    if (!this.venue) return;
+
+    this.loading.venue = true;
+    this.error.venue = '';
+
+    this.venueService.activateVenue(this.venueId).subscribe({
+      next: (updatedVenue) => {
+        this.venue = updatedVenue;
+        this.loading.venue = false;
+      },
+      error: (err) => {
+        this.error.venue =
+          err.error?.message || 'Error al activar el recinto';
+        this.loading.venue = false;
+      },
+    });
+  }
+
   onFollowStatusChanged(following: boolean): void {
     // Refresh venue details or update UI as needed
     console.log(
@@ -189,5 +257,35 @@ export class VenueDetailComponent implements OnInit {
       const url = `https://www.google.com/maps/search/?api=1&query=${this.venue.latitude},${this.venue.longitude}`;
       window.open(url, '_blank');
     }
+  }
+
+  confirmDelete(): void {
+    if (
+      confirm(
+        `¿Estás ABSOLUTAMENTE SEGURO de que deseas ELIMINAR PERMANENTEMENTE el recinto ${this.venue?.name}? Esta acción no se puede deshacer y solo funcionará si el recinto no tiene eventos asociados.`
+      )
+    ) {
+      this.deleteCurrentVenue();
+    }
+  }
+
+  deleteCurrentVenue(): void {
+    if (!this.venue) return;
+
+    this.loading.venue = true;
+    this.error.venue = '';
+
+    this.venueService.deleteVenue(this.venueId).subscribe({
+      next: () => {
+        this.loading.venue = false;
+        alert(`Recinto "${this.venue?.name}" eliminado correctamente.`);
+        this.router.navigate(['/venues']);
+      },
+      error: (err) => {
+        this.error.venue =
+          err.error?.message || 'Error al eliminar el recinto. Es posible que tenga eventos asociados.';
+        this.loading.venue = false;
+      },
+    });
   }
 }

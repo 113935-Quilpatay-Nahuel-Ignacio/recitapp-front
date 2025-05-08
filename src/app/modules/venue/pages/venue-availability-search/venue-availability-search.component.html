@@ -1,0 +1,72 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white py-3">
+          <h2 class="mb-0 text-center">Consultar Disponibilidad de Recintos</h2>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="availabilityForm" (ngSubmit)="onSearch()">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-5">
+                <label for="startDate" class="form-label">Fecha de Inicio *</label>
+                <input type="date" id="startDate" class="form-control" formControlName="startDate"
+                  [ngClass]="{ 'is-invalid': submitted && (f['startDate'].errors || availabilityForm.errors?.['dateRangeInvalid']) }">
+              </div>
+              <div class="col-md-5">
+                <label for="endDate" class="form-label">Fecha de Fin *</label>
+                <input type="date" id="endDate" class="form-control" formControlName="endDate"
+                  [ngClass]="{ 'is-invalid': submitted && (f['endDate'].errors || availabilityForm.errors?.['dateRangeInvalid']) }">
+              </div>
+              <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span *ngIf="!isLoading">Buscar</span>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="submitted && availabilityForm.errors?.['dateRangeInvalid'] && !f['startDate'].errors && !f['endDate'].errors" class="text-danger mt-2">
+              La fecha de inicio no puede ser posterior a la fecha de fin.
+            </div>
+             <div *ngIf="submitted && f['startDate'].errors?.['required']" class="text-danger mt-1">
+                La fecha de inicio es obligatoria.
+            </div>
+            <div *ngIf="submitted && f['endDate'].errors?.['required']" class="text-danger mt-1">
+                La fecha de fin es obligatoria.
+            </div>
+          </form>
+
+          <div *ngIf="isLoading && submitted" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Buscando...</span>
+            </div>
+            <p class="mt-2">Buscando recintos disponibles...</p>
+          </div>
+
+          <div *ngIf="errorMessage && !isLoading" class="alert alert-warning mt-4" role="alert">
+            {{ errorMessage }}
+          </div>
+
+          <div *ngIf="!isLoading && availableVenues.length > 0 && submitted" class="mt-4">
+            <h3 class="mb-3">Recintos Disponibles ({{ availableVenues.length }})</h3>
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+              <div *ngFor="let venue of availableVenues" class="col">
+                <div class="card h-100">
+                  <img *ngIf="venue.image" [src]="venue.image" class="card-img-top object-fit-cover" alt="{{ venue.name }}" style="height: 200px;">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ venue.name }}</h5>
+                    <p class="card-text"><i class="bi bi-geo-alt-fill me-1"></i>{{ venue.address }}</p>
+                    <p class="card-text"><i class="bi bi-people-fill me-1"></i>Capacidad: {{ venue.totalCapacity || 'No especificada' }}</p>
+                    <a *ngIf="venue.id" [routerLink]="['/modules/venue/detail', venue.id]" class="btn btn-sm btn-outline-primary">Ver Detalles</a>
+                  </div>
+                </div>
+                <!-- Si tuviéramos VenueCardComponent y fuera standalone y lo importamos en el TS:
+                <app-venue-card [venue]="venue"></app-venue-card> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

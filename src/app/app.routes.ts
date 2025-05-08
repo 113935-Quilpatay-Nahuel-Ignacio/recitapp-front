@@ -26,6 +26,8 @@ import { EventFormComponent } from './modules/event/pages/event-form/event-form.
 // Venue module
 import { VenueListComponent } from './modules/venue/pages/venue-list/venue-list.component';
 import { VenueDetailComponent } from './modules/venue/pages/venue-detail/venue-detail.component';
+import { VenueFormComponent } from './modules/venue/pages/venue-form/venue-form.component';
+import { VenueAvailabilitySearchComponent } from './modules/venue/pages/venue-availability-search/venue-availability-search.component';
 
 // Ticket module
 import { TicketPurchaseComponent } from './modules/ticket/pages/ticket-purchase/ticket-purchase.component';
@@ -37,7 +39,6 @@ import { PaymentFormComponent } from './modules/transaction/pages/payment-form/p
 
 // Notification module
 import { NotificationCenterComponent } from './modules/notification/pages/notification-center/notification-center.component';
-import { VenueFormComponent } from './modules/venue/pages/venue-form/venue-form.component';
 
 export const routes: Routes = [
   // Default route
@@ -68,9 +69,12 @@ export const routes: Routes = [
   { path: 'events/:id/edit', component: EventFormComponent },
   { path: 'events/:id/tickets', component: TicketPurchaseComponent },
 
-  // Venue routes
-  { path: 'venues', component: VenueListComponent },
-  { path: 'venues/:id', component: VenueDetailComponent },
+  // Venue routes (Reorganizadas y consolidadas)
+  { path: 'venues', component: VenueListComponent }, // Lista general de recintos
+  { path: 'venues/new', component: VenueFormComponent }, // Crear nuevo recinto (antes de :id)
+  { path: 'venues/search-availability', component: VenueAvailabilitySearchComponent }, // Búsqueda de disponibilidad
+  { path: 'venues/:id', component: VenueDetailComponent }, // Detalle de recinto (después de /new y /search-availability)
+  { path: 'venues/:id/edit', component: VenueFormComponent }, // Editar recinto
 
   // Ticket routes
   { path: 'tickets', component: TicketListComponent },
@@ -85,12 +89,6 @@ export const routes: Routes = [
 
   // Admin routes
   { path: 'admin/genres', component: MusicGenreAdminComponent },
-
-  // Rutas para venues (recintos)
-  { path: 'venues/new', component: VenueFormComponent },
-  { path: 'venues/:id/edit', component: VenueFormComponent },
-  { path: 'venues/:id', component: VenueDetailComponent },
-  { path: 'venues', component: VenueListComponent },
 
   // Wildcard route for 404
   { path: '**', redirectTo: '/events' },

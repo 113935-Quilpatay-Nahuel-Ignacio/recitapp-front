@@ -40,11 +40,27 @@ export class VenueFormComponent implements OnInit {
 
     // Check if we're in edit mode by looking for an ID parameter
     this.route.paramMap.subscribe((params) => {
-      const id = params.get('id');
-      if (id) {
-        this.venueId = +id;
-        this.isEditMode = true;
-        this.loadVenue(this.venueId);
+      const idParam = params.get('id');
+      if (idParam) {
+        const numericId = Number(idParam);
+        if (!isNaN(numericId)) {
+          this.venueId = numericId;
+          this.isEditMode = true;
+          this.loadVenue(this.venueId);
+        } else {
+          // Invalid ID parameter in route (e.g., if it was a non-numeric string)
+          // This case should ideally not happen for /venues/new if routing is correct
+          console.error('Invalid ID parameter in route for VenueForm:, idParam');
+          this.error = 'El ID del recinto en la URL no es válido. Mostrando formulario de creación.';
+          this.isEditMode = false;
+          this.venueId = null;
+          // Consider navigating to a safe route or showing a more prominent error
+          // For now, it will default to a new form state due to isEditMode = false
+        }
+      } else {
+        // No 'id' param, definitely in create mode
+        this.isEditMode = false;
+        this.venueId = null;
       }
     });
   }

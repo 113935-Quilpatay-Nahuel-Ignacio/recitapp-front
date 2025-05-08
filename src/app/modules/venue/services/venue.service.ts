@@ -43,6 +43,10 @@ export class VenueService {
     return this.http.patch<Venue>(`${this.baseUrl}/${id}/deactivate`, {});
   }
 
+  activateVenue(id: number): Observable<Venue> {
+    return this.http.patch<Venue>(`${this.baseUrl}/${id}/activate`, {});
+  }
+
   deleteVenue(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }

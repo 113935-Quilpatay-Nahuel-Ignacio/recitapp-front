@@ -45,6 +45,21 @@
                                         <i class="bi bi-slash-circle me-2"></i> Desactivar
                                     </a>
                                 </li>
+                                <li>
+                                    <a class="dropdown-item text-success" href="javascript:void(0)"
+                                        (click)="confirmActivate()" *ngIf="!venue.active">
+                                        <i class="bi bi-check-circle me-2"></i> Activar
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="javascript:void(0)"
+                                        (click)="confirmDelete()">
+                                        <i class="bi bi-trash3 me-2"></i> Eliminar Recinto
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -75,6 +90,12 @@
                             <a class="nav-link" [class.active]="currentTab === 'sections'" (click)="setTab('sections')"
                                 href="javascript:void(0)">
                                 <i class="bi bi-grid-3x3 me-1"></i> Secciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [class.active]="currentTab === 'stats'" (click)="setTab('stats')"
+                                href="javascript:void(0)">
+                                <i class="bi bi-bar-chart-line me-1"></i> Estadísticas
                             </a>
                         </li>
                     </ul>
@@ -305,6 +326,50 @@
                                     class="btn btn-outline-primary">
                                     <i class="bi bi-pencil me-2"></i>Gestionar secciones
                                 </a>
+                            </div>
+                        </div>
+
+                        <!-- Statistics tab -->
+                        <div *ngSwitchCase="'stats'">
+                            <!-- Loading spinner for stats -->
+                            <div *ngIf="loading.stats" class="text-center py-4">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Cargando estadísticas...</span>
+                                </div>
+                            </div>
+
+                            <!-- Error message for stats -->
+                            <div *ngIf="error.stats && !loading.stats" class="alert alert-danger">
+                                {{ error.stats }}
+                            </div>
+
+                            <!-- Statistics content -->
+                            <div *ngIf="venueStats && !loading.stats && !error.stats">
+                                <h4 class="mb-3">Estadísticas de {{ venueStats.venueName }}</h4>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <dl class="row">
+                                            <dt class="col-sm-4">Eventos Totales</dt>
+                                            <dd class="col-sm-8">{{ venueStats.totalEvents }}</dd>
+
+                                            <dt class="col-sm-4">Eventos Próximos</dt>
+                                            <dd class="col-sm-8">{{ venueStats.upcomingEvents ?? 'No disponible' }}</dd>
+
+                                            <dt class="col-sm-4">Eventos Pasados</dt>
+                                            <dd class="col-sm-8">{{ venueStats.pastEvents ?? 'No disponible' }}</dd>
+
+                                            <dt class="col-sm-4">Tasa de Ocupación Estimada</dt>
+                                            <dd class="col-sm-8">{{ venueStats.occupancyRate !== undefined ? (venueStats.occupancyRate * 100).toFixed(2) + '%' : 'No disponible' }}</dd>
+
+                                            <dt class="col-sm-4">Última Actualización de Estadísticas</dt>
+                                            <dd class="col-sm-8">{{ formatDate(venueStats.lastUpdateDate) }}</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                             <!-- No stats message -->
+                            <div *ngIf="!venueStats && !loading.stats && !error.stats" class="text-center py-4">
+                                <p class="text-muted">No hay datos estadísticos disponibles para este recinto.</p>
                             </div>
                         </div>
                     </div>

@@ -72,6 +72,67 @@ export class VenueListComponent implements OnInit {
     this.loadVenues();
   }
 
+  // Métodos de Acción CRUD para la lista
+  confirmDeactivate(venueId: number, venueName: string): void {
+    if (confirm(`¿Estás seguro de que deseas DESACTIVAR el recinto \"${venueName}\"?`)) {
+      this.deactivateVenueInList(venueId);
+    }
+  }
+
+  deactivateVenueInList(venueId: number): void {
+    this.loading = true; // Podríamos tener un loading específico por ítem
+    this.venueService.deactivateVenue(venueId).subscribe({
+      next: () => {
+        // Actualizar el estado en la lista local o recargar
+        this.loadVenues(); // Simple recarga por ahora
+        // Opcional: mostrar mensaje de éxito
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Error al desactivar el recinto.';
+        this.loading = false;
+      },
+    });
+  }
+
+  confirmActivate(venueId: number, venueName: string): void {
+    if (confirm(`¿Estás seguro de que deseas ACTIVAR el recinto \"${venueName}\"?`)) {
+      this.activateVenueInList(venueId);
+    }
+  }
+
+  activateVenueInList(venueId: number): void {
+    this.loading = true;
+    this.venueService.activateVenue(venueId).subscribe({
+      next: () => {
+        this.loadVenues();
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Error al activar el recinto.';
+        this.loading = false;
+      },
+    });
+  }
+
+  confirmDelete(venueId: number, venueName: string): void {
+    if (confirm(`¿Estás ABSOLUTAMENTE SEGURO de que deseas ELIMINAR PERMANENTEMENTE el recinto \"${venueName}\"? Esta acción no se puede deshacer.`)) {
+      this.deleteVenueFromList(venueId);
+    }
+  }
+
+  deleteVenueFromList(venueId: number): void {
+    this.loading = true;
+    this.venueService.deleteVenue(venueId).subscribe({
+      next: () => {
+        this.loadVenues(); // Recargar la lista después de eliminar
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Error al eliminar el recinto. Es posible que tenga eventos asociados.';
+        this.loading = false;
+      },
+    });
+  }
+  // Fin de Métodos de Acción CRUD
+
   formatCapacity(capacity: number | undefined): string {
     if (!capacity) return 'No especificada';
     return capacity.toLocaleString('es-AR');
