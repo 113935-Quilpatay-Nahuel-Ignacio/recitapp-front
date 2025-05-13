@@ -1,1 +1,114 @@
-<p>event-form works!</p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h2>{{ isEditMode ? 'Editar Evento' : 'Registrar Nuevo Evento' }}</h2>
+
+      <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+        <!-- Mensajes de error/éxito -->
+        <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="alert alert-success mt-3">
+          {{ successMessage }}
+        </div>
+
+        <!-- Nombre del Evento -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Nombre del Evento</label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="form-control"
+            [ngClass]="{ 'is-invalid': f['name'].touched && f['name'].errors }"
+          />
+          <div *ngIf="f['name'].touched && f['name'].errors?.['required']" class="invalid-feedback">
+            El nombre es requerido.
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Descripción</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            class="form-control"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Fecha y Hora de Inicio -->
+        <div class="mb-3">
+          <label for="startDateTime" class="form-label">Fecha y Hora de Inicio</label>
+          <input
+            type="datetime-local"
+            id="startDateTime"
+            formControlName="startDateTime"
+            class="form-control"
+            [ngClass]="{ 'is-invalid': f['startDateTime'].touched && f['startDateTime'].errors }"
+          />
+          <div *ngIf="f['startDateTime'].touched && f['startDateTime'].errors?.['required']" class="invalid-feedback">
+            La fecha y hora de inicio son requeridas.
+          </div>
+        </div>
+
+        <!-- Fecha y Hora de Fin -->
+        <div class="mb-3">
+          <label for="endDateTime" class="form-label">Fecha y Hora de Fin (Opcional)</label>
+          <input
+            type="datetime-local"
+            id="endDateTime"
+            formControlName="endDateTime"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Recinto -->
+        <div class="mb-3">
+          <label for="venueId" class="form-label">Recinto</label>
+          <select
+            id="venueId"
+            formControlName="venueId"
+            class="form-select"
+            [ngClass]="{ 'is-invalid': f['venueId'].touched && f['venueId'].errors }"
+          >
+            <option [ngValue]="null" disabled>Selecciona un recinto</option>
+            <option *ngFor="let venue of venues" [ngValue]="venue.id">
+              {{ venue.name }}
+            </option>
+          </select>
+          <div *ngIf="f['venueId'].touched && f['venueId'].errors?.['required']" class="invalid-feedback">
+            El recinto es requerido.
+          </div>
+        </div>
+
+        <!-- Artista Principal -->
+        <div class="mb-3">
+          <label for="mainArtistId" class="form-label">Artista Principal (Opcional)</label>
+          <select
+            id="mainArtistId"
+            formControlName="mainArtistId"
+            class="form-select"
+          >
+            <option [ngValue]="null">Selecciona un artista (o ninguno)</option>
+            <option *ngFor="let artist of artists" [ngValue]="artist.id">
+              {{ artist.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Botón de Envío -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <button type="button" class="btn btn-secondary me-md-2" [routerLink]="isEditMode ? ['/events', eventId] : ['/events']">
+                Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="eventForm.invalid || isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1"></span>
+                {{ isEditMode ? 'Actualizar Evento' : 'Crear Evento' }}
+            </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

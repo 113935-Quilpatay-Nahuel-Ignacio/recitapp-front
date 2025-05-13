@@ -1,1 +1,179 @@
-<p>event-detail works!</p>
+<div class="container py-5">
+  <!-- Indicador de Carga -->
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando detalles del evento...</span>
+    </div>
+    <p class="mt-2">Cargando detalles del evento...</p>
+  </div>
+
+  <!-- Mensaje de Error -->
+  <div *ngIf="!isLoading && errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+    <div class="mt-3">
+        <a routerLink="/events" class="btn btn-primary">Volver a la Lista de Eventos</a>
+    </div>
+  </div>
+
+  <!-- Contenido del Detalle del Evento -->
+  <div *ngIf="!isLoading && event" class="card shadow-lg">
+    <div class="row g-0">
+      <div class="col-md-5" *ngIf="event.flyerImage">
+        <img [src]="event.flyerImage" class="img-fluid rounded-start event-flyer-detail" [alt]="event.name">
+      </div>
+      <div class="col-md-5" *ngIf="!event.flyerImage">
+        <div class="event-flyer-detail-placeholder bg-light d-flex align-items-center justify-content-center h-100 rounded-start">
+            <i class="bi bi-calendar-event display-1 text-muted"></i>
+        </div>
+      </div>
+      <div [ngClass]="event.flyerImage ? 'col-md-7' : 'col-md-12'">
+        <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
+            <h2 class="card-title mb-0">{{ event.name }}</h2>
+            <div class="d-flex align-items-center">
+              <span *ngIf="event.verified === false" class="badge bg-warning text-dark me-2">NO VERIFICADO</span>
+              <span *ngIf="event.verified === true" class="badge bg-success text-light me-2">VERIFICADO</span>
+              <div *ngIf="isAdmin" class="dropdown">
+                  <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" id="eventActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-gear-fill"></i> Acciones
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="eventActionsDropdown">
+                      <li *ngIf="!event.verified">
+                          <button class="dropdown-item" type="button" (click)="confirmVerifyEvent()" [disabled]="isVerifying">
+                              <span *ngIf="isVerifying" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                              <i *ngIf="!isVerifying" class="bi bi-check-circle-fill me-2 text-success"></i> Verificar Evento
+                          </button>
+                      </li>
+                      <li>
+                          <a class="dropdown-item" [routerLink]="['/events', event.id, 'edit']">
+                              <i class="bi bi-pencil-square me-2"></i> Editar Evento
+                          </a>
+                      </li>
+                      <li>
+                          <button class="dropdown-item" type="button" (click)="promptChangeStatus()">
+                              <i class="bi bi-toggles me-2"></i> Cambiar Estado
+                          </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                          <button class="dropdown-item text-danger" (click)="confirmDeleteEvent()" type="button">
+                              <i class="bi bi-trash3-fill me-2"></i> Eliminar Evento
+                          </button>
+                      </li>
+                       <!-- Más acciones aquí: cambiar estado, etc. -->
+                  </ul>
+              </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+          <!-- Verification Feedback -->
+          <div *ngIf="verificationMessage" 
+               [ngClass]="verificationMessage.startsWith('Error') ? 'alert alert-danger' : 'alert alert-success'" 
+               class="mt-3" 
+               role="alert">
+            {{ verificationMessage }}
+          </div>
+
+          <p class="card-text text-muted">
+            <i class="bi bi-calendar-range me-2"></i>
+            <strong>Desde:</strong> {{ formatFullDate(event.startDateTime) }}
+            <span *ngIf="event.endDateTime"><br><i class="bi bi-calendar-range me-2 invisible"></i><strong>Hasta:</strong> {{ formatFullDate(event.endDateTime) }}</span>
+          </p>
+
+          <p class="card-text">
+            <i class="bi bi-tag-fill me-2 text-primary"></i>
+            <strong>Estado:</strong> 
+            <span class="badge fs-6 ms-1" [ngClass]="{
+                'bg-success': event.statusName === 'EN_VENTA',
+                'bg-info': event.statusName === 'PROXIMO',
+                'bg-warning text-dark': event.statusName === 'AGOTADO',
+                'bg-danger': event.statusName === 'CANCELADO',
+                'bg-secondary': event.statusName === 'FINALIZADO'
+              }">{{ formatStatusName(event.statusName) }}</span>
+          </p>
+
+          <hr class="my-3">
+
+          <h5 class="h6 text-uppercase text-muted mb-2">Descripción</h5>
+          <p class="card-text event-description-full" *ngIf="event.description; else noDescription">
+            {{ event.description }}
+          </p>
+          <ng-template #noDescription>
+            <p class="card-text text-muted fst-italic">No hay descripción disponible para este evento.</p>
+          </ng-template>
+
+          <hr class="my-3">
+
+          <div class="row">
+            <div class="col-md-6">
+              <h5 class="h6 text-uppercase text-muted mb-2">Recinto</h5>
+              <p class="card-text">
+                <i class="bi bi-geo-alt-fill me-2 text-primary"></i>
+                <!-- TODO: Enlazar a detalle de recinto si es necesario -->
+                <a href="javascript:void(0)" (click)="navigateToVenue(event.venueId)" class="text-decoration-none">{{ event.venueName }}</a>
+              </p>
+            </div>
+            <div class="col-md-6" *ngIf="event.mainArtistName">
+              <h5 class="h6 text-uppercase text-muted mb-2">Artista Principal</h5>
+              <p class="card-text">
+                <i class="bi bi-person-circle me-2 text-primary"></i>
+                 <!-- TODO: Enlazar a detalle de artista si es necesario -->
+                <a href="javascript:void(0)" (click)="navigateToArtist(event.mainArtistId)" class="text-decoration-none">{{ event.mainArtistName }}</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- Event Statistics -->
+          <div *ngIf="stats || isLoadingStats" class="mt-4 pt-3 border-top">
+            <h5 class="h6 text-uppercase text-muted mb-3">Estadísticas de Tickets</h5>
+            <div *ngIf="isLoadingStats" class="text-center">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                <span class="visually-hidden">Cargando estadísticas...</span>
+              </div>
+            </div>
+            <div *ngIf="stats && !isLoadingStats" class="row">
+              <div class="col-sm-4">
+                <p class="mb-1"><i class="bi bi-ticket-detailed me-2"></i>Total Tickets:</p>
+                <p class="fs-5 fw-bold">{{ stats.totalTickets | number:'1.0-0':'es-AR' }}</p>
+              </div>
+              <div class="col-sm-4">
+                <p class="mb-1"><i class="bi bi-ticket-perforated me-2"></i>Tickets Vendidos:</p>
+                <p class="fs-5 fw-bold">{{ stats.soldTickets | number:'1.0-0':'es-AR' }}</p>
+              </div>
+              <div class="col-sm-4">
+                <p class="mb-1"><i class="bi bi-pie-chart-fill me-2"></i>Ocupación:</p>
+                <p class="fs-5 fw-bold">{{ stats.occupancyRate | number:'1.1-1':'es-AR' }}%</p>
+              </div>
+            </div>
+            <div *ngIf="!stats && !isLoadingStats" class="text-center text-muted small">
+              No se pudieron cargar las estadísticas.
+            </div>
+          </div>
+
+          <!-- TODO: Sección para artistas secundarios si aplica -->
+          <!-- TODO: Sección para comprar tickets / ver disponibilidad si aplica -->
+
+        </div>
+        <div class="card-footer bg-light text-end">
+          <a routerLink="/events" class="btn btn-outline-secondary btn-sm me-2">Volver a la Lista</a>
+          <!-- <button type="button" class="btn btn-primary btn-sm">Comprar Tickets</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Estilos específicos para esta página (opcional, podrían ir en el SCSS) -->
+<style>
+  .event-flyer-detail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-height: 600px; /* Ajusta según necesidad */
+  }
+  .event-flyer-detail-placeholder {
+    min-height: 300px; /* Asegura altura mínima si no hay imagen */
+  }
+  .event-description-full {
+    white-space: pre-wrap; /* Para respetar saltos de línea en la descripción */
+  }
+</style>
