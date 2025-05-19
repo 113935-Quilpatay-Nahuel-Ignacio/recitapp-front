@@ -12,9 +12,9 @@ import { NotificationPreferences } from '../../models/notification-preferences';
   templateUrl: './notification-preferences.component.html',
 })
 export class NotificationPreferencesComponent implements OnInit {
-  userId: number = 2; // Mock user ID
+  userId: number = 4; // Hardcoded to 4 as per request
   preferences: NotificationPreferences = {
-    userId: 2,
+    userId: 4, // Also update here for consistency if used directly
     receiveReminderEmails: true,
     receiveEventPush: true,
     receiveArtistPush: true,

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { EventDTO, EventCreateDTO, EventSearchFilters, EventStatusUpdateDTO, EventVerificationRequest } from '../models/event';
 import { EventStatisticsDTO } from '../models/event-statistics.dto';
 import { environment } from '../../../../environments/environment';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

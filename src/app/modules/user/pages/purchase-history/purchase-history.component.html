@@ -25,37 +25,44 @@
                     <div *ngIf="purchases.length > 0">
                         <div class="card mb-3 shadow-sm" *ngFor="let purchase of purchases">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span class="text-muted">{{ purchase.purchaseDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                                <span class="text-muted">{{ (purchase.purchaseDate | date:'dd/MM/yyyy HH:mm') || 'Fecha no disponible' }}</span>
                                 <span class="badge" [ngClass]="{
-                      'bg-primary': purchase.ticketStatus === 'VENDIDA',
-                      'bg-success': purchase.ticketStatus === 'USADA',
-                      'bg-danger': purchase.ticketStatus === 'CANCELADA',
-                      'bg-warning text-dark': purchase.ticketStatus === 'REGALO'
+                      'bg-primary': purchase.status === 'VENDIDA',
+                      'bg-success': purchase.status === 'USADA',
+                      'bg-danger': purchase.status === 'CANCELADA',
+                      'bg-warning text-dark': purchase.status === 'REGALO'
                     }">
-                                    {{ purchase.ticketStatus }}
+                                    {{ purchase.status || 'Estado Desconocido' }}
                                 </span>
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title text-primary" style="cursor: pointer;"
-                                    (click)="goToEventDetails(purchase.id)">
-                                    {{ purchase.eventName }}
+                                <h5 class="card-title text-primary">
+                                    {{ purchase.eventName || 'Evento Desconocido' }}
+                                    <!-- Event details link disabled as eventId is not available from purchase history -->
+                                    <!-- To enable, ensure eventId is populated in PurchaseHistory model and uncomment below -->
+                                    <!-- (click)="purchase.eventId && goToEventDetails(purchase.eventId)" -->
+                                    <!-- [style.cursor]="purchase.eventId ? 'pointer' : 'default'" -->
                                 </h5>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p class="mb-1"><strong>Artista:</strong> {{ purchase.artistName }}</p>
-                                        <p class="mb-1"><strong>Lugar:</strong> {{ purchase.venueName }}</p>
-                                        <p class="mb-1"><strong>Fecha:</strong> {{ purchase.eventDate | date:'dd/MM/yyyy
-                                            HH:mm' }}</p>
+                                        <p class="mb-1"><strong>Artista:</strong> {{ purchase.artistName || 'N/A' }}</p>
+                                        <p class="mb-1"><strong>Lugar:</strong> {{ purchase.venueName || 'N/A' }}</p>
+                                        <p class="mb-1"><strong>Fecha Evento:</strong> {{ (purchase.eventDate | date:'dd/MM/yyyy HH:mm') || 'N/A' }}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p class="mb-1"><strong>Sección:</strong> {{ purchase.ticketSection }}</p>
-                                        <p class="mb-1"><strong>Precio:</strong> ${{ purchase.ticketPrice.toFixed(2) }}
+                                        <p class="mb-1"><strong>Sección:</strong> {{ purchase.sectionName || 'N/A' }}</p>
+                                        <p class="mb-1"><strong>Precio:</strong> 
+                                            <span *ngIf="purchase.price !== undefined && purchase.price !== null; else noPrice">
+                                                {{ purchase.price | currency:(purchase.currency || 'ARS'):'symbol':'1.2-2' }}
+                                            </span>
+                                            <ng-template #noPrice>N/A</ng-template>
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-footer text-end">
-                                <button class="btn btn-outline-primary" (click)="goToTicketDetails(purchase.id)">
+                                <button class="btn btn-outline-primary" (click)="goToTicketDetails(purchase.ticketId)"
+                                        [disabled]="!purchase.ticketId">
                                     Ver Entrada
                                 </button>
                             </div>

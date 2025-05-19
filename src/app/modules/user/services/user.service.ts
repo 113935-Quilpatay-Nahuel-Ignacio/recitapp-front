@@ -1,9 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { User, UserRegistration, UserUpdate } from '../models/user';
 import { environment } from '../../../../environments/environment';
 import { NotificationPreferences } from '../models/notification-preferences';
+import { PurchaseHistory } from '../models/purchase-history';
+
+// Define interfaces for the backend DTOs to ensure type safety during mapping
+interface BackendTicketPurchaseDTO {
+  ticketId: number;
+  eventName: string;
+  artistName: string;
+  venueName: string;
+  section: string;
+  eventDate: string; // Serialized LocalDateTime
+  price: number;
+  ticketStatus: string;
+  qrCode?: string;
+  eventId?: number; // Add if backend can provide it
+}
+
+interface BackendPurchaseHistoryDTO {
+  transactionId: number;
+  purchaseDate: string; // Serialized LocalDateTime
+  totalAmount: number;
+  paymentMethod: string;
+  transactionStatus: string;
+  tickets: BackendTicketPurchaseDTO[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -33,8 +58,31 @@ export class UserService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  getUserPurchaseHistory(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/${userId}/purchases`);
+  getUserPurchaseHistory(userId: number): Observable<PurchaseHistory[]> {
+    return this.http.get<BackendPurchaseHistoryDTO[]>(`${this.baseUrl}/${userId}/purchases`).pipe(
+      map(backendTransactions => {
+        const frontendPurchases: PurchaseHistory[] = [];
+        for (const transaction of backendTransactions) {
+          for (const ticket of transaction.tickets) {
+            frontendPurchases.push({
+              ticketId: ticket.ticketId,
+              // eventId: ticket.eventId, // Uncomment if backend adds eventId to TicketPurchaseDTO
+              eventName: ticket.eventName,
+              artistName: ticket.artistName,
+              venueName: ticket.venueName,
+              sectionName: ticket.section, // Map from 'section'
+              eventDate: new Date(ticket.eventDate),
+              price: ticket.price,
+              status: ticket.ticketStatus, // Map from 'ticketStatus'
+              qrCode: ticket.qrCode,
+              purchaseDate: new Date(transaction.purchaseDate), // Use transaction's purchaseDate
+              // currency: undefined, // Or map if available
+            });
+          }
+        }
+        return frontendPurchases;
+      })
+    );
   }
 
   getFollowedArtists(userId: number): Observable<any[]> {

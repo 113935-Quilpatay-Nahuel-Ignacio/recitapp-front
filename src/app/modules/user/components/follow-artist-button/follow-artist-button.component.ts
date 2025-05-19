@@ -23,7 +23,7 @@ import { UserService } from '../../services/user.service';
 })
 export class FollowArtistButtonComponent implements OnInit {
   @Input() artistId!: number;
-  @Input() userId: number = 1; // Mock user ID
+  @Input() userId: number = 4; // Default to 4, though parent should provide it
   @Output() followStatusChanged = new EventEmitter<boolean>();
 
   isFollowing = false;

@@ -41,7 +41,7 @@ export class UserProfileComponent implements OnInit {
     this.showDeleteModal = false;
     // Por simplicidad, podemos usar el ID 2 para desarrollo o
     // obtenemos el ID del usuario autenticado (cuando tengamos autenticación)
-    this.userId = 2; // Posteriormente esto vendrá de la autenticación
+    this.userId = 4; // Hardcoded to 4 as per request
 
     this.profileForm = this.formBuilder.group(
       {

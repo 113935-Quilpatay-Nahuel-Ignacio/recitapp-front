@@ -1,0 +1,53 @@
+<div class="ticket-detail-container" *ngIf="ticket$ | async as ticket; else loadingOrError">
+  <div class="ticket-card">
+    <div class="ticket-header">
+      <h2>{{ ticket.eventName }}</h2>
+      <p class="event-date">{{ ticket.eventDate | date: 'fullDate' }} - {{ ticket.eventDate | date: 'shortTime' }}</p>
+    </div>
+
+    <div class="ticket-body">
+      <div class="ticket-section">
+        <h3>Detalles del Evento</h3>
+        <p><strong>Lugar:</strong> {{ ticket.venueName }}</p>
+        <p><strong>Sección:</strong> {{ ticket.sectionName }}</p>
+        <p *ngIf="ticket.seatNumber"><strong>Asiento:</strong> {{ ticket.seatNumber }}</p>
+      </div>
+
+      <div class="ticket-section">
+        <h3>Información del Asistente</h3>
+        <p><strong>Nombre:</strong> {{ ticket.userName }}</p>
+        <p><strong>DNI:</strong> {{ ticket.userDni }}</p>
+      </div>
+
+      <div class="ticket-section">
+        <h3>Detalles de Compra</h3>
+        <p><strong>Fecha de Compra:</strong> {{ ticket.purchaseDate | date: 'medium' }}</p>
+        <p><strong>Precio:</strong> {{ ticket.price | currency:ticket.currency:'symbol':'1.2-2' }}</p>
+        <p><strong>Estado:</strong> <span class="status status-{{ ticket.ticketStatus | lowercase }}">{{ ticket.ticketStatus }}</span></p>
+      </div>
+
+      <div class="ticket-section qr-code-section">
+        <h3>Tu Entrada</h3>
+        <!-- Assuming qrCode is a URL to an image or a base64 encoded image -->
+        <img [src]="ticket.qrCode" alt="QR Code" class="qr-code-img">
+        <p>Presenta este QR en el ingreso.</p>
+      </div>
+    </div>
+
+    <div class="ticket-actions">
+      <button [routerLink]="['/event', ticket.eventId]" class="btn btn-secondary">Volver al Evento</button>
+      <!-- Add other actions like download or share if needed -->
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div *ngIf="error; else loading" class="error-message">
+    <p>{{ error }}</p>
+    <button routerLink="/user/purchase-history" class="btn">Volver al Historial</button>
+  </div>
+  <ng-template #loading>
+    <p class="loading-message">Cargando detalles de la entrada...</p>
+    <!-- You can add a spinner here -->
+  </ng-template>
+</ng-template> 

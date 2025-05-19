@@ -22,7 +22,7 @@ export class PurchaseHistoryComponent implements OnInit {
 
   ngOnInit(): void {
     // Por simplicidad, usamos el ID 2 para desarrollo
-    this.userId = 2; // Posteriormente esto vendrá de la autenticación
+    this.userId = 4; // Posteriormente esto vendrá de la autenticación
     this.loadPurchaseHistory();
   }
 
@@ -47,6 +47,15 @@ export class PurchaseHistoryComponent implements OnInit {
   }
 
   goToTicketDetails(ticketId: number): void {
+    if (ticketId === undefined || ticketId === null) {
+      console.error(
+        'Error: ticketId is undefined or null, cannot navigate to ticket details.',
+        'Check the data source for purchase history items.'
+      );
+      this.error =
+        'ID de entrada no disponible. No se pueden mostrar los detalles.';
+      return;
+    }
     this.router.navigate(['/ticket', ticketId]);
   }
 }

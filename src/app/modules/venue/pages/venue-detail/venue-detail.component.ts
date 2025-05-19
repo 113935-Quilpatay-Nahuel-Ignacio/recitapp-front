@@ -32,7 +32,7 @@ export class VenueDetailComponent implements OnInit {
     events: '',
     stats: '',
   };
-  userId = 2; // For demo purposes, hardcoded user ID
+  userId = 4; // Hardcoded to 4 as per request
   isAdmin = true; // For demo purposes, hardcoded admin status
   currentTab: 'info' | 'events' | 'sections' | 'stats' = 'info';
 

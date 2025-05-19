@@ -18,7 +18,7 @@ export class ArtistDetailComponent implements OnInit {
   artist: ArtistDetailDTO | null = null;
   loading = false;
   error = '';
-  userId = 2; // For demo purposes, hardcoded user ID
+  userId = 4; // Hardcoded to 4 as per request
   isAdmin = true; // For demo purposes, hardcoded admin status
 
   constructor(

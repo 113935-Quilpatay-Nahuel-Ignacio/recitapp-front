@@ -152,6 +152,16 @@
           <!-- TODO: Sección para artistas secundarios si aplica -->
           <!-- TODO: Sección para comprar tickets / ver disponibilidad si aplica -->
 
+          <!-- Botón para Comprar Entradas -->
+          <div class="event-actions mt-4 mb-3">
+            <a [routerLink]="['/events', event.id, 'tickets']" class="btn btn-primary btn-lg" *ngIf="event.statusName === 'EN_VENTA' || event.statusName === 'PROXIMO'">
+              <i class="fas fa-ticket-alt"></i> Comprar Entradas
+            </a>
+            <p *ngIf="event.statusName !== 'EN_VENTA' && event.statusName !== 'PROXIMO'" class="alert alert-info">
+              La venta de entradas para este evento no está activa actualmente (Estado: {{ formatStatusName(event.statusName) }}).
+            </p>
+          </div>
+
         </div>
         <div class="card-footer bg-light text-end">
           <a routerLink="/events" class="btn btn-outline-secondary btn-sm me-2">Volver a la Lista</a>

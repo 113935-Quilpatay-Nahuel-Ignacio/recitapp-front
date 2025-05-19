@@ -32,6 +32,7 @@ import { VenueAvailabilitySearchComponent } from './modules/venue/pages/venue-av
 // Ticket module
 import { TicketPurchaseComponent } from './modules/ticket/pages/ticket-purchase/ticket-purchase.component';
 import { TicketListComponent } from './modules/ticket/pages/ticket-list/ticket-list.component';
+import { TicketDetailComponent } from './modules/ticket/pages/ticket-detail/ticket-detail.component';
 
 // Transaction module
 import { TransactionHistoryComponent } from './modules/transaction/pages/transaction-history/transaction-history.component';
@@ -77,8 +78,9 @@ export const routes: Routes = [
   { path: 'venues/:id/edit', component: VenueFormComponent }, // Editar recinto
 
   // Ticket routes
-  { path: 'tickets', component: TicketListComponent },
-  { path: 'tickets/:id', component: TicketPurchaseComponent },
+  { path: 'tickets', component: TicketListComponent }, // Route to list/manage tickets (if any)
+  { path: 'ticket/:id', component: TicketDetailComponent }, // View details of a specific ticket
+  // The route for purchasing tickets for an event is events/:id/tickets
 
   // Transaction routes
   { path: 'transactions', component: TransactionHistoryComponent },

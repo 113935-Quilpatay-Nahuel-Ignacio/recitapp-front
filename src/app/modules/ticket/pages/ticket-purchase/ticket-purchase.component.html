@@ -1,1 +1,94 @@
-<p>ticket-purchase works!</p>
+<div class="purchase-container">
+  <div *ngIf="isLoading" class="loading-spinner">
+    <p>Loading details...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="ngOnInit()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!isLoading && !error">
+    <div *ngIf="event$ | async as event" class="event-details">
+      <h2>{{ event.name }}</h2>
+      <p *ngIf="event.description">{{ event.description }}</p>
+      <p *ngIf="event.startDateTime">Date: {{ event.startDateTime | date: 'medium' }}</p>
+      <p *ngIf="event.location">Location: {{ event.location }}</p>
+    </div>
+
+    <hr>
+
+    <h3>Available Sections</h3>
+    <div *ngIf="sectionOffers.length === 0 && !isLoading" class="no-offers">
+      <p>No sections available for purchase for this event currently, or still loading.</p>
+    </div>
+
+    <div class="section-offers-list" *ngIf="sectionOffers.length > 0">
+      <div *ngFor="let offer of sectionOffers" class="section-offer-item card mb-3">
+        <div class="card-body">
+          <h4 class="card-title">{{ offer.sectionName }}</h4>
+          <p class="card-text">Price: {{ offer.price | currency:offer.currency:'symbol':'1.2-2' }}</p>
+          <p class="card-text">Available: {{ offer.availableTickets }} tickets</p>
+          <div class="add-section-controls form-inline" *ngIf="offer.availableTickets > 0">
+            <label for="quantity-{{offer.sectionId}}" class="mr-2">Quantity:</label>
+            <input class="form-control mr-2" style="width: 70px;" type="number" id="quantity-{{offer.sectionId}}" #quantityInput value="1" min="1" [max]="offer.availableTickets">
+            <button class="btn btn-primary btn-sm" (click)="addTicketForSection(offer, quantityInput.valueAsNumber || 1)">
+              Add to Cart
+            </button>
+          </div>
+          <p *ngIf="offer.availableTickets === 0" class="text-danger">Sold out</p>
+        </div>
+      </div>
+    </div>
+
+    <hr *ngIf="attendeeTickets.controls.length > 0">
+
+    <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
+      <div formArrayName="attendeeTickets">
+        <h3 *ngIf="attendeeTickets.controls.length > 0">Your Cart ({{ attendeeTickets.controls.length }} Tickets)</h3>
+        
+        <div *ngFor="let ticketCtrl of attendeeTickets.controls; let i = index" [formGroupName]="i" class="attendee-ticket-item card mb-3">
+          <div class="card-header">
+            Ticket {{ i + 1 }} for <strong>{{ ticketCtrl.get('sectionName')?.value }}</strong> - {{ ticketCtrl.get('price')?.value | currency:(sectionOffers[0].currency || 'ARS'):'symbol':'1.2-2' }}
+            <button type="button" (click)="removeTicket(i)" class="btn btn-danger btn-sm float-right">Remove</button>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="firstName-{{i}}">First Name:</label>
+              <input id="firstName-{{i}}" formControlName="attendeeFirstName" placeholder="Attendee First Name" class="form-control">
+              <!-- Basic Validation Example -->
+              <small *ngIf="ticketCtrl.get('attendeeFirstName')?.invalid && ticketCtrl.get('attendeeFirstName')?.touched" class="text-danger">
+                First name is required.
+              </small>
+            </div>
+            <div class="form-group">
+              <label for="lastName-{{i}}">Last Name:</label>
+              <input id="lastName-{{i}}" formControlName="attendeeLastName" placeholder="Attendee Last Name" class="form-control">
+              <small *ngIf="ticketCtrl.get('attendeeLastName')?.invalid && ticketCtrl.get('attendeeLastName')?.touched" class="text-danger">
+                Last name is required.
+              </small>
+            </div>
+            <div class="form-group">
+              <label for="dni-{{i}}">DNI:</label>
+              <input id="dni-{{i}}" formControlName="attendeeDni" placeholder="Attendee DNI" class="form-control">
+              <small *ngIf="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched" class="text-danger">
+                DNI is required.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary mt-3" *ngIf="attendeeTickets.controls.length > 0">
+        <h4>Total: {{ calculateTotal() | currency:(sectionOffers[0].currency || 'ARS'):'symbol':'1.2-2' }}</h4>
+        <!-- Add Payment Method Selection Here -->
+        <p><small>User ID: {{ MOCK_USER_ID }} (placeholder)</small></p>
+        <p><small>Payment Method ID: {{ MOCK_PAYMENT_METHOD_ID }} (placeholder)</small></p>
+
+        <button type="submit" class="btn btn-success btn-lg" [disabled]="purchaseForm.invalid || isLoading || attendeeTickets.controls.length === 0">
+          {{ isLoading ? 'Processing Purchase...' : 'Complete Purchase' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</div>
