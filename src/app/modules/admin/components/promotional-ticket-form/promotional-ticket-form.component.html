@@ -1,0 +1,122 @@
+<div class="container mt-4">
+  <h2>Registrar Entrada Promocional o de Regalo</h2>
+
+  <form [formGroup]="promotionalTicketForm" (ngSubmit)="onSubmit()">
+    <!-- Event Selection -->
+    <div class="mb-3">
+      <label for="eventId" class="form-label">Evento</label>
+      <div *ngIf="isLoadingEvents" class="spinner-border spinner-border-sm" role="status"></div>
+      <select id="eventId" formControlName="eventId" class="form-select"
+              [ngClass]="{ 'is-invalid': fc['eventId'].invalid && fc['eventId'].touched }">
+        <option [ngValue]="null" disabled>-- Seleccione un Evento --</option>
+        <option *ngFor="let event of (events$ | async)" [value]="event.id">
+          {{ event.name }}
+        </option>
+      </select>
+      <div *ngIf="fc['eventId'].invalid && fc['eventId'].touched" class="invalid-feedback">
+        Debe seleccionar un evento.
+      </div>
+    </div>
+
+    <!-- Section Selection (depends on Event) -->
+    <div class="mb-3">
+      <label for="sectionId" class="form-label">Sección</label>
+      <select id="sectionId" formControlName="sectionId" class="form-select"
+              [disabled]="!fc['eventId'].value" 
+              [ngClass]="{ 'is-invalid': fc['sectionId'].invalid && fc['sectionId'].touched }">
+        <option [ngValue]="null" disabled>-- Seleccione una Sección --</option>
+        <option *ngFor="let section of (sections$ | async)" [value]="section.id">
+          {{ section.name }} (Capacidad: {{ section.capacity }})
+        </option>
+      </select>
+      <div *ngIf="fc['sectionId'].invalid && fc['sectionId'].touched" class="invalid-feedback">
+        Debe seleccionar una sección.
+      </div>
+       <small *ngIf="!fc['eventId'].value" class="form-text text-muted">Seleccione un evento para ver las secciones.</small>
+    </div>
+
+    <!-- Attendee Info -->
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="attendeeFirstName" class="form-label">Nombre del Asistente</label>
+        <input type="text" id="attendeeFirstName" formControlName="attendeeFirstName" class="form-control"
+               [ngClass]="{ 'is-invalid': fc['attendeeFirstName'].invalid && fc['attendeeFirstName'].touched }">
+        <div *ngIf="fc['attendeeFirstName'].invalid && fc['attendeeFirstName'].touched" class="invalid-feedback">
+          Nombre requerido.
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="attendeeLastName" class="form-label">Apellido del Asistente</label>
+        <input type="text" id="attendeeLastName" formControlName="attendeeLastName" class="form-control"
+               [ngClass]="{ 'is-invalid': fc['attendeeLastName'].invalid && fc['attendeeLastName'].touched }">
+        <div *ngIf="fc['attendeeLastName'].invalid && fc['attendeeLastName'].touched" class="invalid-feedback">
+          Apellido requerido.
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="attendeeDni" class="form-label">DNI del Asistente</label>
+        <input type="text" id="attendeeDni" formControlName="attendeeDni" class="form-control"
+               [ngClass]="{ 'is-invalid': fc['attendeeDni'].invalid && fc['attendeeDni'].touched }">
+        <div *ngIf="fc['attendeeDni'].invalid && fc['attendeeDni'].touched" class="invalid-feedback">
+          DNI requerido.
+        </div>
+      </div>
+    </div>
+
+    <!-- New fields -->
+    <div class="mb-3">
+      <label for="adminUserId" class="form-label">ID Usuario Administrador (quien registra)</label>
+      <input type="number" id="adminUserId" formControlName="adminUserId" class="form-control">
+      <div *ngIf="fc['adminUserId'].invalid && (fc['adminUserId'].dirty || fc['adminUserId'].touched)"
+           class="text-danger form-text">
+        <small *ngIf="fc['adminUserId'].errors?.['required']">El ID del admin es requerido.</small>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="recipientUserId" class="form-label">ID Usuario Destinatario (quien recibe)</label>
+      <input type="number" id="recipientUserId" formControlName="recipientUserId" class="form-control">
+      <div *ngIf="fc['recipientUserId'].invalid && (fc['recipientUserId'].dirty || fc['recipientUserId'].touched)"
+           class="text-danger form-text">
+        <small *ngIf="fc['recipientUserId'].errors?.['required']">El ID del destinatario es requerido.</small>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="promotionName" class="form-label">Nombre de la Promoción (Opcional)</label>
+      <input type="text" id="promotionName" formControlName="promotionName" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label for="promotionDescription" class="form-label">Descripción de la Promoción (Opcional)</label>
+      <textarea id="promotionDescription" formControlName="promotionDescription" class="form-control" rows="3"></textarea>
+    </div>
+
+    <!-- Notes -->
+    <div class="mb-3">
+      <label for="notes" class="form-label">Notas Adicionales (Opcional)</label>
+      <textarea id="notes" formControlName="notes" class="form-control" rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="promotionalTicketForm.invalid || isLoading">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      {{ isLoading ? 'Registrando...' : 'Registrar Entrada Promocional' }}
+    </button>
+
+    <div *ngIf="submissionError" class="alert alert-danger mt-3">
+      {{ submissionError }}
+    </div>
+  </form>
+
+  <div *ngIf="submissionSuccessMessage && createdTicket" class="alert alert-success mt-3">
+    <p>{{ submissionSuccessMessage }}</p>
+    <h5>Detalles de la Entrada Creada:</h5>
+    <p><strong>Evento:</strong> {{ createdTicket.eventName }}</p>
+    <p><strong>Sección:</strong> {{ createdTicket.sectionName }}</p>
+    <p><strong>Asistente:</strong> {{ createdTicket.attendeeFirstName }} {{ createdTicket.attendeeLastName }} (DNI: {{ createdTicket.attendeeDni }})</p>
+    <p><strong>Precio:</strong> {{ createdTicket.price | currency:'':'symbol':'1.2-2' }}</p>
+    <p><strong>Estado:</strong> {{ createdTicket.status }}</p>
+    <a [routerLink]="['/ticket', createdTicket.id]">Ver Entrada</a>
+  </div>
+
+</div> 

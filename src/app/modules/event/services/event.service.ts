@@ -5,6 +5,7 @@ import { EventDTO, EventCreateDTO, EventSearchFilters, EventStatusUpdateDTO, Eve
 import { EventStatisticsDTO } from '../models/event-statistics.dto';
 import { environment } from '../../../../environments/environment';
 import { map } from 'rxjs/operators';
+import { Section } from '../models/section.model';
 
 @Injectable({
   providedIn: 'root'
@@ -74,5 +75,9 @@ export class EventService {
 
   getEventStatistics(id: number): Observable<EventStatisticsDTO> {
     return this.http.get<EventStatisticsDTO>(`${this.apiUrl}/${id}/statistics`);
+  }
+
+  getSectionsByEventId(eventId: number): Observable<Section[]> {
+    return this.http.get<Section[]>(`${this.apiUrl}/${eventId}/sections`);
   }
 }

@@ -1,0 +1,103 @@
+<div class="container mt-4">
+  <h2>Reporte de Ventas por Evento</h2>
+
+  <!-- Event Selector -->
+  <div class="mb-3">
+    <label for="eventSelector" class="form-label">Seleccionar Evento:</label>
+    <div *ngIf="isLoadingEvents" class="spinner-border spinner-border-sm" role="status">
+      <span class="visually-hidden">Cargando eventos...</span>
+    </div>
+    <select id="eventSelector" class="form-select" 
+            [(ngModel)]="selectedEventId" 
+            (ngModelChange)="onEventSelected()" 
+            [disabled]="isLoadingEvents || (events$ | async)?.length === 0">
+      <option [ngValue]="null" disabled>-- Elija un evento --</option>
+      <option *ngFor="let event of (events$ | async)" [value]="event.id">
+        {{ event.name }} (ID: {{ event.id }})
+      </option>
+    </select>
+    <div *ngIf="loadEventsError" class="alert alert-danger mt-2">
+      {{ loadEventsError }}
+    </div>
+    <div *ngIf="!isLoadingEvents && (events$ | async)?.length === 0 && !loadEventsError" class="alert alert-info mt-2">
+      No hay eventos disponibles para generar reportes o no se pudieron cargar.
+    </div>
+  </div>
+
+  <!-- Report Display -->
+  <div *ngIf="isLoadingReport" class="text-center my-3">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando reporte...</span>
+    </div>
+    <p>Cargando reporte...</p>
+  </div>
+
+  <div *ngIf="loadReportError" class="alert alert-danger mt-3">
+    <strong>Error al cargar el reporte:</strong> {{ loadReportError }}
+  </div>
+
+  <div *ngIf="(report$ | async) as report; else noReportTemplate">
+    <div class="card mt-4">
+      <div class="card-header">
+        <h3 class="mb-3">Reporte de Ventas para {{ report.eventName }} (ID: {{ report.eventId }})</h3>
+        <small class="text-muted">Generado el: {{ report.generatedDate | date:'medium' }}</small>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <p><strong>Fecha de Generación:</strong> {{ report.generatedDate | date:'medium' }}</p>
+            <p *ngIf="report.periodStartDate && report.periodEndDate">
+              <strong>Período del Reporte:</strong>
+              {{ report.periodStartDate | date:'shortDate' }} - {{ report.periodEndDate | date:'shortDate' }}
+            </p>
+            <p><strong>Total Entradas Vendidas (Evento):</strong> {{ report.soldTickets }}</p>
+            <p *ngIf="report.promotionalTicketsCount">
+              <strong>Entradas Promocionales (Evento):</strong> {{ report.promotionalTicketsCount }}
+            </p>
+            <p><strong>Ingresos Totales (Evento):</strong> {{ report.totalRevenue | currency:'':'symbol':'1.2-2' }}</p>
+            <p *ngIf="report.occupancyRateOverall">
+              <strong>Tasa de Ocupación General:</strong> {{ report.occupancyRateOverall | percent:'1.2-2' }}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Total Entradas Vendidas (Global del Reporte):</strong> {{ report.soldTickets }}</p>
+            <p *ngIf="report.totalTicketsOverall">
+              <strong>Total Entradas Emitidas (Global del Reporte):</strong> {{ report.totalTicketsOverall }}
+            </p>
+          </div>
+        </div>
+        
+        <h4>Desglose por Sección/Item:</h4>
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Sección</th>
+              <th class="text-end">Tickets Vendidos</th>
+              <th class="text-end">Ingresos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of report.items">
+              <td>{{ item.sectionName }} <span *ngIf="item.sectionId" class="text-muted small">(ID: {{item.sectionId}})</span></td>
+              <td class="text-end">{{ item.ticketsSold }}</td>
+              <td class="text-end">{{ item.revenue | currency:'':'symbol':'1.2-2' }}</td>
+            </tr>
+            <tr *ngIf="report.items.length === 0">
+              <td colspan="3" class="text-center fst-italic">No hay datos detallados disponibles para este reporte.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noReportTemplate>
+    <div *ngIf="selectedEventId && !isLoadingReport && !loadReportError" class="alert alert-info mt-3">
+      No hay datos de reporte para el evento seleccionado o aún no se ha cargado.
+    </div>
+    <div *ngIf="!selectedEventId && !isLoadingReport && !loadReportError" class="alert alert-light mt-3 text-center">
+      Seleccione un evento para ver el reporte de ventas.
+    </div>
+  </ng-template>
+
+</div> 
