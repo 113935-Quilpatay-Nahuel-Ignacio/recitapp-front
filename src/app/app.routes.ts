@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+// import { AuthGuard } from './guards/auth.guard';
 
 // User module
 import { UserRegisterComponent } from './modules/user/pages/user-register/user-register.component';
@@ -91,6 +92,22 @@ export const routes: Routes = [
 
   // Admin routes
   { path: 'admin/genres', component: MusicGenreAdminComponent },
+
+  // Lazy-loaded routes
+  // {
+  //   path: 'profile',
+  //   loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule),
+  //   canActivate: [AuthGuard]
+  // },
+  {
+    path: 'admin',
+    loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule)
+    // Aquí podríamos añadir un canMatch o canActivate general para /admin si fuera necesario más adelante
+  },
+  // {
+  //   path: 'terminos-y-condiciones',
+  //   // ... existing code ... // This route is invalid as is
+  // },
 
   // Wildcard route for 404
   { path: '**', redirectTo: '/events' },

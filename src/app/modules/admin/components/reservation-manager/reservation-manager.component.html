@@ -1,0 +1,74 @@
+<div class="container mt-4">
+  <h2>Gestión de Reservas de Entradas</h2>
+
+  <!-- Sección para Reservas Expiradas -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>Reservas Expiradas</h4>
+    </div>
+    <div class="card-body">
+      <button class="btn btn-info me-2" (click)="fetchExpiredReservationIds()" [disabled]="isLoadingExpiredIds">
+        <span *ngIf="isLoadingExpiredIds" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{ isLoadingExpiredIds ? 'Cargando...' : 'Ver IDs de Reservas Expiradas' }}
+      </button>
+
+      <button class="btn btn-danger" (click)="confirmAndClearExpiredReservations()" [disabled]="isClearingReservations">
+        <span *ngIf="isClearingReservations" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{ isClearingReservations ? 'Limpiando...' : 'Limpiar Todas las Reservas Expiradas' }}
+      </button>
+
+      <div *ngIf="loadExpiredIdsError" class="alert alert-danger mt-3" role="alert">
+        <strong>Error al cargar IDs:</strong> {{ loadExpiredIdsError }}
+      </div>
+
+      <div *ngIf="clearReservationsSuccess" class="alert alert-success mt-3" role="alert">
+        {{ clearReservationsSuccess }}
+      </div>
+      <div *ngIf="clearReservationsError" class="alert alert-danger mt-3" role="alert">
+        <strong>Error al limpiar:</strong> {{ clearReservationsError }}
+      </div>
+
+      <div *ngIf="(expiredReservationIds$ | async) as ids; else noExpiredIdsTemplate" class="mt-3">
+        <p *ngIf="ids && ids.length > 0"><strong>IDs de Reservas Expiradas:</strong></p>
+        <ul *ngIf="ids && ids.length > 0" class="list-group">
+          <li *ngFor="let id of ids" class="list-group-item">{{ id }}</li>
+        </ul>
+        <p *ngIf="ids && ids.length === 0">No hay reservas expiradas actualmente.</p>
+      </div>
+      <ng-template #noExpiredIdsTemplate>
+        <p *ngIf="!isLoadingExpiredIds && !loadExpiredIdsError" class="mt-3 fst-italic">Haga clic en "Ver IDs" para cargar la lista.</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Sección para Contar Reservas por Evento (Opcional) -->
+  <div class="card">
+    <div class="card-header">
+      <h4>Contar Reservas por Evento</h4>
+    </div>
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label for="eventIdInput" class="form-label">ID del Evento:</label>
+          <input type="number" class="form-control" id="eventIdInput" [(ngModel)]="eventIdForCount" placeholder="Ingrese ID de evento">
+        </div>
+        <div class="col-md-auto">
+          <button class="btn btn-primary" (click)="fetchReservedTicketsCount()" [disabled]="isLoadingCount || !eventIdForCount">
+            <span *ngIf="isLoadingCount" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            {{ isLoadingCount ? 'Contando...' : 'Contar Reservas' }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="loadCountError" class="alert alert-danger mt-3" role="alert">
+        <strong>Error al contar:</strong> {{ loadCountError }}
+      </div>
+
+      <div *ngIf="reservedTicketsCount !== null && !isLoadingCount && !loadCountError" class="mt-3">
+        <p class="fs-5"><strong>Total de Tickets Reservados para el evento {{ eventIdForCount }}:</strong> {{ reservedTicketsCount }}</p>
+      </div>
+       <p *ngIf="reservedTicketsCount === null && !isLoadingCount && !loadCountError && eventIdForCount" class="mt-3 fst-italic">No se encontraron resultados o el evento no tiene reservas.</p>
+    </div>
+  </div>
+
+</div> 

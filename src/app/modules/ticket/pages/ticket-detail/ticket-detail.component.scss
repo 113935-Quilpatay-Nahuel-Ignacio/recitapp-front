@@ -148,4 +148,20 @@
 .error-message p {
   color: #dc3545;
   margin-bottom: 1rem;
+}
+
+/* Styles for the edit attendee modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 1040; /* Ensure it's below the modal (Bootstrap default is 1050 for modal) */
+}
+
+.modal {
+  /* Ensure modal is above backdrop; Bootstrap typically handles this if classes are correct */
+  z-index: 1050; 
 } 

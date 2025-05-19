@@ -7,10 +7,11 @@ export interface Ticket {
   seatNumber?: string | null; // Can be null if not applicable
   price: number;
   currency: string;
-  userName: string; // Attendee name
-  userDni: string; // Attendee DNI
+  attendeeFirstName: string; // New field based on backend DTO
+  attendeeLastName: string;  // New field based on backend DTO
+  attendeeDni: string;       // New field based on backend DTO (was userDni)
   qrCode: string; // URL or base64 image data
-  ticketStatus: string;
+  status: string;
   purchaseDate: string; // ISO date string
   eventId: number;
 } 

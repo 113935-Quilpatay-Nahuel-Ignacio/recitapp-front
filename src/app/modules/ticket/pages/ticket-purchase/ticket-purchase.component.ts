@@ -14,13 +14,8 @@ import { Event } from '../../../event/models/event.model';
 import { EventDTO } from '../../../event/models/event';
 import { catchError, finalize, tap, map as rxjsMap } from 'rxjs/operators';
 import { EMPTY, Observable } from 'rxjs';
+import { TicketPurchaseRequestDTO, TicketPurchaseResponseDTO, TicketRequest } from '../../models/booking.model';
 
-// Import DTOs from booking.model.ts
-import { 
-  TicketPurchaseRequestDTO, 
-  TicketRequest, 
-  TicketPurchaseResponseDTO 
-} from '../../models/booking.model';
 
 @Component({
   selector: 'app-ticket-purchase',

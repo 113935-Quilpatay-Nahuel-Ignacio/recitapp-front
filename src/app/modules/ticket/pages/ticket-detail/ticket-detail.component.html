@@ -15,8 +15,8 @@
 
       <div class="ticket-section">
         <h3>Información del Asistente</h3>
-        <p><strong>Nombre:</strong> {{ ticket.userName }}</p>
-        <p><strong>DNI:</strong> {{ ticket.userDni }}</p>
+        <p><strong>Nombre:</strong> {{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}</p>
+        <p><strong>DNI:</strong> {{ ticket.attendeeDni }}</p>
       </div>
 
       <div class="ticket-section">
@@ -36,7 +36,75 @@
 
     <div class="ticket-actions">
       <button [routerLink]="['/event', ticket.eventId]" class="btn btn-secondary">Volver al Evento</button>
+      <button 
+        *ngIf="canEditTicket(ticket)" 
+        (click)="openEditModal(ticket)" 
+        class="btn btn-primary ms-2">
+        Modificar Asignación
+      </button>
       <!-- Add other actions like download or share if needed -->
+    </div>
+  </div>
+</div>
+
+<!-- Edit Attendee Modal -->
+<div class="modal-backdrop" *ngIf="isEditModalOpen"></div>
+<div class="modal" *ngIf="isEditModalOpen" tabindex="-1" role="dialog" style="display: block;">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <form [formGroup]="attendeeForm" (ngSubmit)="onSaveAttendeeDetails()">
+        <div class="modal-header">
+          <h5 class="modal-title">Modificar Asignación de Entrada</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeEditModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="error && !attendeeForm.dirty" class="alert alert-danger">
+            {{ error }}
+          </div>
+          
+          <div class="mb-3">
+            <label for="attendeeFirstName" class="form-label">Nombre del Asistente</label>
+            <input type="text" id="attendeeFirstName" formControlName="attendeeFirstName" class="form-control"
+                   [ngClass]="{ 'is-invalid': attendeeForm.get('attendeeFirstName')?.invalid && attendeeForm.get('attendeeFirstName')?.touched }">
+            <div *ngIf="attendeeForm.get('attendeeFirstName')?.invalid && attendeeForm.get('attendeeFirstName')?.touched"
+                 class="invalid-feedback">
+              El nombre es requerido.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="attendeeLastName" class="form-label">Apellido del Asistente</label>
+            <input type="text" id="attendeeLastName" formControlName="attendeeLastName" class="form-control"
+                   [ngClass]="{ 'is-invalid': attendeeForm.get('attendeeLastName')?.invalid && attendeeForm.get('attendeeLastName')?.touched }">
+            <div *ngIf="attendeeForm.get('attendeeLastName')?.invalid && attendeeForm.get('attendeeLastName')?.touched"
+                 class="invalid-feedback">
+              El apellido es requerido.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="attendeeDni" class="form-label">DNI del Asistente</label>
+            <input type="text" id="attendeeDni" formControlName="attendeeDni" class="form-control"
+                   [ngClass]="{ 'is-invalid': attendeeForm.get('attendeeDni')?.invalid && attendeeForm.get('attendeeDni')?.touched }">
+            <div *ngIf="attendeeForm.get('attendeeDni')?.invalid && attendeeForm.get('attendeeDni')?.touched"
+                 class="invalid-feedback">
+              El DNI es requerido.
+            </div>
+          </div>
+          
+          <div *ngIf="error && attendeeForm.dirty" class="alert alert-danger mt-3">
+             {{ error }}
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="attendeeForm.invalid || isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
