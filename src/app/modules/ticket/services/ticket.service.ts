@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Ticket } from '../models/ticket.model';
 import { environment } from '../../../../environments/environment';
 import { HttpParams } from '@angular/common/http';
+import { inject } from '@angular/core';
 
 export interface AttendeeUpdateRequest {
   attendeeFirstName?: string;
@@ -12,8 +13,16 @@ export interface AttendeeUpdateRequest {
 }
 
 export interface TicketTransferRequest {
-  recipientUserId?: number;
-  recipientEmail: string;
+  recipientUserId: number;
+  attendeeFirstName: string;
+  attendeeLastName: string;
+  attendeeDni: string;
+}
+
+export interface TicketTransferBySearchRequest {
+  recipientFirstName: string;
+  recipientLastName: string;
+  recipientDni: string;
 }
 
 export interface PromotionalTicketItem {
@@ -67,9 +76,9 @@ export interface PromotionalTicketResponse {
 })
 export class TicketService {
   private apiUrl = `${environment.apiUrl}/tickets`;
+  private usersApiUrl = `${environment.apiUrl}/users`;
   private adminApiUrl = `${environment.apiUrl}/admin/tickets`;
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getTicketById(ticketId: number): Observable<Ticket> {
     return this.http.get<Ticket>(`${this.apiUrl}/${ticketId}`);
@@ -79,8 +88,12 @@ export class TicketService {
     return this.http.patch<Ticket>(`${this.apiUrl}/${ticketId}/assignment`, attendeeData);
   }
 
-  transferTicket(ticketId: number, transferData: TicketTransferRequest): Observable<Ticket> {
-    return this.http.post<Ticket>(`${this.apiUrl}/${ticketId}/transfer`, transferData);
+  transferTicket(currentOwnerUserId: number, ticketId: number, data: TicketTransferRequest): Observable<Ticket> {
+    return this.http.post<Ticket>(`${this.usersApiUrl}/${currentOwnerUserId}/tickets/${ticketId}/transfer`, data);
+  }
+
+  transferTicketBySearch(currentOwnerUserId: number, ticketId: number, data: TicketTransferBySearchRequest): Observable<Ticket> {
+    return this.http.post<Ticket>(`${this.usersApiUrl}/${currentOwnerUserId}/tickets/${ticketId}/transfer-search`, data);
   }
 
   validateTicket(ticketId: number, qrCodeValue: string): Observable<boolean> {

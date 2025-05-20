@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TicketService, AttendeeUpdateRequest, TicketTransferRequest } from '../../services/ticket.service';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { TicketService, AttendeeUpdateRequest, TicketTransferBySearchRequest } from '../../services/ticket.service';
 import { Ticket } from '../../models/ticket.model';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
@@ -24,6 +24,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 })
 export class TicketDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private ticketService = inject(TicketService);
   private fb = inject(FormBuilder);
 
@@ -35,12 +36,14 @@ export class TicketDetailComponent implements OnInit {
   attendeeForm: FormGroup;
   
   isTransferModalOpen = false;
-  transferForm: FormGroup;
+  transferTicketForm: FormGroup;
   transferError: string | null = null;
-  transferSuccess: string | null = null;
+  transferLoading = false;
 
   editingTicketId: number | null = null;
-  isLoading = false;
+  isLoading = true;
+  currentTicketId: number | null = null;
+  currentUserId: number | null = 4; // Placeholder User ID
 
   constructor() {
     this.attendeeForm = this.fb.group({
@@ -49,18 +52,19 @@ export class TicketDetailComponent implements OnInit {
       attendeeDni: ['', Validators.required],
     });
 
-    this.transferForm = this.fb.group({
-      recipientUserId: [null, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      recipientEmail: ['', [Validators.required, Validators.email]],
+    this.transferTicketForm = this.fb.group({
+      recipientFirstName: ['', Validators.required],
+      recipientLastName: ['', Validators.required],
+      recipientDni: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(
+    this.ticket$ = this.route.paramMap.pipe(
       switchMap((params) => {
         const id = params.get('id');
         if (id) {
-          this.editingTicketId = +id;
+          this.currentTicketId = +id;
           this.isLoading = true;
           return this.ticketService.getTicketById(+id).pipe(
             tap(ticket => {
@@ -68,7 +72,7 @@ export class TicketDetailComponent implements OnInit {
               this.isLoading = false;
             }),
             catchError((err) => {
-              this.error = err.error?.message || 'Error fetching ticket details.';
+              this.error = (err.error as any)?.message || 'Error fetching ticket details.';
               this.ticketSubject.next(null);
               this.isLoading = false;
               return of(null);
@@ -80,7 +84,7 @@ export class TicketDetailComponent implements OnInit {
           return of(null);
         }
       })
-    ).subscribe();
+    );
   }
 
   canEditTicket(ticket: Ticket | null): boolean {
@@ -98,8 +102,7 @@ export class TicketDetailComponent implements OnInit {
 
   openEditModal(ticket: Ticket): void {
     if (!this.canEditTicket(ticket)) {
-      console.warn('Editing not allowed for this ticket:', ticket);
-      this.error = 'No se permite la modificación para esta entrada (estado o fecha no válidos).';
+      this.error = 'No se permite la modificación para esta entrada.';
       return;
     }
     this.editingTicketId = ticket.id;
@@ -142,62 +145,56 @@ export class TicketDetailComponent implements OnInit {
         this.closeEditModal();
       }),
       catchError(err => {
-        this.error = err.error?.message || 'Error al actualizar los detalles del asistente.';
+        this.error = (err.error as any)?.message || 'Error al actualizar los detalles del asistente.';
         this.isLoading = false;
         return of(null);
       })
     ).subscribe();
   }
 
-  openTransferModal(ticket: Ticket): void {
-    if (!this.canTransferTicket(ticket) || !ticket.id) {
+  openTransferModal(): void {
+    if (!this.canTransferTicket(this.ticketSubject.value) || !this.currentTicketId) {
       this.transferError = 'Esta entrada no se puede transferir en este momento.';
       return;
     }
-    this.editingTicketId = ticket.id;
     this.isTransferModalOpen = true;
     this.transferError = null;
-    this.transferSuccess = null;
-    this.transferForm.reset();
+    this.transferTicketForm.reset();
   }
 
   closeTransferModal(): void {
     this.isTransferModalOpen = false;
-    this.transferForm.reset();
-    this.editingTicketId = null;
+    this.transferTicketForm.reset();
     this.transferError = null;
-    this.transferSuccess = null;
   }
 
   onConfirmTransfer(): void {
-    if (this.transferForm.invalid || !this.editingTicketId) {
-      this.transferError = 'Por favor, complete todos los campos requeridos correctamente.';
-      this.transferForm.markAllAsTouched();
+    if (this.transferTicketForm.invalid || !this.currentTicketId || !this.currentUserId) {
+      if (!this.currentUserId) {
+        this.transferError = 'Error: No se pudo identificar al usuario actual para la transferencia (ID de usuario no disponible).';
+      } else {
+        this.transferError = 'Por favor complete todos los campos requeridos del destinatario.';
+      }
+      this.transferTicketForm.markAllAsTouched();
       return;
     }
-
-    this.isLoading = true;
+    this.transferLoading = true;
     this.transferError = null;
-    this.transferSuccess = null;
 
-    const transferRequest: TicketTransferRequest = {
-      recipientUserId: +this.transferForm.value.recipientUserId,
-      recipientEmail: this.transferForm.value.recipientEmail,
-    };
+    const searchData: TicketTransferBySearchRequest = this.transferTicketForm.value;
 
-    this.ticketService.transferTicket(this.editingTicketId, transferRequest).pipe(
+    this.ticketService.transferTicketBySearch(this.currentUserId, this.currentTicketId, searchData).pipe(
       tap(updatedTicket => {
         this.ticketSubject.next(updatedTicket);
-        this.isLoading = false;
-        this.transferSuccess = `Entrada transferida exitosamente a ${updatedTicket.attendeeFirstName} ${updatedTicket.attendeeLastName}. El nuevo dueño ha sido notificado.`;
+        this.transferLoading = false;
+        this.transferError = null;
         this.closeTransferModal();
+        alert('¡Entrada transferida con éxito! El nuevo dueño y asistente es el usuario encontrado.');
       }),
       catchError(err => {
-        this.transferError = err.error?.message || 'Error al transferir la entrada.';
-        if (err.status === 404 && err.error?.message?.includes('Recipient user not found')) {
-          this.transferError = 'Usuario destinatario no encontrado. Verifique el ID y el Email.';
-        }
-        this.isLoading = false;
+        this.transferError = (err.error as any)?.message || 'Error al transferir la entrada por búsqueda.';
+        this.transferLoading = false;
+        console.error('Transfer error:', err);
         return of(null);
       })
     ).subscribe();

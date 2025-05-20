@@ -44,7 +44,7 @@
       </button>
       <button 
         *ngIf="canTransferTicket(ticket)" 
-        (click)="openTransferModal(ticket)" 
+        (click)="openTransferModal()" 
         class="btn btn-info ms-2">
         Transferir Entrada
       </button>
@@ -120,56 +120,54 @@
 <div class="modal" *ngIf="isTransferModalOpen" tabindex="-1" role="dialog" style="display: block;">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-      <form [formGroup]="transferForm" (ngSubmit)="onConfirmTransfer()">
+      <form [formGroup]="transferTicketForm" (ngSubmit)="onConfirmTransfer()">
         <div class="modal-header">
           <h5 class="modal-title">Transferir Entrada</h5>
           <button type="button" class="btn-close" (click)="closeTransferModal()" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Estás a punto de transferir la titularidad de esta entrada. Ingresa los datos del nuevo asistente:</p>
+          <p>Estás a punto de transferir la titularidad de esta entrada. Ingresa los datos del usuario destinatario (nombre, apellido y DNI):</p>
           
           <div *ngIf="transferError" class="alert alert-danger">
             {{ transferError }}
           </div>
-          <div *ngIf="transferSuccess" class="alert alert-success">
-            {{ transferSuccess }}
-          </div>
 
           <div class="mb-3">
-            <label for="recipientUserId" class="form-label">ID del Usuario Destinatario</label>
-            <input type="number" id="recipientUserId" class="form-control" formControlName="recipientUserId" 
-                   placeholder="Ej: 123" 
-                   [ngClass]="{ 'is-invalid': transferForm.get('recipientUserId')?.invalid && transferForm.get('recipientUserId')?.touched }">
-            <div *ngIf="transferForm.get('recipientUserId')?.errors?.['required'] && transferForm.get('recipientUserId')?.touched" class="invalid-feedback">
-              El ID del usuario es requerido.
-            </div>
-            <div *ngIf="transferForm.get('recipientUserId')?.errors?.['pattern'] && transferForm.get('recipientUserId')?.touched" class="invalid-feedback">
-              El ID debe ser numérico.
+            <label for="recipientFirstName" class="form-label">Nombre del Usuario Destinatario</label>
+            <input type="text" id="recipientFirstName" formControlName="recipientFirstName" class="form-control"
+                   [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientFirstName')?.invalid && transferTicketForm.get('recipientFirstName')?.touched }">
+            <div *ngIf="transferTicketForm.get('recipientFirstName')?.invalid && transferTicketForm.get('recipientFirstName')?.touched"
+                 class="invalid-feedback">
+              <div *ngIf="transferTicketForm.get('recipientFirstName')?.errors?.['required']">Nombre del destinatario es requerido.</div>
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="recipientEmail" class="form-label">Email del Usuario Destinatario</label>
-            <input type="email" id="recipientEmail" class="form-control" formControlName="recipientEmail" 
-                   placeholder="Ej: correo@ejemplo.com" 
-                   [ngClass]="{ 'is-invalid': transferForm.get('recipientEmail')?.invalid && transferForm.get('recipientEmail')?.touched }">
-            <div *ngIf="transferForm.get('recipientEmail')?.errors?.['required'] && transferForm.get('recipientEmail')?.touched" class="invalid-feedback">
-              El email es requerido.
-            </div>
-            <div *ngIf="transferForm.get('recipientEmail')?.errors?.['email'] && transferForm.get('recipientEmail')?.touched" class="invalid-feedback">
-              Ingrese un email válido.
+            <label for="recipientLastName" class="form-label">Apellido del Usuario Destinatario</label>
+            <input type="text" id="recipientLastName" formControlName="recipientLastName" class="form-control"
+                   [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientLastName')?.invalid && transferTicketForm.get('recipientLastName')?.touched }">
+            <div *ngIf="transferTicketForm.get('recipientLastName')?.invalid && transferTicketForm.get('recipientLastName')?.touched"
+                 class="invalid-feedback">
+              <div *ngIf="transferTicketForm.get('recipientLastName')?.errors?.['required']">Apellido del destinatario es requerido.</div>
             </div>
           </div>
 
-          <p class="form-text">Asegúrate de que el ID y el email correspondan al usuario correcto. Esta acción es irreversible una vez confirmada.</p>
+          <div class="mb-3">
+            <label for="recipientDni" class="form-label">DNI del Usuario Destinatario</label>
+            <input type="text" id="recipientDni" formControlName="recipientDni" class="form-control"
+                   [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientDni')?.invalid && transferTicketForm.get('recipientDni')?.touched }">
+            <div *ngIf="transferTicketForm.get('recipientDni')?.invalid && transferTicketForm.get('recipientDni')?.touched"
+                 class="invalid-feedback">
+              <div *ngIf="transferTicketForm.get('recipientDni')?.errors?.['required']">DNI del destinatario es requerido.</div>
+            </div>
+          </div>
+
+          <p class="form-text">El sistema buscará al usuario con estos datos. Si se encuentra, se le transferirá la entrada y sus datos (nombre, apellido, DNI) serán asignados como los del asistente. Esta acción es irreversible.</p>
 
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeTransferModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="transferForm.invalid || isLoading">
-            <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            {{ isLoading ? 'Transfiriendo...' : 'Confirmar Transferencia' }}
-          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="transferTicketForm.invalid || transferLoading">Transferir por Búsqueda</button>
         </div>
       </form>
     </div>

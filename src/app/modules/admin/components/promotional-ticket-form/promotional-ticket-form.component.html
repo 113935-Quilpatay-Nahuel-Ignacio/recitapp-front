@@ -18,70 +18,17 @@
       </div>
     </div>
 
-    <!-- Section Selection (depends on Event) -->
-    <div class="mb-3">
-      <label for="sectionId" class="form-label">Sección</label>
-      <select id="sectionId" formControlName="sectionId" class="form-select"
-              [disabled]="!fc['eventId'].value" 
-              [ngClass]="{ 'is-invalid': fc['sectionId'].invalid && fc['sectionId'].touched }">
-        <option [ngValue]="null" disabled>-- Seleccione una Sección --</option>
-        <option *ngFor="let section of (sections$ | async)" [value]="section.id">
-          {{ section.name }} (Capacidad: {{ section.capacity }})
-        </option>
-      </select>
-      <div *ngIf="fc['sectionId'].invalid && fc['sectionId'].touched" class="invalid-feedback">
-        Debe seleccionar una sección.
-      </div>
-       <small *ngIf="!fc['eventId'].value" class="form-text text-muted">Seleccione un evento para ver las secciones.</small>
-    </div>
-
-    <!-- Attendee Info -->
-    <div class="row">
-      <div class="col-md-4 mb-3">
-        <label for="attendeeFirstName" class="form-label">Nombre del Asistente</label>
-        <input type="text" id="attendeeFirstName" formControlName="attendeeFirstName" class="form-control"
-               [ngClass]="{ 'is-invalid': fc['attendeeFirstName'].invalid && fc['attendeeFirstName'].touched }">
-        <div *ngIf="fc['attendeeFirstName'].invalid && fc['attendeeFirstName'].touched" class="invalid-feedback">
-          Nombre requerido.
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <label for="attendeeLastName" class="form-label">Apellido del Asistente</label>
-        <input type="text" id="attendeeLastName" formControlName="attendeeLastName" class="form-control"
-               [ngClass]="{ 'is-invalid': fc['attendeeLastName'].invalid && fc['attendeeLastName'].touched }">
-        <div *ngIf="fc['attendeeLastName'].invalid && fc['attendeeLastName'].touched" class="invalid-feedback">
-          Apellido requerido.
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <label for="attendeeDni" class="form-label">DNI del Asistente</label>
-        <input type="text" id="attendeeDni" formControlName="attendeeDni" class="form-control"
-               [ngClass]="{ 'is-invalid': fc['attendeeDni'].invalid && fc['attendeeDni'].touched }">
-        <div *ngIf="fc['attendeeDni'].invalid && fc['attendeeDni'].touched" class="invalid-feedback">
-          DNI requerido.
-        </div>
-      </div>
-    </div>
-
-    <!-- New fields -->
+    <!-- Admin User ID -->
     <div class="mb-3">
       <label for="adminUserId" class="form-label">ID Usuario Administrador (quien registra)</label>
-      <input type="number" id="adminUserId" formControlName="adminUserId" class="form-control">
-      <div *ngIf="fc['adminUserId'].invalid && (fc['adminUserId'].dirty || fc['adminUserId'].touched)"
-           class="text-danger form-text">
-        <small *ngIf="fc['adminUserId'].errors?.['required']">El ID del admin es requerido.</small>
+      <input type="number" id="adminUserId" formControlName="adminUserId" class="form-control"
+             [ngClass]="{ 'is-invalid': fc['adminUserId'].invalid && fc['adminUserId'].touched }">
+      <div *ngIf="fc['adminUserId'].invalid && fc['adminUserId'].touched" class="invalid-feedback">
+        El ID del admin es requerido.
       </div>
     </div>
 
-    <div class="mb-3">
-      <label for="recipientUserId" class="form-label">ID Usuario Destinatario (quien recibe)</label>
-      <input type="number" id="recipientUserId" formControlName="recipientUserId" class="form-control">
-      <div *ngIf="fc['recipientUserId'].invalid && (fc['recipientUserId'].dirty || fc['recipientUserId'].touched)"
-           class="text-danger form-text">
-        <small *ngIf="fc['recipientUserId'].errors?.['required']">El ID del destinatario es requerido.</small>
-      </div>
-    </div>
-
+    <!-- Promotion Info (Optional) -->
     <div class="mb-3">
       <label for="promotionName" class="form-label">Nombre de la Promoción (Opcional)</label>
       <input type="text" id="promotionName" formControlName="promotionName" class="form-control">
@@ -92,15 +39,88 @@
       <textarea id="promotionDescription" formControlName="promotionDescription" class="form-control" rows="3"></textarea>
     </div>
 
-    <!-- Notes -->
-    <div class="mb-3">
-      <label for="notes" class="form-label">Notas Adicionales (Opcional)</label>
-      <textarea id="notes" formControlName="notes" class="form-control" rows="3"></textarea>
+    <hr>
+    <h4>Tickets a Generar</h4>
+
+    <div formArrayName="tickets">
+      <div *ngFor="let ticketGroup of ticketsFormArray.controls; let i = index" [formGroupName]="i" class="ticket-entry mb-4 p-3 border rounded">
+        <h5>Ticket {{ i + 1 }}</h5>
+
+        <!-- Section Selection (depends on Event) -->
+        <div class="mb-3">
+          <label [for]="'sectionId-' + i" class="form-label">Sección</label>
+          <select [id]="'sectionId-' + i" formControlName="sectionId" class="form-select"
+                  [disabled]="!fc['eventId'].value || ticketGroup.get('sectionId')!.disabled"
+                  [ngClass]="{ 'is-invalid': ticketGroup.get('sectionId')!.invalid && ticketGroup.get('sectionId')!.touched }">
+            <option [ngValue]="null" disabled>-- Seleccione una Sección --</option>
+            <option *ngFor="let section of (sections$ | async)" [value]="section.id">
+              {{ section.name }} (Capacidad: {{ section.capacity }})
+            </option>
+          </select>
+          <div *ngIf="ticketGroup.get('sectionId')!.invalid && ticketGroup.get('sectionId')!.touched" class="invalid-feedback">
+            Debe seleccionar una sección.
+          </div>
+          <small *ngIf="!fc['eventId'].value && ticketGroup.get('sectionId')!.disabled" class="form-text text-muted">Seleccione un evento para ver las secciones.</small>
+        </div>
+
+        <!-- Recipient User ID -->
+        <div class="mb-3">
+          <label [for]="'recipientUserId-' + i" class="form-label">ID Usuario Destinatario (quien recibe)</label>
+          <input type="number" [id]="'recipientUserId-' + i" formControlName="recipientUserId" class="form-control"
+                 [ngClass]="{ 'is-invalid': ticketGroup.get('recipientUserId')!.invalid && ticketGroup.get('recipientUserId')!.touched }">
+          <div *ngIf="ticketGroup.get('recipientUserId')!.invalid && ticketGroup.get('recipientUserId')!.touched" class="invalid-feedback">
+            El ID del destinatario es requerido.
+          </div>
+        </div>
+
+        <!-- Attendee Info -->
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label [for]="'attendeeFirstName-' + i" class="form-label">Nombre del Asistente</label>
+            <input type="text" [id]="'attendeeFirstName-' + i" formControlName="attendeeFirstName" class="form-control"
+                   [ngClass]="{ 'is-invalid': ticketGroup.get('attendeeFirstName')!.invalid && ticketGroup.get('attendeeFirstName')!.touched }">
+            <div *ngIf="ticketGroup.get('attendeeFirstName')!.invalid && ticketGroup.get('attendeeFirstName')!.touched" class="invalid-feedback">
+              Nombre requerido.
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label [for]="'attendeeLastName-' + i" class="form-label">Apellido del Asistente</label>
+            <input type="text" [id]="'attendeeLastName-' + i" formControlName="attendeeLastName" class="form-control"
+                   [ngClass]="{ 'is-invalid': ticketGroup.get('attendeeLastName')!.invalid && ticketGroup.get('attendeeLastName')!.touched }">
+            <div *ngIf="ticketGroup.get('attendeeLastName')!.invalid && ticketGroup.get('attendeeLastName')!.touched" class="invalid-feedback">
+              Apellido requerido.
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label [for]="'attendeeDni-' + i" class="form-label">DNI del Asistente</label>
+            <input type="text" [id]="'attendeeDni-' + i" formControlName="attendeeDni" class="form-control"
+                   [ngClass]="{ 'is-invalid': ticketGroup.get('attendeeDni')!.invalid && ticketGroup.get('attendeeDni')!.touched }">
+            <div *ngIf="ticketGroup.get('attendeeDni')!.invalid && ticketGroup.get('attendeeDni')!.touched" class="invalid-feedback">
+              DNI requerido.
+            </div>
+          </div>
+        </div>
+
+        <!-- Is Gift -->
+        <div class="mb-3 form-check">
+          <input type="checkbox" [id]="'isGift-' + i" formControlName="isGift" class="form-check-input">
+          <label [for]="'isGift-' + i" class="form-check-label">¿Es Regalo?</label>
+        </div>
+
+        <button type="button" class="btn btn-danger btn-sm" (click)="removeTicket(i)" [disabled]="ticketsFormArray.controls.length <= 1">
+          Eliminar Ticket
+        </button>
+      </div>
     </div>
+
+    <button type="button" class="btn btn-secondary mt-3 mb-3" (click)="addTicket()">
+      <i class="fas fa-plus"></i> Añadir Otro Ticket
+    </button>
+    <br>
 
     <button type="submit" class="btn btn-primary" [disabled]="promotionalTicketForm.invalid || isLoading">
       <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-      {{ isLoading ? 'Registrando...' : 'Registrar Entrada Promocional' }}
+      {{ isLoading ? 'Registrando...' : 'Registrar Entradas Promocionales' }}
     </button>
 
     <div *ngIf="submissionError" class="alert alert-danger mt-3">
@@ -108,15 +128,11 @@
     </div>
   </form>
 
-  <div *ngIf="submissionSuccessMessage && createdTicket" class="alert alert-success mt-3">
+  <div *ngIf="submissionSuccessMessage" class="alert alert-success mt-3">
     <p>{{ submissionSuccessMessage }}</p>
-    <h5>Detalles de la Entrada Creada:</h5>
-    <p><strong>Evento:</strong> {{ createdTicket.eventName }}</p>
-    <p><strong>Sección:</strong> {{ createdTicket.sectionName }}</p>
-    <p><strong>Asistente:</strong> {{ createdTicket.attendeeFirstName }} {{ createdTicket.attendeeLastName }} (DNI: {{ createdTicket.attendeeDni }})</p>
-    <p><strong>Precio:</strong> {{ createdTicket.price | currency:'':'symbol':'1.2-2' }}</p>
-    <p><strong>Estado:</strong> {{ createdTicket.status }}</p>
-    <a [routerLink]="['/ticket', createdTicket.id]">Ver Entrada</a>
+    <!-- Display of individual ticket details removed for batch creation -->
+    <!-- Example: Could list IDs or a summary if needed -->
+    <!-- <p *ngIf="response?.tickets?.length">Tickets creados: {{ response.tickets.map(t => t.id).join(', ') }}</p> -->
   </div>
 
 </div> 
