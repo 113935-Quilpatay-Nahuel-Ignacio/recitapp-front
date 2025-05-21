@@ -3,8 +3,8 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, FormArray } from '@angular/forms';
 import { TicketService, PromotionalTicketRequest, PromotionalTicketResponse, TicketResponseItem } from '../../../ticket/services/ticket.service';
 import { EventService } from '../../../event/services/event.service';
-import { Event } from '../../../event/models/event.model';
-import { Section } from '../../../event/models/section.model';
+import { EventDTO } from '../../../event/models/event';
+import { SectionAvailability } from '../../../event/models/section-availability.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
@@ -32,8 +32,9 @@ export class PromotionalTicketFormComponent implements OnInit {
   submissionError: string | null = null;
   submissionSuccessMessage: string | null = null;
 
-  events$!: Observable<Event[]>;
-  sections$!: Observable<Section[]>;
+  events: EventDTO[] = [];
+  events$!: Observable<EventDTO[]>;
+  sections$!: Observable<SectionAvailability[]>;
 
   ngOnInit(): void {
     this.promotionalTicketForm = this.fb.group({
@@ -85,11 +86,15 @@ export class PromotionalTicketFormComponent implements OnInit {
     this.isLoadingEvents = true;
     this.submissionError = null;
     this.events$ = this.eventService.searchEvents({}).pipe(
-      tap(() => this.isLoadingEvents = false),
+      tap((loadedEvents: EventDTO[]) => {
+        this.events = loadedEvents;
+        this.isLoadingEvents = false;
+      }),
       catchError(err => {
         console.error('Error loading events:', err);
         this.submissionError = 'Error al cargar los eventos. Intente más tarde.';
         this.isLoadingEvents = false;
+        this.events = [];
         return of([]);
       })
     );
@@ -101,34 +106,47 @@ export class PromotionalTicketFormComponent implements OnInit {
     if (eventIdControl) {
       this.sections$ = eventIdControl.valueChanges.pipe(
         startWith(eventIdControl.value),
-        switchMap((eventId: number | null) => {
+        switchMap((selectedEventId: number | null) => {
           this.ticketsFormArray.controls.forEach(ticketGroup => {
             const sectionIdControl = ticketGroup.get('sectionId');
             sectionIdControl?.reset({ value: null, disabled: true });
-            if (eventId) {
-              sectionIdControl?.enable();
-            } else {
-              sectionIdControl?.disable();
-            }
           });
 
-          if (eventId) {
-            return this.eventService.getSectionsByEventId(eventId).pipe(
-              catchError(err => {
-                console.error('Error loading sections for event:', eventId, err);
-                this.submissionError = `Error al cargar secciones para el evento ${eventId}.`;
-                this.ticketsFormArray.controls.forEach(ticketGroup => {
-                  ticketGroup.get('sectionId')?.disable();
-                });
-                return of([]);
-              })
-            );
+          if (selectedEventId) {
+            const selectedEvent = this.events.find(event => event.id === selectedEventId);
+            if (selectedEvent && selectedEvent.venueId) {
+              this.ticketsFormArray.controls.forEach(ticketGroup => {
+                ticketGroup.get('sectionId')?.enable();
+              });
+              return this.eventService.getSectionsByVenueId(selectedEvent.venueId).pipe(
+                catchError(err => {
+                  console.error('Error loading sections for venue:', selectedEvent.venueId, err);
+                  this.submissionError = `Error al cargar secciones para el venue ${selectedEvent.venueId}.`;
+                  this.ticketsFormArray.controls.forEach(ticketGroup => {
+                    ticketGroup.get('sectionId')?.disable();
+                  });
+                  return of([]);
+                })
+              );
+            } else {
+              this.submissionError = selectedEvent?.venueId ? null : 'El evento seleccionado no tiene un venue ID asociado.';
+              this.disableAllSectionControls();
+              return of([]);
+            }
           } else {
+            this.disableAllSectionControls();
             return of([]);
           }
         })
       );
     }
+  }
+
+  private disableAllSectionControls(): void {
+    this.ticketsFormArray.controls.forEach(ticketGroup => {
+      ticketGroup.get('sectionId')?.disable();
+      ticketGroup.get('sectionId')?.reset({ value: null, disabled: true });
+    });
   }
 
   onSubmit(): void {

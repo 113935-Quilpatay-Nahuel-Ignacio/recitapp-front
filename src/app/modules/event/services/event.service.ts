@@ -6,12 +6,14 @@ import { EventStatisticsDTO } from '../models/event-statistics.dto';
 import { environment } from '../../../../environments/environment';
 import { map } from 'rxjs/operators';
 import { Section } from '../models/section.model';
+import { SectionAvailability } from '../models/section-availability.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
   private apiUrl = `${environment.apiUrl}/events`;
+  private venuesApiUrl = `${environment.apiUrl}/venues`;
 
   constructor(private http: HttpClient) { }
 
@@ -79,5 +81,9 @@ export class EventService {
 
   getSectionsByEventId(eventId: number): Observable<Section[]> {
     return this.http.get<Section[]>(`${this.apiUrl}/${eventId}/sections`);
+  }
+
+  getSectionsByVenueId(venueId: number): Observable<SectionAvailability[]> {
+    return this.http.get<SectionAvailability[]>(`${this.venuesApiUrl}/${venueId}/sections`);
   }
 }

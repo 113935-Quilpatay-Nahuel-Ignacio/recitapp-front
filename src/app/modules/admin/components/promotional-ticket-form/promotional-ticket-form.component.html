@@ -53,8 +53,8 @@
                   [disabled]="!fc['eventId'].value || ticketGroup.get('sectionId')!.disabled"
                   [ngClass]="{ 'is-invalid': ticketGroup.get('sectionId')!.invalid && ticketGroup.get('sectionId')!.touched }">
             <option [ngValue]="null" disabled>-- Seleccione una Sección --</option>
-            <option *ngFor="let section of (sections$ | async)" [value]="section.id">
-              {{ section.name }} (Capacidad: {{ section.capacity }})
+            <option *ngFor="let section of (sections$ | async)" [value]="section.sectionId">
+              {{ section.sectionName }} (Capacidad: {{ section.totalCapacity }} | Precio: {{ section.basePrice | currency:'USD':'symbol':'1.2-2' }} | Disp: {{section.availableTickets}})
             </option>
           </select>
           <div *ngIf="ticketGroup.get('sectionId')!.invalid && ticketGroup.get('sectionId')!.touched" class="invalid-feedback">
