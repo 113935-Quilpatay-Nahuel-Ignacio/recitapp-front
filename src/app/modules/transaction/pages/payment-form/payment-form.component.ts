@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction';
 
@@ -36,7 +36,9 @@ export class PaymentFormComponent implements OnInit {
     });
 
     this.availablePaymentMethods$ =
-      this.transactionService.getAvailablePaymentMethods();
+      this.transactionService.getAvailablePaymentMethods().pipe(
+        map(methods => methods.map(method => method.name))
+      );
   }
 
   onSubmit(): void {

@@ -7,7 +7,6 @@ import { EventDTO } from '../../../event/models/event';
 import { SectionAvailability } from '../../../event/models/section-availability.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-promotional-ticket-form',
@@ -16,7 +15,6 @@ import { RouterLink } from '@angular/router';
     CommonModule,
     ReactiveFormsModule,
     CurrencyPipe,
-    RouterLink
   ],
   templateUrl: './promotional-ticket-form.component.html',
   styleUrls: ['./promotional-ticket-form.component.scss']

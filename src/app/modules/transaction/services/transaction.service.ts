@@ -44,9 +44,7 @@ export class TransactionService {
   getPaymentHistory(
     userId: number,
     startDate?: string, // LocalDateTime as ISO string
-    endDate?: string,   // LocalDateTime as ISO string
-    // Pagination params (page, limit) are not in the backend controller for this endpoint
-    // paymentMethodFilter is also not in this specific backend endpoint
+    endDate?: string   // LocalDateTime as ISO string
   ): Observable<TransactionDTO[]> {
     let params = new HttpParams();
     if (startDate) {

@@ -18,7 +18,6 @@
             <th>Date</th>
             <th>Description</th>
             <th>Amount</th>
-            <th>Currency</th>
             <th>Status</th>
             <th>Payment Method</th>
             <th>Actions</th>
@@ -29,24 +28,23 @@
             <td>{{ tx.id }}</td>
             <td>{{ tx.transactionDate | date: 'medium' }}</td>
             <td>{{ tx.description || 'N/A' }}</td>
-            <td>{{ tx.amount | currency: tx.currency:'symbol' }}</td>
-            <td>{{ tx.currency }}</td>
+            <td>{{ tx.totalAmount | currency }}</td>
             <td>
-              <span [ngClass]="'status-' + tx.status.toLowerCase()">{{ tx.status }}</span>
+              <span [ngClass]="'status-' + tx.statusName.toLowerCase()">{{ tx.statusName }}</span>
             </td>
-            <td>{{ tx.paymentMethod }}</td>
+            <td>{{ tx.paymentMethodName }}</td>
             <td>
               <button (click)="viewReceipt(tx.id)" class="action-button">
                 View Receipt
               </button>
               <button 
-                *ngIf="tx.status === 'completed' || tx.status === 'pending'" 
+                *ngIf="tx.statusName === 'completed' || tx.statusName === 'pending'" 
                 (click)="cancelTransaction(tx.id)" 
                 class="action-button cancel-button">
                 Cancel
               </button>
               <button 
-                *ngIf="tx.status === 'completed' && !tx.isRefund" 
+                *ngIf="tx.statusName === 'completed' && !tx.isRefund" 
                 (click)="requestRefund(tx.id)" 
                 class="action-button refund-button">
                 Refund

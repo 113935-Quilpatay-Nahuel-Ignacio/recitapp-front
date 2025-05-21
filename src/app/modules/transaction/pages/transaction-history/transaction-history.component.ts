@@ -4,6 +4,9 @@ import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction';
+import { TransactionReceiptDTO } from '../../models/dto/transaction-receipt.dto';
+import { RefundRequestDTO } from '../../models/dto/refund-request.dto';
+import { TransactionStatusUpdateDTO } from '../../models/dto/transaction-status-update.dto';
 
 @Component({
   selector: 'app-transaction-history',
@@ -16,7 +19,7 @@ export class TransactionHistoryComponent implements OnInit {
   transactions$!: Observable<Transaction[]>;
   errorMessage: string | null = null;
   // Example User ID, in a real app this would come from auth service or input
-  userId = 'user123';
+  userId = 123;
 
   private transactionService = inject(TransactionService);
 
@@ -27,24 +30,21 @@ export class TransactionHistoryComponent implements OnInit {
   loadTransactionHistory(): void {
     this.errorMessage = null;
     this.transactions$ = this.transactionService
-      .getPaymentHistory(this.userId, 1, 10) // Example pagination
+      .getPaymentHistory(this.userId)
       .pipe(
         catchError((err) => {
           console.error('Error fetching transaction history:', err);
           this.errorMessage = 'Failed to load transaction history.';
-          return of([]); // Return empty array on error
+          return of([]);
         })
       );
   }
 
-  viewReceipt(transactionId: string): void {
+  viewReceipt(transactionId: number): void {
     this.transactionService.getPaymentReceipt(transactionId).subscribe({
-      next: (response) => {
-        if (response.receiptUrl) {
-          window.open(response.receiptUrl, '_blank');
-        } else {
-          alert('Receipt URL not found.');
-        }
+      next: (response: TransactionReceiptDTO) => {
+        console.log('Receipt data:', response);
+        alert(`Receipt details for Tx ID ${transactionId} logged to console. No direct 'receiptUrl' field found in response.`);
       },
       error: (err) => {
         console.error('Error fetching receipt:', err);
@@ -56,18 +56,19 @@ export class TransactionHistoryComponent implements OnInit {
   // Placeholder for RAPP113935-107: Modify transaction status
   // This would typically be an admin action or triggered by a payment gateway callback
   // For demonstration, let's add a mock way to change status to 'cancelled'
-  cancelTransaction(transactionId: string): void {
+  cancelTransaction(transactionId: number): void {
+    const statusUpdate: TransactionStatusUpdateDTO = { statusName: 'cancelled' };
     this.transactionService
-      .updateTransactionStatus(transactionId, 'cancelled')
+      .updateTransactionStatus(transactionId, statusUpdate)
       .pipe(
         switchMap(() => {
           // Reload history to reflect the change
-          return this.transactionService.getPaymentHistory(this.userId, 1, 10);
+          return this.transactionService.getPaymentHistory(this.userId);
         }),
         catchError((err) => {
           console.error('Error cancelling transaction or reloading history:', err);
           alert('Failed to cancel transaction.');
-          return of([]); // Return empty array on error or keep existing data
+          return of([]);
         })
       )
       .subscribe(updatedTransactions => {
@@ -78,13 +79,14 @@ export class TransactionHistoryComponent implements OnInit {
 
   // Placeholder for RAPP113935-111: Register Refund
   // This would typically involve more complex UI/logic
-  requestRefund(transactionId: string): void {
+  requestRefund(transactionId: number): void {
     const reason = prompt('Please enter reason for refund:');
     if (reason) {
-      this.transactionService.registerRefund(transactionId, reason).subscribe({
+      const refundRequest: RefundRequestDTO = { transactionId, reason };
+      this.transactionService.registerRefund(refundRequest).subscribe({
         next: (refundTransaction) => {
           alert(`Refund for transaction ${transactionId} processed. Refund ID: ${refundTransaction.id}`);
-          this.loadTransactionHistory(); // Refresh list
+          this.loadTransactionHistory();
         },
         error: (err) => {
           console.error('Error processing refund:', err);

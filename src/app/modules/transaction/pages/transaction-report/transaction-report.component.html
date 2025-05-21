@@ -50,7 +50,6 @@
               <th>User ID</th>
               <th>Description</th>
               <th>Amount</th>
-              <th>Currency</th>
               <th>Status</th>
               <th>Payment Method</th>
             </tr>
@@ -61,12 +60,11 @@
               <td>{{ tx.transactionDate | date: 'medium' }}</td>
               <td>{{ tx.userId }}</td>
               <td>{{ tx.description || 'N/A' }}</td>
-              <td>{{ tx.amount | currency: tx.currency:'symbol' }}</td>
-              <td>{{ tx.currency }}</td>
+              <td>{{ tx.totalAmount | currency }}</td>
               <td>
-                <span [ngClass]="'status-' + tx.status.toLowerCase()">{{ tx.status }}</span>
+                <span [ngClass]="'status-' + tx.statusName.toLowerCase()">{{ tx.statusName }}</span>
               </td>
-              <td>{{ tx.paymentMethod }}</td>
+              <td>{{ tx.paymentMethodName }}</td>
             </tr>
           </tbody>
         </table>

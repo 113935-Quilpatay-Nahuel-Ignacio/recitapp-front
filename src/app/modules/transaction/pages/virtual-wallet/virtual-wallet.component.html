@@ -59,10 +59,10 @@
               <td>{{ tx.id }}</td>
               <td>{{ tx.transactionDate | date: 'medium' }}</td>
               <td>{{ tx.description || 'N/A' }}</td>
-              <td [ngClass]="{'positive-amount': tx.amount > 0, 'negative-amount': tx.amount < 0}">
-                {{ tx.amount | currency: tx.currency:'symbol' }}
+              <td [ngClass]="{'positive-amount': tx.totalAmount > 0, 'negative-amount': tx.totalAmount < 0}">
+                {{ tx.totalAmount | currency }}
               </td>
-              <td><span [ngClass]="'status-' + tx.status.toLowerCase()">{{ tx.status }}</span></td>
+              <td><span [ngClass]="'status-' + tx.statusName.toLowerCase()">{{ tx.statusName }}</span></td>
             </tr>
           </tbody>
         </table>
