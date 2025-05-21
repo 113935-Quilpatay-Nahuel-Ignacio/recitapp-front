@@ -35,9 +35,9 @@ import { TicketPurchaseComponent } from './modules/ticket/pages/ticket-purchase/
 import { TicketListComponent } from './modules/ticket/pages/ticket-list/ticket-list.component';
 import { TicketDetailComponent } from './modules/ticket/pages/ticket-detail/ticket-detail.component';
 
-// Transaction module
-import { TransactionHistoryComponent } from './modules/transaction/pages/transaction-history/transaction-history.component';
-import { PaymentFormComponent } from './modules/transaction/pages/payment-form/payment-form.component';
+// Transaction module imports removed as it will be lazy loaded
+// import { TransactionHistoryComponent } from './modules/transaction/pages/transaction-history/transaction-history.component';
+// import { PaymentFormComponent } from './modules/transaction/pages/payment-form/payment-form.component';
 
 // Notification module
 import { NotificationCenterComponent } from './modules/notification/pages/notification-center/notification-center.component';
@@ -83,9 +83,12 @@ export const routes: Routes = [
   { path: 'ticket/:id', component: TicketDetailComponent }, // View details of a specific ticket
   // The route for purchasing tickets for an event is events/:id/tickets
 
-  // Transaction routes
-  { path: 'transactions', component: TransactionHistoryComponent },
-  { path: 'payment', component: PaymentFormComponent },
+  // Transaction routes are now lazy-loaded
+  {
+    path: 'transactions',
+    loadChildren: () => import('./modules/transaction/transaction.routes').then(m => m.TRANSACTION_ROUTES),
+    // title: 'Transactions' // Optional: set a general title for the module section
+  },
 
   // Notification routes
   { path: 'notifications', component: NotificationCenterComponent },

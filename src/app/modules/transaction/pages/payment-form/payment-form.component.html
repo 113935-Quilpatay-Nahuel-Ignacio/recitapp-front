@@ -1,1 +1,79 @@
-<p>payment-form works!</p>
+<div class="payment-form-container">
+  <h2>Register Payment</h2>
+  <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+    <!-- User ID (could be hidden or pre-filled in a real app) -->
+    <div class="form-group">
+      <label for="userId">User ID:</label>
+      <input id="userId" type="text" formControlName="userId" />
+      <div
+        *ngIf="paymentForm.get('userId')?.invalid && paymentForm.get('userId')?.touched"
+        class="error-message"
+      >
+        User ID is required.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input id="amount" type="number" formControlName="amount" />
+      <div
+        *ngIf="paymentForm.get('amount')?.invalid && paymentForm.get('amount')?.touched"
+        class="error-message"
+      >
+        <span *ngIf="paymentForm.get('amount')?.errors?.['required']">
+          Amount is required.
+        </span>
+        <span *ngIf="paymentForm.get('amount')?.errors?.['min']">
+          Amount must be positive.
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="currency">Currency:</label>
+      <input id="currency" type="text" formControlName="currency" />
+      <!-- Could be a select dropdown in a real app -->
+      <div
+        *ngIf="paymentForm.get('currency')?.invalid && paymentForm.get('currency')?.touched"
+        class="error-message"
+      >
+        Currency is required.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="paymentMethod">Payment Method:</label>
+      <select id="paymentMethod" formControlName="paymentMethod">
+        <option value="" disabled>Select a payment method</option>
+        <option
+          *ngFor="let method of availablePaymentMethods$ | async"
+          [value]="method"
+        >
+          {{ method }}
+        </option>
+      </select>
+      <div
+        *ngIf="paymentForm.get('paymentMethod')?.invalid && paymentForm.get('paymentMethod')?.touched"
+        class="error-message"
+      >
+        Payment method is required.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description (Optional):</label>
+      <input id="description" type="text" formControlName="description" />
+    </div>
+
+    <div class="form-group">
+      <label for="eventId">Event ID (Optional):</label>
+      <input id="eventId" type="text" formControlName="eventId" />
+    </div>
+
+    <button type="submit" [disabled]="paymentForm.invalid">Submit Payment</button>
+  </form>
+
+  <div *ngIf="submissionMessage" class="submission-message">
+    {{ submissionMessage }}
+  </div>
+</div>

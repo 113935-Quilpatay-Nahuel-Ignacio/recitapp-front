@@ -1,0 +1,79 @@
+<div class="virtual-wallet-container">
+  <h2>Virtual Wallet Management (User: {{ userId }})</h2>
+
+  <div class="wallet-overview">
+    <h3>Current Balance:</h3>
+    <p class="balance" [class.loading-text]="isLoading && (walletBalance$ | async) === null">
+      <span *ngIf="(walletBalance$ | async) !== null; else balanceLoading">
+        {{ (walletBalance$ | async) | currency: 'USD':'symbol' }} <!-- Assuming USD for now -->
+      </span>
+      <ng-template #balanceLoading>Loading balance...</ng-template>
+    </p>
+  </div>
+
+  <div class="wallet-actions">
+    <h3>Adjust Balance (Deposit/Withdraw)</h3>
+    <form [formGroup]="walletForm" (ngSubmit)="adjustBalance()">
+      <div class="form-group">
+        <label for="amount">Amount (Positive for deposit, negative for withdrawal):</label>
+        <input id="amount" type="number" formControlName="amount" placeholder="e.g., 50 or -20" />
+        <div *ngIf="walletForm.get('amount')?.invalid && walletForm.get('amount')?.touched" class="error-message">
+          <span *ngIf="walletForm.get('amount')?.errors?.['required']">Amount is required.</span>
+          <span *ngIf="walletForm.get('amount')?.errors?.['pattern']">Enter a valid number (e.g., 50, -20.50).</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="currency">Currency:</label>
+        <input id="currency" type="text" formControlName="currency" />
+         <!-- TODO: Make this a select if multiple currencies are supported -->
+      </div>
+      <button type="submit" [disabled]="walletForm.invalid || isLoading">
+        {{ isLoading ? 'Processing...' : 'Submit Adjustment' }}
+      </button>
+    </form>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message-banner">
+    {{ errorMessage }}
+  </div>
+
+  <div class="recent-transactions">
+    <h3>Recent Wallet Transactions</h3>
+    <button (click)="loadWalletData()" [disabled]="isLoading" class="refresh-button">
+      {{ isLoading ? 'Refreshing...' : 'Refresh Data' }}
+    </button>
+    <div *ngIf="recentTransactions$ | async as transactions; else loadingTransactions">
+      <div *ngIf="transactions.length > 0; else noTransactions" class="transactions-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of transactions">
+              <td>{{ tx.id }}</td>
+              <td>{{ tx.transactionDate | date: 'medium' }}</td>
+              <td>{{ tx.description || 'N/A' }}</td>
+              <td [ngClass]="{'positive-amount': tx.amount > 0, 'negative-amount': tx.amount < 0}">
+                {{ tx.amount | currency: tx.currency:'symbol' }}
+              </td>
+              <td><span [ngClass]="'status-' + tx.status.toLowerCase()">{{ tx.status }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noTransactions>
+        <p *ngIf="!isLoading">No recent wallet transactions found.</p>
+      </ng-template>
+    </div>
+    <ng-template #loadingTransactions>
+      <p *ngIf="isLoading">Loading recent transactions...</p>
+    </ng-template>
+  </div>
+
+</div> 

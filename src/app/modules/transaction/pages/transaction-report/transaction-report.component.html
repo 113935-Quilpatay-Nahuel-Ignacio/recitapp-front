@@ -1,0 +1,84 @@
+<div class="transaction-report-container">
+  <h2>Generate Transaction Report</h2>
+
+  <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input id="startDate" type="date" formControlName="startDate" />
+      </div>
+      <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input id="endDate" type="date" formControlName="endDate" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="status">Status (Optional):</label>
+        <select id="status" formControlName="status">
+          <option value="">All Statuses</option>
+          <option *ngFor="let s of transactionStatuses" [value]="s">
+            {{ s | titlecase }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="userId">User ID (Optional):</label>
+        <input id="userId" type="text" formControlName="userId" />
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="reportForm.invalid || isLoading">
+      {{ isLoading ? 'Generating...' : 'Generate Report' }}
+    </button>
+  </form>
+
+  <div *ngIf="errorMessage" class="error-message-banner">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="reportData$ | async as report; else noReportOrLoading">
+    <div *ngIf="report.length > 0; else noResults" class="report-results">
+      <h3>Report Results ({{ report.length }} transactions)</h3>
+      <div class="transactions-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>User ID</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Currency</th>
+              <th>Status</th>
+              <th>Payment Method</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of report">
+              <td>{{ tx.id }}</td>
+              <td>{{ tx.transactionDate | date: 'medium' }}</td>
+              <td>{{ tx.userId }}</td>
+              <td>{{ tx.description || 'N/A' }}</td>
+              <td>{{ tx.amount | currency: tx.currency:'symbol' }}</td>
+              <td>{{ tx.currency }}</td>
+              <td>
+                <span [ngClass]="'status-' + tx.status.toLowerCase()">{{ tx.status }}</span>
+              </td>
+              <td>{{ tx.paymentMethod }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <ng-template #noResults>
+      <p *ngIf="!isLoading && reportForm.dirty">No transactions found matching your criteria.</p>
+    </ng-template>
+  </div>
+  <ng-template #noReportOrLoading>
+    <p *ngIf="isLoading">Loading report...</p>
+    <p *ngIf="!isLoading && !errorMessage && reportForm.pristine">Enter criteria and generate a report.</p>
+  </ng-template>
+
+</div> 

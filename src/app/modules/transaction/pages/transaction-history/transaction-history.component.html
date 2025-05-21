@@ -1,1 +1,67 @@
-<p>transaction-history works!</p>
+<div class="transaction-history-container">
+  <h2>Transaction History for User: {{ userId }}</h2>
+
+  <button (click)="loadTransactionHistory()" class="refresh-button">
+    Refresh History
+  </button>
+
+  <div *ngIf="errorMessage" class="error-message-banner">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="transactions$ | async as transactions; else loading">
+    <div *ngIf="transactions.length > 0; else noTransactions" class="transactions-table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Currency</th>
+            <th>Status</th>
+            <th>Payment Method</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tx of transactions">
+            <td>{{ tx.id }}</td>
+            <td>{{ tx.transactionDate | date: 'medium' }}</td>
+            <td>{{ tx.description || 'N/A' }}</td>
+            <td>{{ tx.amount | currency: tx.currency:'symbol' }}</td>
+            <td>{{ tx.currency }}</td>
+            <td>
+              <span [ngClass]="'status-' + tx.status.toLowerCase()">{{ tx.status }}</span>
+            </td>
+            <td>{{ tx.paymentMethod }}</td>
+            <td>
+              <button (click)="viewReceipt(tx.id)" class="action-button">
+                View Receipt
+              </button>
+              <button 
+                *ngIf="tx.status === 'completed' || tx.status === 'pending'" 
+                (click)="cancelTransaction(tx.id)" 
+                class="action-button cancel-button">
+                Cancel
+              </button>
+              <button 
+                *ngIf="tx.status === 'completed' && !tx.isRefund" 
+                (click)="requestRefund(tx.id)" 
+                class="action-button refund-button">
+                Refund
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noTransactions>
+      <p>No transactions found for this user.</p>
+    </ng-template>
+  </div>
+
+  <ng-template #loading>
+    <p>Loading transaction history...</p>
+  </ng-template>
+</div>

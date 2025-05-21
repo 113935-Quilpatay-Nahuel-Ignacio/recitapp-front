@@ -1,0 +1,124 @@
+.transaction-report-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+form {
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 0; /* Prevent overflow in flex items */
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+input[type='text'],
+input[type='date'],
+select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+button[type='submit'] {
+  display: block;
+  width: auto;
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 1rem;
+}
+
+button[type='submit']:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+button[type='submit']:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.error-message-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.report-results h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.transactions-table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* Status styling - can reuse from transaction-history or define separately */
+.status-completed {
+  color: green;
+  font-weight: bold;
+}
+.status-pending {
+  color: orange;
+  font-weight: bold;
+}
+.status-failed,
+.status-cancelled {
+  color: red;
+  font-weight: bold;
+}
+.status-refunded {
+  color: #555;
+  font-style: italic;
+} 
