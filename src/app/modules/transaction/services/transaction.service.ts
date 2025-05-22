@@ -19,7 +19,7 @@ import {
 })
 export class TransactionService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/v1`; // Added /v1 for versioning
+  private baseUrl = `${environment.apiUrl}`; // Removed /v1
 
   constructor() {}
 
@@ -93,6 +93,24 @@ export class TransactionService {
   // Added based on WalletController: [GET] /wallet/balance/{userId}
   getUserWalletBalance(userId: number): Observable<number> { // Backend returns BigDecimal
     return this.http.get<number>(`${this.baseUrl}/wallet/balance/${userId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Corresponds to [POST] /payment-methods (from PaymentMethodController)
+  createPaymentMethod(paymentMethodDTO: PaymentMethodDTO): Observable<PaymentMethodDTO> {
+    return this.http.post<PaymentMethodDTO>(`${this.baseUrl}/payment-methods`, paymentMethodDTO)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Corresponds to [PUT] /payment-methods/{paymentMethodId}
+  updatePaymentMethod(paymentMethodId: number, paymentMethodDTO: PaymentMethodDTO): Observable<PaymentMethodDTO> {
+    return this.http.put<PaymentMethodDTO>(`${this.baseUrl}/payment-methods/${paymentMethodId}`, paymentMethodDTO)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Corresponds to [DELETE] /payment-methods/{paymentMethodId}
+  deletePaymentMethod(paymentMethodId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/payment-methods/${paymentMethodId}`)
       .pipe(catchError(this.handleError));
   }
 

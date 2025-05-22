@@ -1,0 +1,74 @@
+<div class="management-container">
+  <h2>Payment Method Management</h2>
+
+  <!-- Error/Success Messages -->
+  <div *ngIf="errorMessage" class="error-message-banner">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="success-message-banner">{{ successMessage }}</div>
+
+  <!-- Form for Add/Edit -->
+  <form [formGroup]="paymentMethodForm" (ngSubmit)="onSubmit()" class="pm-form">
+    <h3>{{ editingPaymentMethod ? 'Edit' : 'Add New' }} Payment Method</h3>
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input id="name" type="text" formControlName="name" />
+      <div *ngIf="paymentMethodForm.get('name')?.invalid && paymentMethodForm.get('name')?.touched" class="error-message">
+        Name is required.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <input id="description" type="text" formControlName="description" />
+    </div>
+    <div class="form-group checkbox-group">
+      <input id="active" type="checkbox" formControlName="active" />
+      <label for="active">Active</label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" [disabled]="paymentMethodForm.invalid || isLoading">
+        {{ isLoading ? 'Saving...' : (editingPaymentMethod ? 'Update' : 'Create') }}
+      </button>
+      <button type="button" (click)="cancelEdit()" *ngIf="editingPaymentMethod" class="cancel-button">
+        Cancel Edit
+      </button>
+    </div>
+  </form>
+
+  <!-- List of Payment Methods -->
+  <h3>Available Payment Methods</h3>
+  <div *ngIf="isLoading && !(paymentMethods$ | async)" class="loading-indicator">Loading methods...</div>
+
+  <div *ngIf="paymentMethods$ | async as methods">
+    <div *ngIf="methods.length > 0; else noMethods" class="pm-list">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pm of methods">
+            <td>{{ pm.id }}</td>
+            <td>{{ pm.name }}</td>
+            <td>{{ pm.description || 'N/A' }}</td>
+            <td>
+              <span [ngClass]="pm.active ? 'status-active' : 'status-inactive'">
+                {{ pm.active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button (click)="editPaymentMethod(pm)" class="action-button edit-button">Edit</button>
+              <button (click)="deletePaymentMethod(pm.id)" class="action-button delete-button">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noMethods>
+      <p *ngIf="!isLoading">No payment methods found. Add one using the form above.</p>
+    </ng-template>
+  </div>
+</div> 

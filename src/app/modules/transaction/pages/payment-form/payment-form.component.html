@@ -1,76 +1,86 @@
 <div class="payment-form-container">
   <h2>Register Payment</h2>
   <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
-    <!-- User ID (could be hidden or pre-filled in a real app) -->
+    <!-- User ID -->
     <div class="form-group">
       <label for="userId">User ID:</label>
-      <input id="userId" type="text" formControlName="userId" />
-      <div
-        *ngIf="paymentForm.get('userId')?.invalid && paymentForm.get('userId')?.touched"
-        class="error-message"
-      >
-        User ID is required.
+      <input id="userId" type="number" formControlName="userId" />
+      <div *ngIf="paymentForm.get('userId')?.invalid && paymentForm.get('userId')?.touched" class="error-message">
+        User ID is required and must be a number.
       </div>
     </div>
 
+    <!-- PaymentMethodId Dropdown -->
     <div class="form-group">
-      <label for="amount">Amount:</label>
-      <input id="amount" type="number" formControlName="amount" />
-      <div
-        *ngIf="paymentForm.get('amount')?.invalid && paymentForm.get('amount')?.touched"
-        class="error-message"
-      >
-        <span *ngIf="paymentForm.get('amount')?.errors?.['required']">
-          Amount is required.
-        </span>
-        <span *ngIf="paymentForm.get('amount')?.errors?.['min']">
-          Amount must be positive.
-        </span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="currency">Currency:</label>
-      <input id="currency" type="text" formControlName="currency" />
-      <!-- Could be a select dropdown in a real app -->
-      <div
-        *ngIf="paymentForm.get('currency')?.invalid && paymentForm.get('currency')?.touched"
-        class="error-message"
-      >
-        Currency is required.
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="paymentMethod">Payment Method:</label>
-      <select id="paymentMethod" formControlName="paymentMethod">
-        <option value="" disabled>Select a payment method</option>
-        <option
-          *ngFor="let method of availablePaymentMethods$ | async"
-          [value]="method"
-        >
-          {{ method }}
+      <label for="paymentMethodId">Payment Method:</label>
+      <select id="paymentMethodId" formControlName="paymentMethodId">
+        <option [ngValue]="null" disabled>Select a payment method</option>
+        <option *ngFor="let method of availablePaymentMethods$ | async" [value]="method.id">
+          {{ method.name }}
         </option>
       </select>
-      <div
-        *ngIf="paymentForm.get('paymentMethod')?.invalid && paymentForm.get('paymentMethod')?.touched"
-        class="error-message"
-      >
+      <div *ngIf="paymentForm.get('paymentMethodId')?.invalid && paymentForm.get('paymentMethodId')?.touched" class="error-message">
         Payment method is required.
       </div>
     </div>
 
+    <!-- Total Amount -->
+    <div class="form-group">
+      <label for="totalAmount">Total Amount:</label>
+      <input id="totalAmount" type="number" formControlName="totalAmount" />
+      <div *ngIf="paymentForm.get('totalAmount')?.invalid && paymentForm.get('totalAmount')?.touched" class="error-message">
+        <span *ngIf="paymentForm.get('totalAmount')?.errors?.['required']">Total Amount is required.</span>
+        <span *ngIf="paymentForm.get('totalAmount')?.errors?.['min']">Total Amount must be positive.</span>
+      </div>
+    </div>
+
+    <!-- External Reference -->
+    <div class="form-group">
+      <label for="externalReference">External Reference (Optional):</label>
+      <input id="externalReference" type="text" formControlName="externalReference" />
+    </div>
+
+    <!-- Description -->
     <div class="form-group">
       <label for="description">Description (Optional):</label>
       <input id="description" type="text" formControlName="description" />
     </div>
 
+    <!-- Currency (Kept for now, verify if backend needs it) -->
     <div class="form-group">
-      <label for="eventId">Event ID (Optional):</label>
-      <input id="eventId" type="text" formControlName="eventId" />
+      <label for="currency">Currency:</label>
+      <input id="currency" type="text" formControlName="currency" />
+      <div *ngIf="paymentForm.get('currency')?.invalid && paymentForm.get('currency')?.touched" class="error-message">
+        Currency is required.
+      </div>
     </div>
 
-    <button type="submit" [disabled]="paymentForm.invalid">Submit Payment</button>
+    <!-- Transaction Details FormArray -->
+    <div formArrayName="details" class="details-array">
+      <h4>Ticket Details:</h4>
+      <div *ngFor="let detailGroup of details.controls; let i = index" [formGroupName]="i" class="detail-item">
+        <h5>Ticket {{ i + 1 }}</h5>
+        <div class="form-group">
+          <label for="ticketId-{{ i }}">Ticket ID:</label>
+          <input id="ticketId-{{ i }}" type="number" formControlName="ticketId" />
+          <div *ngIf="detailGroup.get('ticketId')?.invalid && detailGroup.get('ticketId')?.touched" class="error-message">
+            Ticket ID is required.
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="unitPrice-{{ i }}">Unit Price:</label>
+          <input id="unitPrice-{{ i }}" type="number" formControlName="unitPrice" />
+          <div *ngIf="detailGroup.get('unitPrice')?.invalid && detailGroup.get('unitPrice')?.touched" class="error-message">
+            <span *ngIf="detailGroup.get('unitPrice')?.errors?.['required']">Unit Price is required.</span>
+            <span *ngIf="detailGroup.get('unitPrice')?.errors?.['min']">Unit Price must be positive.</span>
+          </div>
+        </div>
+        <button type="button" (click)="removeDetail(i)" class="remove-detail-button">Remove Ticket {{i + 1}}</button>
+      </div>
+      <button type="button" (click)="addDetail()" class="add-detail-button">+ Add Ticket Detail</button>
+    </div>
+
+    <button type="submit" [disabled]="paymentForm.invalid" class="submit-button">Submit Payment</button>
   </form>
 
   <div *ngIf="submissionMessage" class="submission-message">

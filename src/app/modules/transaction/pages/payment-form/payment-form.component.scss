@@ -92,3 +92,59 @@ button[type='submit']:hover:not(:disabled) {
   border: 1px solid #f5c6cb;
 }
 */
+
+/* Styles for Transaction Details FormArray */
+.details-array {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+}
+
+.details-array h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.detail-item {
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  background-color: #fff;
+}
+
+.detail-item h5 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  color: #444;
+}
+
+.add-detail-button,
+.remove-detail-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.add-detail-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.remove-detail-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  margin-bottom: 0.5rem; /* Add some space below remove button */
+  display: inline-block; /* Or block if you want it full width */
+}
+
+.submit-button {
+  margin-top: 1.5rem;
+}

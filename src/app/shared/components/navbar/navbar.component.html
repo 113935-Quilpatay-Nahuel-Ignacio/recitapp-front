@@ -21,6 +21,22 @@
             </ul>
 
             <ul class="navbar-nav">
+                <!-- Menú desplegable Gestión de Pagos -->
+                <li class="nav-item dropdown" *ngIf="isLoggedIn"> <!-- Show only if logged in -->
+                    <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Gestión de Pagos
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="paymentsDropdown">
+                        <li><a class="dropdown-item" routerLink="/transactions/history" routerLinkActive="active">Historial de Transacciones</a></li>
+                        <li><a class="dropdown-item" routerLink="/transactions/payment" routerLinkActive="active">Realizar Pago</a></li>
+                        <li><a class="dropdown-item" routerLink="/transactions/wallet" routerLinkActive="active">Billetera Virtual</a></li>
+                        <li *ngIf="isAdmin"><hr class="dropdown-divider"></li> <!-- Admin only section -->
+                        <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/report" routerLinkActive="active">Reporte de Transacciones</a></li>
+                        <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/manage-payment-methods" routerLinkActive="active">Administrar Métodos de Pago</a></li>
+                    </ul>
+                </li>
+
                 <!-- Menú desplegable Mi Cuenta -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"

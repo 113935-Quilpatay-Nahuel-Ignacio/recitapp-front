@@ -25,7 +25,7 @@ export class VirtualWalletComponent implements OnInit {
   recentTransactions$!: Observable<Transaction[]>;
   errorMessage: string | null = null;
   isLoading = false;
-  userId = 123; // Example User ID, ensure this is a number
+  userId = 4; // Changed to 4
 
   private fb = inject(FormBuilder);
   private transactionService = inject(TransactionService);

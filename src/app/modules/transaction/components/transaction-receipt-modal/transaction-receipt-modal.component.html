@@ -1,0 +1,28 @@
+<div class="modal-overlay" *ngIf="receipt">
+  <div class="modal-content">
+    <button class="close-button" (click)="onClose()">&times;</button>
+    <h2>Transaction Receipt</h2>
+    <div *ngIf="receipt">
+      <p><strong>Receipt Number:</strong> {{ receipt.receiptNumber }}</p>
+      <p><strong>Transaction ID:</strong> {{ receipt.transactionId }}</p>
+      <p><strong>Issue Date:</strong> {{ receipt.issueDate | date: 'medium' }}</p>
+      <p><strong>Client:</strong> {{ receipt.userFullName }} (DNI: {{ receipt.userDni }})</p>
+      <p><strong>Total Amount:</strong> {{ receipt.totalAmount | currency }}</p>
+      <p><strong>Payment Method:</strong> {{ receipt.paymentMethod }}</p>
+      <p><strong>Refunded:</strong> {{ receipt.isRefund ? 'Yes' : 'No' }}</p>
+
+      <h3>Items:</h3>
+      <ul *ngIf="receipt.items && receipt.items.length > 0">
+        <li *ngFor="let item of receipt.items">
+          {{ item.itemDescription }} - {{ item.quantity }} x {{ item.unitPrice | currency }} = {{ item.subtotal | currency }}
+        </li>
+      </ul>
+      <p *ngIf="!receipt.items || receipt.items.length === 0">No items found for this transaction.</p>
+    </div>
+    <div class="modal-actions">
+      <button (click)="onClose()" class="button">Close</button>
+      <!-- Add a print button if desired -->
+      <!-- <button (click)="printReceipt()" class="button primary-button">Print</button> -->
+    </div>
+  </div>
+</div> 

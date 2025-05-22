@@ -3,6 +3,7 @@ import { PaymentFormComponent } from './pages/payment-form/payment-form.componen
 import { TransactionHistoryComponent } from './pages/transaction-history/transaction-history.component';
 import { TransactionReportComponent } from './pages/transaction-report/transaction-report.component';
 import { VirtualWalletComponent } from './pages/virtual-wallet/virtual-wallet.component';
+import { PaymentMethodManagementComponent } from './pages/payment-method-management/payment-method-management.component';
 
 export const TRANSACTION_ROUTES: Routes = [
   {
@@ -24,6 +25,11 @@ export const TRANSACTION_ROUTES: Routes = [
     path: 'wallet', // e.g., /transactions/wallet
     component: VirtualWalletComponent,
     title: 'Virtual Wallet',
+  },
+  {
+    path: 'manage-payment-methods',
+    component: PaymentMethodManagementComponent,
+    title: 'Manage Payment Methods',
   },
   {
     path: '',

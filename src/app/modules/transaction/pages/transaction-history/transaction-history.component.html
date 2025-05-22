@@ -34,17 +34,20 @@
             </td>
             <td>{{ tx.paymentMethodName }}</td>
             <td>
-              <button (click)="viewReceipt(tx.id)" class="action-button">
+              <button 
+                (click)="viewReceipt(tx.id)" 
+                class="action-button"
+                [disabled]="tx.statusName !== 'COMPLETADA' && tx.statusName !== 'REEMBOLSADA'">
                 View Receipt
               </button>
               <button 
-                *ngIf="tx.statusName === 'completed' || tx.statusName === 'pending'" 
+                *ngIf="tx.statusName === 'INICIADA' || tx.statusName === 'PROCESANDO'" 
                 (click)="cancelTransaction(tx.id)" 
                 class="action-button cancel-button">
                 Cancel
               </button>
               <button 
-                *ngIf="tx.statusName === 'completed' && !tx.isRefund" 
+                *ngIf="tx.statusName === 'COMPLETADA' && !tx.isRefund" 
                 (click)="requestRefund(tx.id)" 
                 class="action-button refund-button">
                 Refund
@@ -63,3 +66,8 @@
     <p>Loading transaction history...</p>
   </ng-template>
 </div>
+
+<app-transaction-receipt-modal 
+  [receipt]="selectedReceipt" 
+  (closeModal)="closeReceiptModal()">
+</app-transaction-receipt-modal>

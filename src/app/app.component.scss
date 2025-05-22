@@ -11,3 +11,100 @@
     opacity: 1;
   }
 }
+
+/* Added styles for app layout */
+.app-header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.app-header nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+}
+
+.app-header nav ul li {
+  display: inline;
+  margin-right: 15px;
+}
+
+.app-header nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.app-header nav a:hover {
+  text-decoration: underline;
+}
+
+.app-content {
+  display: flex;
+  min-height: calc(100vh - 160px); /* Adjust based on header/footer height */
+}
+
+.content-container {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar {
+  width: 250px; /* Adjust as needed */
+  background-color: #f4f4f4;
+  padding: 1rem;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar h2 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li a {
+  display: block;
+  padding: 0.75rem 0.5rem;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active-link { /* You might need to set active-link class via [routerLinkActive] */
+  background-color: #007bff;
+  color: white;
+}
+
+.router-outlet-area {
+  flex-grow: 1;
+  padding: 1.5rem;
+  background-color: #fff;
+}
+
+.app-footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  /* position: fixed; */ /* Uncomment if you want a sticky footer */
+  bottom: 0;
+  width: 100%;
+}
