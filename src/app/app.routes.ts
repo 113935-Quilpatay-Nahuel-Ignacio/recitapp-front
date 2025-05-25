@@ -7,7 +7,7 @@ import { UserProfileComponent } from './modules/user/pages/user-profile/user-pro
 import { PurchaseHistoryComponent } from './modules/user/pages/purchase-history/purchase-history.component';
 import { UserFollowingComponent } from './modules/user/pages/user-following/user-following.component';
 import { UserLoginComponent } from './modules/user/pages/user-login/user-login.component';
-import { NotificationPreferencesComponent } from './modules/user/pages/notification-preferences/notification-preferences.component';
+// import { NotificationPreferencesComponent } from './modules/user/pages/notification-preferences/notification-preferences.component'; // Old import
 
 // Artist module
 import { ArtistDetailComponent } from './modules/artist/pages/artist-detail/artist-detail.component';
@@ -41,6 +41,7 @@ import { TicketDetailComponent } from './modules/ticket/pages/ticket-detail/tick
 
 // Notification module
 import { NotificationCenterComponent } from './modules/notification/pages/notification-center/notification-center.component';
+import { NotificationPreferencesComponent } from './modules/notification/pages/notification-preferences/notification-preferences.component'; // New import
 
 export const routes: Routes = [
   // Default route
@@ -52,7 +53,7 @@ export const routes: Routes = [
   { path: 'user/profile', component: UserProfileComponent },
   { path: 'user/purchases', component: PurchaseHistoryComponent },
   { path: 'user/following', component: UserFollowingComponent },
-  { path: 'user/notifications', component: NotificationPreferencesComponent },
+  // { path: 'user/notifications', component: NotificationPreferencesComponent }, // Old route
 
   // Artist routes
   { path: 'artists', component: ArtistListComponent },
@@ -92,6 +93,7 @@ export const routes: Routes = [
 
   // Notification routes
   { path: 'notifications', component: NotificationCenterComponent },
+  { path: 'user/preferences', component: NotificationPreferencesComponent }, // Corrected route as per user request
 
   // Admin routes
   { path: 'admin/genres', component: MusicGenreAdminComponent },

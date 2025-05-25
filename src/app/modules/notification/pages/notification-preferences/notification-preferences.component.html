@@ -1,0 +1,38 @@
+<div class="preferences-container">
+  <h2>Notification Preferences</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading preferences...</p>
+  </div>
+
+  <div *ngIf="errorLoading" class="error-message">
+    <p>Could not load your notification preferences. Please try again later.</p>
+  </div>
+
+  <form *ngIf="!isLoading && !errorLoading" [formGroup]="preferencesForm" (ngSubmit)="onSubmit()">
+    <p class="form-description">
+      Manage how you receive notifications from RecitApp.
+    </p>
+
+    <div *ngFor="let item of preferenceItems" class="preference-item">
+      <label [for]="item.key">
+        {{ item.label }}
+      </label>
+      <input type="checkbox" [id]="item.key" [formControlName]="item.key" />
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="!preferencesForm.dirty || isSaving">
+        <span *ngIf="isSaving">Saving...</span>
+        <span *ngIf="!isSaving">Save Preferences</span>
+      </button>
+    </div>
+
+    <div *ngIf="saveSuccess" class="success-message form-feedback">
+      Preferences saved successfully!
+    </div>
+    <div *ngIf="errorSaving" class="error-message form-feedback">
+      Failed to save preferences. Please try again.
+    </div>
+  </form>
+</div> 

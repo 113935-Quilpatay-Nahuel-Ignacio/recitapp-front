@@ -1,1 +1,46 @@
-<p>notification-center works!</p>
+<div class="notification-center-container">
+  <header class="notification-header">
+    <h2>Notification Center</h2>
+    <button (click)="markAllAsRead()" class="mark-all-read-btn">
+      Mark All as Read
+    </button>
+    <a routerLink="/user/preferences" class="preferences-link">
+      Notification Settings
+    </a>
+  </header>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading notifications...</p>
+    <!-- Add a spinner or more elaborate loading animation here -->
+  </div>
+
+  <div *ngIf="errorLoading" class="error-message">
+    <p>Could not load notifications. Please try again later.</p>
+  </div>
+
+  <div *ngIf="!(isLoading || errorLoading) && (notifications$ | async) as notifications">
+    <ul *ngIf="notifications.length > 0; else noNotifications" class="notification-list">
+      <li 
+        *ngFor="let notification of notifications" 
+        class="notification-item" 
+        [class.unread]="!notification.isRead"
+        (click)="markAsRead(notification)"
+      >
+        <a [routerLink]="getNotificationLink(notification)" class="notification-link">
+          <div class="notification-content">
+            <strong class="notification-title">
+              {{ notification.relatedEventName || notification.relatedArtistName || notification.typeName }}
+            </strong>
+            <p class="notification-message">{{ notification.content }}</p>
+            <small class="notification-timestamp">{{ notification.sentAt | date:'short' }}</small>
+          </div>
+          <span *ngIf="!notification.isRead" class="unread-indicator" title="Mark as read"></span>
+        </a>
+      </li>
+    </ul>
+    <ng-template #noNotifications>
+      <p class="empty-state">You have no new notifications.</p>
+    </ng-template>
+  </div>
+
+</div>
