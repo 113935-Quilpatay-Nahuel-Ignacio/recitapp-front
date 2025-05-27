@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-// import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from './core/guards/auth.guard';
+import { RoleGuard } from './core/guards/role.guard';
 
 // User module
 import { UserRegisterComponent } from './modules/user/pages/user-register/user-register.component';
@@ -47,71 +48,164 @@ export const routes: Routes = [
   // Default route
   { path: '', redirectTo: '/events', pathMatch: 'full' },
 
-  // User routes
-  { path: 'register', component: UserRegisterComponent },
-  { path: 'login', component: UserLoginComponent },
-  { path: 'user/profile', component: UserProfileComponent },
-  { path: 'user/purchases', component: PurchaseHistoryComponent },
-  { path: 'user/following', component: UserFollowingComponent },
-  // { path: 'user/notifications', component: NotificationPreferencesComponent }, // Old route
+  // Auth routes (lazy loaded)
+  {
+    path: 'auth',
+    loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule)
+  },
+
+  // Dashboard (protected) - TODO: Crear módulo dashboard
+  // {
+  //   path: 'dashboard',
+  //   canActivate: [AuthGuard],
+  //   loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
+  // },
+
+  // User routes (legacy - mantener por compatibilidad)
+  { path: 'register', redirectTo: '/auth/register' },
+  { path: 'login', redirectTo: '/auth/login' },
+  
+  // Protected user routes
+  { 
+    path: 'user/profile', 
+    component: UserProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'user/purchases', 
+    component: PurchaseHistoryComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'user/following', 
+    component: UserFollowingComponent,
+    canActivate: [AuthGuard]
+  },
 
   // Artist routes
   { path: 'artists', component: ArtistListComponent },
-  { path: 'artists/new', component: ArtistEditComponent },
-  { path: 'artists/management', component: ArtistManagementComponent },
+  { 
+    path: 'artists/new', 
+    component: ArtistEditComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
+  },
+  { 
+    path: 'artists/management', 
+    component: ArtistManagementComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
+  },
   { path: 'artists/:id', component: ArtistDetailComponent },
-  { path: 'artists/:id/edit', component: ArtistEditComponent },
+  { 
+    path: 'artists/:id/edit', 
+    component: ArtistEditComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
+  },
   { path: 'artists/:id/events', component: ArtistEventsComponent },
-  { path: 'artists/:id/statistics', component: ArtistStatisticsComponent },
-  { path: 'artists/:id/platforms', component: ArtistPlatformsComponent },
+  { 
+    path: 'artists/:id/statistics', 
+    component: ArtistStatisticsComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
+  },
+  { 
+    path: 'artists/:id/platforms', 
+    component: ArtistPlatformsComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
+  },
 
   // Event routes
   { path: 'events', component: EventListComponent },
-  { path: 'events/new', component: EventFormComponent },
+  { 
+    path: 'events/new', 
+    component: EventFormComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
+  },
   { path: 'events/:id', component: EventDetailComponent },
-  { path: 'events/:id/edit', component: EventFormComponent },
-  { path: 'events/:id/tickets', component: TicketPurchaseComponent },
+  { 
+    path: 'events/:id/edit', 
+    component: EventFormComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
+  },
+  { 
+    path: 'events/:id/tickets', 
+    component: TicketPurchaseComponent,
+    canActivate: [AuthGuard]
+  },
 
-  // Venue routes (Reorganizadas y consolidadas)
-  { path: 'venues', component: VenueListComponent }, // Lista general de recintos
-  { path: 'venues/new', component: VenueFormComponent }, // Crear nuevo recinto (antes de :id)
-  { path: 'venues/search-availability', component: VenueAvailabilitySearchComponent }, // Búsqueda de disponibilidad
-  { path: 'venues/:id', component: VenueDetailComponent }, // Detalle de recinto (después de /new y /search-availability)
-  { path: 'venues/:id/edit', component: VenueFormComponent }, // Editar recinto
+  // Venue routes
+  { path: 'venues', component: VenueListComponent },
+  { 
+    path: 'venues/new', 
+    component: VenueFormComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN'] }
+  },
+  { path: 'venues/search-availability', component: VenueAvailabilitySearchComponent },
+  { path: 'venues/:id', component: VenueDetailComponent },
+  { 
+    path: 'venues/:id/edit', 
+    component: VenueFormComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN'] }
+  },
 
   // Ticket routes
-  { path: 'tickets', component: TicketListComponent }, // Route to list/manage tickets (if any)
-  { path: 'ticket/:id', component: TicketDetailComponent }, // View details of a specific ticket
-  // The route for purchasing tickets for an event is events/:id/tickets
+  { 
+    path: 'tickets', 
+    component: TicketListComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'ticket/:id', 
+    component: TicketDetailComponent,
+    canActivate: [AuthGuard]
+  },
 
-  // Transaction routes are now lazy-loaded
+  // Transaction routes (lazy loaded and protected)
   {
     path: 'transactions',
     loadChildren: () => import('./modules/transaction/transaction.routes').then(m => m.TRANSACTION_ROUTES),
-    // title: 'Transactions' // Optional: set a general title for the module section
+    canActivate: [AuthGuard]
   },
 
-  // Notification routes
-  { path: 'notifications', component: NotificationCenterComponent },
-  { path: 'user/preferences', component: NotificationPreferencesComponent }, // Corrected route as per user request
+  // Notification routes (protected)
+  { 
+    path: 'notifications', 
+    component: NotificationCenterComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'user/preferences', 
+    component: NotificationPreferencesComponent,
+    canActivate: [AuthGuard]
+  },
 
-  // Admin routes
-  { path: 'admin/genres', component: MusicGenreAdminComponent },
+  // Admin routes (protected)
+  { 
+    path: 'admin/genres', 
+    component: MusicGenreAdminComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN'] }
+  },
 
-  // Lazy-loaded routes
-  // {
-  //   path: 'profile',
-  //   loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule),
-  //   canActivate: [AuthGuard]
-  // },
+  // Admin module (lazy loaded and protected)
   {
     path: 'admin',
-    loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule)
-    // Aquí podríamos añadir un canMatch o canActivate general para /admin si fuera necesario más adelante
+    loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
+
+  // Unauthorized page - TODO: Crear componente unauthorized
   // {
-  //   path: 'terminos-y-condiciones',
-  //   // ... existing code ... // This route is invalid as is
+  //   path: 'unauthorized',
+  //   loadComponent: () => import('./shared/components/unauthorized/unauthorized.component').then(c => c.UnauthorizedComponent)
   // },
 
   // Wildcard route for 404

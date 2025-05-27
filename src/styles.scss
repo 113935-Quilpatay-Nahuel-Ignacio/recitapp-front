@@ -280,3 +280,28 @@ footer {
     transform: translateY(-2px);
   }
 }
+
+// Custom green color variations for icons and elements
+.text-green-light {
+  color: #4ade80 !important; // Verde claro
+}
+
+.text-green-medium {
+  color: var(--primary-green) !important; // Verde principal
+}
+
+.text-green-dark {
+  color: var(--primary-green-dark) !important; // Verde oscuro
+}
+
+.text-green-emerald {
+  color: #10b981 !important; // Verde esmeralda
+}
+
+.text-green-lime {
+  color: #84cc16 !important; // Verde lima
+}
+
+.text-green-forest {
+  color: #059669 !important; // Verde bosque
+}

@@ -1,7 +1,7 @@
 <!-- src/app/shared/components/navbar/navbar.component.html -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand" routerLink="/">Recitapp</a>
+        <a class="navbar-brand" routerLink="/">RecitApp</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
             aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -18,11 +18,19 @@
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/venues" routerLinkActive="active">Recintos</a>
                 </li>
+                
+                <!-- Enlaces para usuarios autenticados con roles específicos -->
+                <li class="nav-item" *ngIf="isEventRegistrar">
+                    <a class="nav-link" routerLink="/events/new" routerLinkActive="active">Crear Evento</a>
+                </li>
+                <li class="nav-item" *ngIf="isEventRegistrar">
+                    <a class="nav-link" routerLink="/artists/management" routerLinkActive="active">Gestión Artistas</a>
+                </li>
             </ul>
 
             <ul class="navbar-nav">
-                <!-- Menú desplegable Gestión de Pagos -->
-                <li class="nav-item dropdown" *ngIf="isLoggedIn"> <!-- Show only if logged in -->
+                <!-- Menú desplegable Gestión de Pagos - Solo usuarios autenticados -->
+                <li class="nav-item dropdown" *ngIf="isAuthenticated">
                     <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Gestión de Pagos
@@ -31,47 +39,91 @@
                         <li><a class="dropdown-item" routerLink="/transactions/history" routerLinkActive="active">Historial de Transacciones</a></li>
                         <li><a class="dropdown-item" routerLink="/transactions/payment" routerLinkActive="active">Realizar Pago</a></li>
                         <li><a class="dropdown-item" routerLink="/transactions/wallet" routerLinkActive="active">Billetera Virtual</a></li>
-                        <li *ngIf="isAdmin"><hr class="dropdown-divider"></li> <!-- Admin only section -->
+                        <li *ngIf="isAdmin"><hr class="dropdown-divider"></li>
                         <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/report" routerLinkActive="active">Reporte de Transacciones</a></li>
                         <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/manage-payment-methods" routerLinkActive="active">Administrar Métodos de Pago</a></li>
                     </ul>
                 </li>
 
-                <!-- Menú desplegable Mi Cuenta -->
-                <li class="nav-item dropdown">
+                <!-- Menú desplegable Mi Cuenta - Solo usuarios autenticados -->
+                <li class="nav-item dropdown" *ngIf="isAuthenticated">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        Mi cuenta
+                        {{ userDisplayName || 'Mi cuenta' }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" routerLink="/user/profile">Perfil</a></li>
-                        <li><a class="dropdown-item" routerLink="/user/purchases">Mis compras</a></li>
-                        <li><a class="dropdown-item" routerLink="/user/following">Mis seguimientos</a></li>
-                        <li><a class="dropdown-item" routerLink="/notifications">Notificaciones</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" routerLink="/user/register">Registro</a></li>
-                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                        <li><h6 class="dropdown-header">{{ currentUser?.email }}</h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" routerLink="/user/profile">
+                            <i class="fas fa-user me-2"></i>Perfil
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/user/purchases">
+                            <i class="fas fa-shopping-bag me-2"></i>Mis compras
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/tickets">
+                            <i class="fas fa-ticket-alt me-2"></i>Mis entradas
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/user/following">
+                            <i class="fas fa-heart me-2"></i>Mis seguimientos
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/notifications">
+                            <i class="fas fa-bell me-2"></i>Notificaciones
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/user/preferences">
+                            <i class="fas fa-cog me-2"></i>Preferencias
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" (click)="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+                        </a></li>
                     </ul>
                 </li>
 
-                <!-- Menú desplegable Admin -->
-                <li class="nav-item dropdown">
+                <!-- Menú desplegable Admin - Solo administradores -->
+                <li class="nav-item dropdown" *ngIf="isAdmin">
                     <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        Admin
+                        <i class="fas fa-cog me-1"></i>Admin
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                        <li><a class="dropdown-item" routerLink="/admin/genres">Géneros Musicales</a></li>
-                        <li><a class="dropdown-item" routerLink="/admin/users">Usuarios</a></li>
-                        <li><a class="dropdown-item" routerLink="/admin/dashboard">Dashboard</a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/users">
+                            <i class="fas fa-users me-2"></i>Usuarios
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/genres">
+                            <i class="fas fa-music me-2"></i>Géneros Musicales
+                        </a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/admin/manage-reservations">Gestión de Reservas</a></li>
-                        <li><a class="dropdown-item" routerLink="/admin/event-sales-report">Reporte de Ventas por Evento</a></li>
-                        <li><a class="dropdown-item" routerLink="/admin/validate-ticket">Validar Entrada</a></li>
-                        <li><a class="dropdown-item" routerLink="/admin/create-promotional-ticket">Crear Entrada Promocional</a></li>
+                        <li><a class="dropdown-item" routerLink="/venues/new">
+                            <i class="fas fa-building me-2"></i>Crear Recinto
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/manage-reservations">
+                            <i class="fas fa-calendar-check me-2"></i>Gestión de Reservas
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/event-sales-report">
+                            <i class="fas fa-chart-bar me-2"></i>Reporte de Ventas
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/validate-ticket">
+                            <i class="fas fa-check-circle me-2"></i>Validar Entrada
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/admin/create-promotional-ticket">
+                            <i class="fas fa-gift me-2"></i>Entrada Promocional
+                        </a></li>
                     </ul>
+                </li>
+
+                <!-- Enlaces de autenticación - Solo usuarios no autenticados -->
+                <li class="nav-item" *ngIf="!isAuthenticated">
+                    <a class="nav-link" routerLink="/auth/login" routerLinkActive="active">
+                        <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                    </a>
+                </li>
+                <li class="nav-item" *ngIf="!isAuthenticated">
+                    <a class="nav-link" routerLink="/auth/register" routerLinkActive="active">
+                        <i class="fas fa-user-plus me-1"></i>Registrarse
+                    </a>
                 </li>
             </ul>
         </div>
