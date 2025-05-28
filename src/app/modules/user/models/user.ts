@@ -1,3 +1,5 @@
+import { Role } from './role';
+
 export interface User {
   id?: number;
   email: string;
@@ -8,7 +10,14 @@ export interface User {
   city: string;
   registrationDate?: Date;
   roleName?: string;
+  role?: Role;
   authMethod?: string;
+  active?: boolean;
+  walletBalance?: number;
+  lastConnection?: Date;
+  phone?: string;
+  address?: string;
+  profileImage?: string;
 }
 
 export interface UserRegistration {
@@ -29,4 +38,6 @@ export interface UserUpdate {
   country?: string;
   city?: string;
   password?: string;
+  phone?: string;
+  address?: string;
 }

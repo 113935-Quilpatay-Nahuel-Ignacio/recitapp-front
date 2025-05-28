@@ -1,0 +1,264 @@
+<div class="user-detail-dialog">
+  <div mat-dialog-title class="dialog-header">
+    <div class="title-content">
+      <mat-icon>person</mat-icon>
+      <div class="user-info">
+        <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+        <p>{{ user.email }}</p>
+      </div>
+    </div>
+    <div class="user-status">
+      <mat-chip [color]="getRoleColor(user.roleName || '')">
+        {{ getRoleLabel(user.roleName || '') }}
+      </mat-chip>
+      <mat-chip [color]="user.active ? 'primary' : ''">
+        <mat-icon>{{ user.active ? 'check_circle' : 'cancel' }}</mat-icon>
+        {{ user.active ? 'Activo' : 'Inactivo' }}
+      </mat-chip>
+    </div>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <mat-tab-group>
+      <!-- Información General -->
+      <mat-tab label="Información General">
+        <div class="tab-content">
+          <div class="info-grid">
+            <!-- Información Personal -->
+            <mat-card class="info-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>person</mat-icon>
+                  Información Personal
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="info-item">
+                  <label>ID de Usuario:</label>
+                  <span class="copyable" (click)="copyToClipboard(user.id?.toString() || '')">
+                    {{ user.id }}
+                    <mat-icon>content_copy</mat-icon>
+                  </span>
+                </div>
+                <div class="info-item">
+                  <label>Email:</label>
+                  <span class="copyable" (click)="copyToClipboard(user.email)">
+                    {{ user.email }}
+                    <mat-icon>content_copy</mat-icon>
+                  </span>
+                </div>
+                <div class="info-item">
+                  <label>Nombre Completo:</label>
+                  <span>{{ user.firstName }} {{ user.lastName }}</span>
+                </div>
+                <div class="info-item">
+                  <label>DNI:</label>
+                  <span>{{ user.dni }}</span>
+                </div>
+                <div class="info-item" *ngIf="user.phone">
+                  <label>Teléfono:</label>
+                  <span>{{ user.phone }}</span>
+                </div>
+                <div class="info-item" *ngIf="user.address">
+                  <label>Dirección:</label>
+                  <span>{{ user.address }}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Ubicación -->
+            <mat-card class="info-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>location_on</mat-icon>
+                  Ubicación
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="info-item">
+                  <label>País:</label>
+                  <span>{{ user.country }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Ciudad:</label>
+                  <span>{{ user.city }}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Información de Cuenta -->
+            <mat-card class="info-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>account_circle</mat-icon>
+                  Información de Cuenta
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="info-item">
+                  <label>Fecha de Registro:</label>
+                  <span>{{ formatDate(user.registrationDate) }}</span>
+                </div>
+                <div class="info-item" *ngIf="user.lastConnection">
+                  <label>Última Conexión:</label>
+                  <span>{{ formatDate(user.lastConnection) }}</span>
+                </div>
+                <div class="info-item" *ngIf="user.authMethod">
+                  <label>Método de Autenticación:</label>
+                  <span>{{ user.authMethod }}</span>
+                </div>
+                <div class="info-item" *ngIf="user.walletBalance !== undefined">
+                  <label>Saldo de Billetera:</label>
+                  <span class="balance">{{ formatCurrency(user.walletBalance) }}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Historial de Compras -->
+      <mat-tab label="Compras">
+        <div class="tab-content">
+          <div *ngIf="loadingPurchases" class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Cargando historial de compras...</p>
+          </div>
+
+          <div *ngIf="!loadingPurchases && purchases.length === 0" class="empty-state">
+            <mat-icon>shopping_cart_outlined</mat-icon>
+            <h3>Sin compras registradas</h3>
+            <p>Este usuario no ha realizado ninguna compra.</p>
+          </div>
+
+          <div *ngIf="!loadingPurchases && purchases.length > 0" class="purchases-list">
+            <mat-card *ngFor="let purchase of purchases" class="purchase-card">
+              <mat-card-content>
+                <div class="purchase-header">
+                  <h4>{{ purchase.eventName }}</h4>
+                  <mat-chip [color]="purchase.status === 'COMPLETADA' ? 'primary' : 'warn'">
+                    {{ purchase.status }}
+                  </mat-chip>
+                </div>
+                <div class="purchase-details">
+                  <div class="detail-item">
+                    <mat-icon>event</mat-icon>
+                    <span>{{ purchase.eventDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>location_on</mat-icon>
+                    <span>{{ purchase.venueName }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>attach_money</mat-icon>
+                    <span>{{ formatCurrency(purchase.price) }}</span>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Artistas Seguidos -->
+      <mat-tab label="Artistas Seguidos">
+        <div class="tab-content">
+          <div *ngIf="loadingArtists" class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Cargando artistas seguidos...</p>
+          </div>
+
+          <div *ngIf="!loadingArtists && followedArtists.length === 0" class="empty-state">
+            <mat-icon>music_note</mat-icon>
+            <h3>Sin artistas seguidos</h3>
+            <p>Este usuario no sigue ningún artista.</p>
+          </div>
+
+          <mat-list *ngIf="!loadingArtists && followedArtists.length > 0">
+            <mat-list-item *ngFor="let artist of followedArtists">
+              <mat-icon matListItemIcon>music_note</mat-icon>
+              <div matListItemTitle>{{ artist.name }}</div>
+              <div matListItemLine>{{ artist.genre || 'Género no especificado' }}</div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-tab>
+
+      <!-- Venues Seguidos -->
+      <mat-tab label="Venues Seguidos">
+        <div class="tab-content">
+          <div *ngIf="loadingVenues" class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Cargando venues seguidos...</p>
+          </div>
+
+          <div *ngIf="!loadingVenues && followedVenues.length === 0" class="empty-state">
+            <mat-icon>place</mat-icon>
+            <h3>Sin venues seguidos</h3>
+            <p>Este usuario no sigue ningún venue.</p>
+          </div>
+
+          <mat-list *ngIf="!loadingVenues && followedVenues.length > 0">
+            <mat-list-item *ngFor="let venue of followedVenues">
+              <mat-icon matListItemIcon>place</mat-icon>
+              <div matListItemTitle>{{ venue.name }}</div>
+              <div matListItemLine>{{ venue.address || 'Dirección no especificada' }}</div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-tab>
+
+      <!-- Preferencias de Notificación -->
+      <mat-tab label="Notificaciones">
+        <div class="tab-content">
+          <div *ngIf="loadingPreferences" class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Cargando preferencias...</p>
+          </div>
+
+          <div *ngIf="!loadingPreferences && !notificationPreferences" class="empty-state">
+            <mat-icon>notifications_off</mat-icon>
+            <h3>Sin preferencias configuradas</h3>
+            <p>Este usuario no ha configurado sus preferencias de notificación.</p>
+          </div>
+
+          <mat-card *ngIf="!loadingPreferences && notificationPreferences" class="preferences-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>notifications</mat-icon>
+                Preferencias de Notificación
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="preference-item">
+                <label>Emails de recordatorio:</label>
+                <mat-chip [color]="notificationPreferences.receiveReminderEmails ? 'primary' : ''">
+                  {{ notificationPreferences.receiveReminderEmails ? 'Activado' : 'Desactivado' }}
+                </mat-chip>
+              </div>
+              <div class="preference-item">
+                <label>Notificaciones push de eventos:</label>
+                <mat-chip [color]="notificationPreferences.receiveEventPush ? 'primary' : ''">
+                  {{ notificationPreferences.receiveEventPush ? 'Activado' : 'Desactivado' }}
+                </mat-chip>
+              </div>
+              <div class="preference-item">
+                <label>Notificaciones push de artistas:</label>
+                <mat-chip [color]="notificationPreferences.receiveArtistPush ? 'primary' : ''">
+                  {{ notificationPreferences.receiveArtistPush ? 'Activado' : 'Desactivado' }}
+                </mat-chip>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-raised-button color="primary" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+      Cerrar
+    </button>
+  </div>
+</div> 

@@ -1,0 +1,342 @@
+.user-management-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // Header Section
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .title-section {
+      h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 8px 0;
+        font-size: 2rem;
+        font-weight: 500;
+        color: #1976d2;
+
+        mat-icon {
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      .subtitle {
+        margin: 0;
+        color: #666;
+        font-size: 1rem;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+
+  // Filters Card
+  .filters-card {
+    margin-bottom: 24px;
+
+    mat-card-header {
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #333;
+      }
+    }
+
+    .filters-form {
+      .filter-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 16px;
+        align-items: end;
+
+        .search-field {
+          min-width: 250px;
+        }
+
+        @media (max-width: 1024px) {
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+
+          .search-field {
+            grid-column: 1 / -1;
+            min-width: unset;
+          }
+        }
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+          
+          .search-field {
+            grid-column: 1;
+          }
+        }
+      }
+    }
+  }
+
+  // Stats Section
+  .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .stat-card {
+      .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .stat-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          background-color: #e3f2fd;
+          color: #1976d2;
+
+          &.admin {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+          }
+
+          &.moderator {
+            background-color: #e8f5e8;
+            color: #388e3c;
+          }
+
+          &.buyer {
+            background-color: #fff3e0;
+            color: #f57c00;
+          }
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+          }
+        }
+
+        .stat-info {
+          h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+          }
+
+          p {
+            margin: 0;
+            color: #666;
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Table Card
+  .table-card {
+    mat-card-header {
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #333;
+      }
+    }
+
+    .table-container {
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px;
+        gap: 16px;
+
+        p {
+          margin: 0;
+          color: #666;
+        }
+      }
+
+      .users-table {
+        width: 100%;
+        
+        .email-cell {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .email-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            color: #666;
+          }
+        }
+
+        .actions-cell {
+          display: flex;
+          gap: 4px;
+          align-items: center;
+        }
+
+        mat-chip {
+          font-size: 0.75rem;
+          min-height: 24px;
+          
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+          }
+
+          // Custom styling for different states
+          &[color="primary"] {
+            background-color: #1976d2;
+            color: white;
+          }
+
+          &[color="accent"] {
+            background-color: #00bcd4;
+            color: white;
+          }
+
+          &[color="warn"] {
+            background-color: #f44336;
+            color: white;
+          }
+
+          // Default styling for chips without color
+          &:not([color]) {
+            background-color: #e0e0e0;
+            color: #424242;
+          }
+        }
+
+        // Responsive table
+        @media (max-width: 1024px) {
+          .mat-column-id,
+          .mat-column-city,
+          .mat-column-registrationDate {
+            display: none;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .mat-column-country {
+            display: none;
+          }
+        }
+      }
+
+      .no-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px;
+        text-align: center;
+
+        mat-icon {
+          font-size: 4rem;
+          width: 4rem;
+          height: 4rem;
+          color: #ccc;
+          margin-bottom: 16px;
+        }
+
+        h3 {
+          margin: 0 0 8px 0;
+          color: #666;
+        }
+
+        p {
+          margin: 0 0 24px 0;
+          color: #999;
+        }
+      }
+    }
+  }
+
+  // Menu styles
+  .delete-action {
+    color: #f44336 !important;
+
+    mat-icon {
+      color: #f44336 !important;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .header-section {
+      flex-direction: column;
+      align-items: stretch;
+
+      .action-buttons {
+        justify-content: center;
+      }
+    }
+
+    .stats-section {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-section {
+      grid-template-columns: 1fr;
+    }
+
+    .header-section {
+      .action-buttons {
+        flex-direction: column;
+        
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}
+
+// Global snackbar styles
+.success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+} 

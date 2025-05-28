@@ -4,8 +4,13 @@ import { ReservationManagerComponent } from './components/reservation-manager/re
 import { EventSalesReportComponent } from './components/event-sales-report/event-sales-report.component';
 import { TicketValidationComponent } from './components/ticket-validation/ticket-validation.component';
 import { PromotionalTicketFormComponent } from './components/promotional-ticket-form/promotional-ticket-form.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
 
 const routes: Routes = [
+  {
+    path: 'users',
+    component: UserManagementComponent
+  },
   {
     path: 'manage-reservations',
     component: ReservationManagerComponent
@@ -23,10 +28,10 @@ const routes: Routes = [
     path: 'create-promotional-ticket',
     component: PromotionalTicketFormComponent
   },
-  // Podríamos añadir una ruta por defecto para /admin o redirigir
+  // Redirigir por defecto a gestión de usuarios
   {
     path: '',
-    redirectTo: 'manage-reservations',
+    redirectTo: 'users',
     pathMatch: 'full'
   }
 ];

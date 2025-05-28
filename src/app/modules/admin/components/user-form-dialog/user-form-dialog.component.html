@@ -1,0 +1,180 @@
+<div class="user-form-dialog">
+  <div mat-dialog-title class="dialog-header">
+    <div class="title-content">
+      <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+      <h2>{{ isEditMode ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h2>
+    </div>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+      <!-- Información Personal -->
+      <div class="form-section">
+        <h3>
+          <mat-icon>person</mat-icon>
+          Información Personal
+        </h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput 
+                   type="email" 
+                   formControlName="email" 
+                   placeholder="usuario@ejemplo.com">
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+              {{ getErrorMessage('email') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nombre</mat-label>
+            <input matInput 
+                   formControlName="firstName" 
+                   placeholder="Nombre">
+            <mat-error *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
+              {{ getErrorMessage('firstName') }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Apellido</mat-label>
+            <input matInput 
+                   formControlName="lastName" 
+                   placeholder="Apellido">
+            <mat-error *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
+              {{ getErrorMessage('lastName') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>DNI</mat-label>
+            <input matInput 
+                   formControlName="dni" 
+                   placeholder="12345678">
+            <mat-icon matSuffix>badge</mat-icon>
+            <mat-error *ngIf="userForm.get('dni')?.invalid && userForm.get('dni')?.touched">
+              {{ getErrorMessage('dni') }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Contraseña</mat-label>
+            <input matInput 
+                   type="password" 
+                   formControlName="password" 
+                   [placeholder]="isEditMode ? 'Dejar vacío para mantener actual' : 'Mínimo 6 caracteres'">
+            <mat-icon matSuffix>lock</mat-icon>
+            <mat-error *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+              {{ getErrorMessage('password') }}
+            </mat-error>
+            <mat-hint *ngIf="isEditMode">Dejar vacío para mantener la contraseña actual</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Ubicación -->
+      <div class="form-section">
+        <h3>
+          <mat-icon>location_on</mat-icon>
+          Ubicación
+        </h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>País</mat-label>
+            <input matInput 
+                   formControlName="country" 
+                   placeholder="Argentina">
+            <mat-error *ngIf="userForm.get('country')?.invalid && userForm.get('country')?.touched">
+              {{ getErrorMessage('country') }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Ciudad</mat-label>
+            <input matInput 
+                   formControlName="city" 
+                   placeholder="Córdoba">
+            <mat-error *ngIf="userForm.get('city')?.invalid && userForm.get('city')?.touched">
+              {{ getErrorMessage('city') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Teléfono</mat-label>
+            <input matInput 
+                   formControlName="phone" 
+                   placeholder="+54 351 123 4567">
+            <mat-icon matSuffix>phone</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Dirección</mat-label>
+            <input matInput 
+                   formControlName="address" 
+                   placeholder="Calle 123, Barrio">
+            <mat-icon matSuffix>home</mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Rol y Permisos -->
+      <div class="form-section">
+        <h3>
+          <mat-icon>admin_panel_settings</mat-icon>
+          Rol y Permisos
+        </h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Rol del Usuario</mat-label>
+            <mat-select formControlName="roleName">
+              <mat-option *ngFor="let role of availableRoles" [value]="role.value">
+                <div class="role-option">
+                  <span class="role-label">{{ role.label }}</span>
+                  <span class="role-description">{{ role.description }}</span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="userForm.get('roleName')?.invalid && userForm.get('roleName')?.touched">
+              {{ getErrorMessage('roleName') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Descripción del rol seleccionado -->
+        <div class="role-info" *ngIf="userForm.get('roleName')?.value">
+          <mat-icon>info</mat-icon>
+          <p>{{ getRoleDescription(userForm.get('roleName')?.value) }}</p>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button 
+            type="button" 
+            (click)="onCancel()"
+            [disabled]="isLoading">
+      Cancelar
+    </button>
+    
+    <button mat-raised-button 
+            color="primary" 
+            type="submit"
+            (click)="onSubmit()"
+            [disabled]="isLoading || userForm.invalid">
+      <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+      <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+      {{ isEditMode ? 'Actualizar' : 'Crear Usuario' }}
+    </button>
+  </div>
+</div> 
