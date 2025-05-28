@@ -53,7 +53,7 @@ export class UserFormDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: UserFormDialogData
   ) {
     this.isEditMode = data.mode === 'edit';
-    this.userForm = this.createForm();
+    this.userForm = this.initializeForm();
   }
 
   ngOnInit(): void {
@@ -62,40 +62,50 @@ export class UserFormDialogComponent implements OnInit {
     }
   }
 
-  private createForm(): FormGroup {
+  private initializeForm(): FormGroup {
+    const validators: any = {
+      email: [Validators.required, Validators.email],
+      firstName: [Validators.required, Validators.minLength(2)],
+      lastName: [Validators.required, Validators.minLength(2)],
+      dni: [Validators.required, Validators.pattern(/^\d{7,8}$/)],
+      country: [Validators.required],
+      city: [Validators.required],
+      roleName: [Validators.required]
+    };
+
+    // Only require password for new users
+    if (!this.isEditMode) {
+      validators.password = [Validators.required, Validators.minLength(6)];
+    }
+
     return this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: [
-        '', 
-        this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]
-      ],
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
-      country: ['', [Validators.required]],
-      city: ['', [Validators.required]],
+      email: ['', validators.email],
+      password: ['', validators.password || []],
+      firstName: ['', validators.firstName],
+      lastName: ['', validators.lastName],
+      dni: ['', validators.dni],
+      country: ['', validators.country],
+      city: ['', validators.city],
       phone: [''],
       address: [''],
-      roleName: ['COMPRADOR', [Validators.required]]
+      roleName: ['COMPRADOR', validators.roleName]
     });
   }
 
   private populateForm(user: User): void {
-    this.userForm.patchValue({
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      dni: user.dni,
-      country: user.country,
-      city: user.city,
+    const formData = {
+      email: user.email || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      dni: user.dni || '',
+      country: user.country || '',
+      city: user.city || '',
       phone: user.phone || '',
       address: user.address || '',
       roleName: user.roleName || 'COMPRADOR'
-    });
+    };
 
-    // En modo edición, la contraseña es opcional
-    this.userForm.get('password')?.clearValidators();
-    this.userForm.get('password')?.updateValueAndValidity();
+    this.userForm.patchValue(formData);
   }
 
   onSubmit(): void {
@@ -156,7 +166,7 @@ export class UserFormDialogComponent implements OnInit {
       address: formValue.address
     };
 
-    // Solo incluir contraseña si se proporcionó
+    // Only include password if provided
     if (formValue.password && formValue.password.trim()) {
       userData.password = formValue.password;
     }
@@ -181,7 +191,9 @@ export class UserFormDialogComponent implements OnInit {
   private markFormGroupTouched(): void {
     Object.keys(this.userForm.controls).forEach(key => {
       const control = this.userForm.get(key);
-      control?.markAsTouched();
+      if (control) {
+        control.markAsTouched();
+      }
     });
   }
 
@@ -191,17 +203,19 @@ export class UserFormDialogComponent implements OnInit {
 
   getErrorMessage(fieldName: string): string {
     const control = this.userForm.get(fieldName);
-    if (control?.hasError('required')) {
+    if (!control) return '';
+
+    if (control.hasError('required')) {
       return `${this.getFieldLabel(fieldName)} es requerido`;
     }
-    if (control?.hasError('email')) {
+    if (control.hasError('email')) {
       return 'Ingrese un email válido';
     }
-    if (control?.hasError('minlength')) {
-      const minLength = control.errors?.['minlength']?.requiredLength;
-      return `Mínimo ${minLength} caracteres`;
+    if (control.hasError('minlength')) {
+      const requiredLength = control.errors?.['minlength']?.requiredLength;
+      return `Mínimo ${requiredLength} caracteres`;
     }
-    if (control?.hasError('pattern')) {
+    if (control.hasError('pattern')) {
       if (fieldName === 'dni') {
         return 'DNI debe tener 7 u 8 dígitos';
       }

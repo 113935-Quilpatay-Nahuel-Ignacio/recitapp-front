@@ -66,7 +66,6 @@ export class UserManagementComponent implements OnInit {
     'lastName',
     'roleName',
     'country',
-    'city',
     'registrationDate',
     'active',
     'actions'
