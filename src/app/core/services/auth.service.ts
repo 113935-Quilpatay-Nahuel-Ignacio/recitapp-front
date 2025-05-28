@@ -57,13 +57,26 @@ export class AuthService {
     }
 
     const token = this.getToken();
+    const refreshToken = this.getRefreshToken();
     const user = this.getStoredUser();
 
     if (token && user && this.isTokenValid(token)) {
       this.currentUserSubject.next(user);
       this.isAuthenticatedSubject.next(true);
       this.scheduleTokenRefresh();
+    } else if (refreshToken && user) {
+      // Si el token expiró pero tenemos refresh token, intentar renovar
+      this.refreshToken().subscribe({
+        next: () => {
+          // Token renovado exitosamente
+        },
+        error: () => {
+          // Error al renovar, limpiar datos
+          this.clearAuthData();
+        }
+      });
     } else {
+      // No hay tokens válidos, limpiar datos
       this.clearAuthData();
     }
   }

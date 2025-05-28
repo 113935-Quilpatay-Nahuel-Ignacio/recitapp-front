@@ -27,7 +27,7 @@ export class RegisterComponent implements OnInit {
 
     // Redirigir si ya está autenticado
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/events']);
     }
   }
 
@@ -154,7 +154,7 @@ export class RegisterComponent implements OnInit {
         next: () => {
           this.successMessage = 'Cuenta creada exitosamente. Redirigiendo...';
           setTimeout(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/events']);
           }, 2000);
         },
         error: (error) => {

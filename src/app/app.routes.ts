@@ -46,7 +46,7 @@ import { NotificationPreferencesComponent } from './modules/notification/pages/n
 
 export const routes: Routes = [
   // Default route
-  { path: '', redirectTo: '/events', pathMatch: 'full' },
+  { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
 
   // Auth routes (lazy loaded)
   {
@@ -209,5 +209,5 @@ export const routes: Routes = [
   // },
 
   // Wildcard route for 404
-  { path: '**', redirectTo: '/events' },
+  { path: '**', redirectTo: '/auth/login' },
 ];

@@ -47,29 +47,31 @@ function isAuthUrl(url: string): boolean {
 }
 
 function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, authService: AuthService): Observable<any> {
+  const refreshToken = authService.getRefreshToken();
+  
+  // Si no hay refresh token, no intentar renovar, simplemente hacer logout silencioso
+  if (!refreshToken) {
+    isRefreshing = false;
+    authService.logout().subscribe(); // Logout silencioso
+    return throwError(() => new Error('Authentication required'));
+  }
+
   if (!isRefreshing) {
     isRefreshing = true;
     refreshTokenSubject.next(null);
-
-    const refreshToken = authService.getRefreshToken();
     
-    if (refreshToken) {
-      return authService.refreshToken().pipe(
-        switchMap((response: any) => {
-          isRefreshing = false;
-          refreshTokenSubject.next(response.token);
-          return next(addTokenHeader(request, response.token));
-        }),
-        catchError((error) => {
-          isRefreshing = false;
-          authService.logout();
-          return throwError(() => error);
-        })
-      );
-    } else {
-      authService.logout();
-      return throwError(() => new Error('No refresh token available'));
-    }
+    return authService.refreshToken().pipe(
+      switchMap((response: any) => {
+        isRefreshing = false;
+        refreshTokenSubject.next(response.token);
+        return next(addTokenHeader(request, response.token));
+      }),
+      catchError((error) => {
+        isRefreshing = false;
+        authService.logout().subscribe(); // Logout silencioso
+        return throwError(() => error);
+      })
+    );
   }
 
   return refreshTokenSubject.pipe(
