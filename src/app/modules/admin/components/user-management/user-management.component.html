@@ -213,7 +213,7 @@
               <div class="actions-cell">
                 <button mat-icon-button 
                         (click)="openUserDetailDialog(user)"
-                        matTooltip="Ver detalles"
+                        matTooltip="Ver detalles del usuario"
                         class="action-btn view-btn">
                   <mat-icon>visibility</mat-icon>
                 </button>
@@ -226,29 +226,11 @@
                 </button>
 
                 <button mat-icon-button 
-                        [matMenuTriggerFor]="userMenu"
-                        matTooltip="Más opciones"
-                        class="action-btn menu-btn">
-                  <mat-icon>more_vert</mat-icon>
+                        (click)="deleteUser(user)"
+                        matTooltip="Eliminar usuario"
+                        class="action-btn delete-btn">
+                  <mat-icon>delete</mat-icon>
                 </button>
-
-                <mat-menu #userMenu="matMenu" class="user-menu">
-                  <button mat-menu-item (click)="openUserDetailDialog(user)">
-                    <mat-icon>visibility</mat-icon>
-                    <span>Ver detalles</span>
-                  </button>
-                  <button mat-menu-item (click)="openEditUserDialog(user)">
-                    <mat-icon>edit</mat-icon>
-                    <span>Editar</span>
-                  </button>
-                  <mat-divider></mat-divider>
-                  <button mat-menu-item 
-                          (click)="deleteUser(user)"
-                          class="delete-menu-item">
-                    <mat-icon>delete</mat-icon>
-                    <span>Eliminar</span>
-                  </button>
-                </mat-menu>
               </div>
             </td>
           </ng-container>

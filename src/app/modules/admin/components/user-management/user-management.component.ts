@@ -15,7 +15,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 
@@ -47,7 +46,6 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../shared/co
     MatDialogModule,
     MatSnackBarModule,
     MatTooltipModule,
-    MatMenuModule,
     MatProgressSpinnerModule,
     MatDividerModule,
     FilterPipe
