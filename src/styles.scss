@@ -1,5 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
 
+// Importar Angular Material Core ANTES que Bootstrap
+@use '@angular/material' as mat;
+
+// Configurar tema Material personalizado
+@include mat.core();
+
+$custom-primary: mat.define-palette(mat.$green-palette, 500);
+$custom-accent: mat.define-palette(mat.$green-palette, A200, A100, A400);
+$custom-warn: mat.define-palette(mat.$red-palette);
+
+$custom-theme: mat.define-dark-theme((
+  color: (
+    primary: $custom-primary,
+    accent: $custom-accent,
+    warn: $custom-warn,
+  )
+));
+
+@include mat.all-component-themes($custom-theme);
+
 // Color variables for the dark theme with green accents
 :root {
   --primary-green: #22c55e;
@@ -21,13 +41,291 @@ html, body {
   height: 100%; 
   background-color: var(--dark-bg);
   color: var(--dark-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "liga" 1;
 }
 
 body { 
   margin: 0; 
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
   background-color: var(--dark-bg);
   color: var(--dark-text);
+}
+
+// Material Design Form Field Fixes - ALTA PRIORIDAD
+::ng-deep {
+  // Configuración general para Material Form Fields
+  .mat-mdc-form-field {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    
+    .mdc-text-field {
+      background-color: rgba(255, 255, 255, 0.03) !important;
+      border-radius: 6px !important;
+    }
+    
+    .mdc-text-field--outlined .mdc-notched-outline {
+      border-color: #555555 !important;
+    }
+    
+    .mdc-text-field--focused .mdc-notched-outline {
+      border-color: #4CAF50 !important;
+      border-width: 2px !important;
+    }
+    
+    .mdc-floating-label {
+      color: #b0b0b0 !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    .mdc-text-field--focused .mdc-floating-label {
+      color: #4CAF50 !important;
+    }
+    
+    .mdc-text-field__input {
+      color: #e0e0e0 !important;
+      caret-color: #4CAF50 !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      
+      &::placeholder {
+        color: #888888 !important;
+        opacity: 1 !important;
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      }
+    }
+    
+    .mat-mdc-select-value {
+      color: #e0e0e0 !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    .mat-mdc-select-arrow {
+      color: #b0b0b0 !important;
+    }
+    
+    // Error states
+    &.mat-form-field-invalid {
+      .mdc-notched-outline {
+        border-color: #f44336 !important;
+      }
+      
+      .mdc-floating-label {
+        color: #f44336 !important;
+      }
+    }
+    
+    .mat-mdc-form-field-error {
+      color: #f44336 !important;
+      font-size: 0.75rem !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    .mat-mdc-form-field-hint {
+      color: #888888 !important;
+      font-size: 0.75rem !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    // Icons
+    mat-icon {
+      color: #b0b0b0 !important;
+    }
+  }
+  
+  // Select options styling
+  .mat-mdc-option {
+    color: #e0e0e0 !important;
+    background-color: #3a3a42 !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    
+    &:hover {
+      background-color: rgba(76, 175, 80, 0.1) !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: rgba(76, 175, 80, 0.2) !important;
+      color: #ffffff !important;
+    }
+    
+    .mdc-list-item__primary-text {
+      color: inherit !important;
+      font-size: 14px !important;
+    }
+  }
+  
+  .mat-mdc-select-panel {
+    background-color: #3a3a42 !important;
+    border-radius: 6px !important;
+    
+    .mat-mdc-option {
+      padding: 0 16px !important;
+      font-size: 14px !important;
+    }
+  }
+  
+  // Mejorar el centrado específico para mat-select
+  .mat-mdc-select {
+    .mat-mdc-select-value {
+      display: flex !important;
+      align-items: center !important;
+      min-height: 1.5em !important;
+      color: #e0e0e0 !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    .mat-mdc-select-placeholder {
+      color: #888888 !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+    
+    .mat-mdc-select-value-text {
+      display: flex !important;
+      align-items: center !important;
+      color: #ffffff !important;
+    }
+  }
+  
+  // Button fixes
+  .mat-mdc-button {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    
+    &.mat-primary {
+      --mdc-text-button-label-text-color: #4CAF50;
+      
+      &:not(:disabled):hover {
+        background-color: rgba(76, 175, 80, 0.1);
+      }
+    }
+  }
+  
+  .mat-mdc-raised-button {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    
+    &.mat-primary {
+      --mdc-filled-button-container-color: #4CAF50;
+      --mdc-filled-button-label-text-color: #ffffff;
+      
+      &:not(:disabled):hover {
+        --mdc-filled-button-container-color: #45a049;
+      }
+    }
+  }
+  
+  // Tooltip fixes
+  .mat-mdc-tooltip {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
+  
+  // Menu fixes
+  .mat-mdc-menu-panel {
+    background-color: #3a3a42 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+    
+    .mat-mdc-menu-item {
+      color: #e0e0e0 !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      
+      &:hover {
+        background-color: rgba(76, 175, 80, 0.15) !important;
+      }
+      
+      &.delete-menu-item {
+        color: #ef5350 !important;
+        
+        &:hover {
+          background-color: rgba(244, 67, 54, 0.15) !important;
+        }
+      }
+    }
+  }
+  
+  // Snackbar fixes
+  .mat-mdc-snack-bar-container {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    
+    &.success-snackbar {
+      --mdc-snackbar-container-color: #4CAF50 !important;
+      --mdc-snackbar-supporting-text-color: #ffffff !important;
+    }
+    
+    &.error-snackbar {
+      --mdc-snackbar-container-color: #f44336 !important;
+      --mdc-snackbar-supporting-text-color: #ffffff !important;
+    }
+  }
+  
+  // Table fixes
+  .mat-mdc-table {
+    background-color: transparent !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    
+    .mat-mdc-header-cell {
+      background-color: #42424a !important;
+      color: #e0e0e0 !important;
+      font-weight: 600 !important;
+      border-bottom: 1px solid #505058 !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    .mat-mdc-cell {
+      color: #d0d0d0 !important;
+      border-bottom: 1px solid #45454d !important;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    .mat-mdc-row:hover {
+      background-color: rgba(76, 175, 80, 0.08) !important;
+    }
+  }
+  
+  // Paginator fixes
+  .mat-mdc-paginator {
+    background-color: #3a3a42 !important;
+    color: #ffffff !important;
+    border-top: 1px solid #4a4a52 !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    
+    .mat-mdc-paginator-range-label {
+      color: #b0b0b0 !important;
+    }
+    
+    .mat-mdc-icon-button {
+      color: #b0b0b0 !important;
+    }
+    
+    .mat-mdc-select {
+      .mat-mdc-select-value,
+      .mat-mdc-select-arrow {
+        color: #b0b0b0 !important;
+      }
+    }
+  }
+  
+  // Spinner fixes
+  .mat-mdc-progress-spinner circle {
+    stroke: #4CAF50 !important;
+  }
+  
+  // Dialog fixes
+  .mat-mdc-dialog-container {
+    background-color: #2c2c34 !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
+  
+  .mat-mdc-dialog-title {
+    color: #ffffff !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
 }
 
 // Override Bootstrap styles for dark theme

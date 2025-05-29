@@ -87,7 +87,6 @@ export class UserManagementComponent implements OnInit {
     this.filterForm = this.fb.group({
       search: [''],
       role: [''],
-      country: [''],
       active: ['']
     });
   }
@@ -137,10 +136,9 @@ export class UserManagementComponent implements OnInit {
         data.dni?.toLowerCase().includes(filterObj.search.toLowerCase());
 
       const roleMatch = !filterObj.role || data.roleName === filterObj.role;
-      const countryMatch = !filterObj.country || data.country?.toLowerCase().includes(filterObj.country.toLowerCase());
       const activeMatch = filterObj.active === '' || data.active?.toString() === filterObj.active;
 
-      return searchMatch && roleMatch && countryMatch && activeMatch;
+      return searchMatch && roleMatch && activeMatch;
     };
   }
 

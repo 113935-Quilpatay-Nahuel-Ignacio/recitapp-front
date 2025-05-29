@@ -17,7 +17,10 @@
         Exportar
       </button>
       
-      <button mat-icon-button (click)="refreshUsers()" matTooltip="Actualizar">
+      <button mat-icon-button 
+              (click)="refreshUsers()" 
+              matTooltip="Actualizar lista de usuarios"
+              class="refresh-button">
         <mat-icon>refresh</mat-icon>
       </button>
     </div>
@@ -77,8 +80,12 @@
       <div class="filters-row">
         <mat-form-field appearance="outline" class="filter-field search-field">
           <mat-label>Buscar</mat-label>
-          <input matInput formControlName="search" placeholder="Email, nombre, apellido o DNI">
+          <input matInput 
+                 formControlName="search" 
+                 placeholder=""
+                 autocomplete="off">
           <mat-icon matSuffix>search</mat-icon>
+          <mat-hint>Email, nombre, apellido o DNI</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
@@ -89,11 +96,6 @@
               {{ role.label }}
             </mat-option>
           </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>País</mat-label>
-          <input matInput formControlName="country" placeholder="Filtrar por país">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
