@@ -262,9 +262,11 @@ export class UserManagementComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '500px',
-      maxWidth: '90vw',
-      data: dialogData
+      width: '650px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: dialogData,
+      panelClass: 'confirm-dialog-container'
     });
 
     dialogRef.afterClosed().subscribe(confirmed => {
@@ -285,9 +287,11 @@ export class UserManagementComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      maxWidth: '90vw',
-      data: dialogData
+      width: '550px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: dialogData,
+      panelClass: 'confirm-dialog-container'
     });
 
     dialogRef.afterClosed().subscribe(confirmed => {
