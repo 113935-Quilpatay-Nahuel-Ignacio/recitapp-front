@@ -12,7 +12,7 @@ export interface User {
   roleName?: string;
   role?: Role;
   authMethod?: string;
-  active?: boolean;
+  active?: boolean | number;
   walletBalance?: number;
   lastConnection?: Date;
   phone?: string;

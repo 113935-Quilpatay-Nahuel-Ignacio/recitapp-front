@@ -136,7 +136,21 @@ export class UserManagementComponent implements OnInit {
         data.dni?.toLowerCase().includes(filterObj.search.toLowerCase());
 
       const roleMatch = !filterObj.role || data.roleName === filterObj.role;
-      const activeMatch = filterObj.active === '' || data.active?.toString() === filterObj.active;
+      
+      // Manejar active como número (1 = activo, 0 = inactivo)
+      let activeMatch = true;
+      if (filterObj.active !== '') {
+        const filterValue = filterObj.active;
+        const userActive = data.active;
+        
+        if (filterValue === '1') {
+          // Filtrar por activos
+          activeMatch = userActive === 1 || userActive === true;
+        } else if (filterValue === '0') {
+          // Filtrar por inactivos
+          activeMatch = userActive === 0 || userActive === false || !userActive;
+        }
+      }
 
       return searchMatch && roleMatch && activeMatch;
     };
@@ -321,6 +335,21 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
+  // Función para convertir el valor active a boolean
+  isUserActive(user: User): boolean {
+    return user.active === 1 || user.active === true;
+  }
+
+  // Función para obtener el texto del estado
+  getStatusText(user: User): string {
+    return this.isUserActive(user) ? 'Activo' : 'Inactivo';
+  }
+
+  // Función para obtener el ícono del estado
+  getStatusIcon(user: User): string {
+    return this.isUserActive(user) ? 'check_circle' : 'cancel';
+  }
+
   exportUsers(): void {
     // Implementación básica de exportación
     const csvData = this.dataSource.data.map(user => ({
@@ -333,7 +362,7 @@ export class UserManagementComponent implements OnInit {
       Ciudad: user.city,
       Rol: this.getRoleLabel(user.roleName || ''),
       'Fecha Registro': user.registrationDate ? new Date(user.registrationDate).toLocaleDateString() : '',
-      Estado: user.active ? 'Activo' : 'Inactivo'
+      Estado: this.getStatusText(user)
     }));
 
     const headers = Object.keys(csvData[0] || {});

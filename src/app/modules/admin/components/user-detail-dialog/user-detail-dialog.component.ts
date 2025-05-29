@@ -160,6 +160,21 @@ export class UserDetailDialogComponent implements OnInit {
     }
   }
 
+  // Función para convertir el valor active a boolean
+  isUserActive(user: User): boolean {
+    return user.active === 1 || user.active === true;
+  }
+
+  // Función para obtener el texto del estado
+  getStatusText(user: User): string {
+    return this.isUserActive(user) ? 'Activo' : 'Inactivo';
+  }
+
+  // Función para obtener el ícono del estado
+  getStatusIcon(user: User): string {
+    return this.isUserActive(user) ? 'check_circle' : 'cancel';
+  }
+
   formatDate(date: Date | string | undefined): string {
     if (!date) return 'No disponible';
     const dateObj = typeof date === 'string' ? new Date(date) : date;

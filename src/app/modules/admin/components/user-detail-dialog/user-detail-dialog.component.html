@@ -11,9 +11,9 @@
       <mat-chip [color]="getRoleColor(user.roleName || '')">
         {{ getRoleLabel(user.roleName || '') }}
       </mat-chip>
-      <mat-chip [color]="user.active ? 'primary' : ''">
-        <mat-icon>{{ user.active ? 'check_circle' : 'cancel' }}</mat-icon>
-        {{ user.active ? 'Activo' : 'Inactivo' }}
+      <mat-chip [color]="isUserActive(user) ? 'primary' : ''">
+        <mat-icon>{{ getStatusIcon(user) }}</mat-icon>
+        {{ getStatusText(user) }}
       </mat-chip>
     </div>
   </div>
