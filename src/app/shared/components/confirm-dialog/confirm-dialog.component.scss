@@ -97,9 +97,8 @@
           gap: 12px;
           margin-bottom: 12px;
           padding: 16px;
-          background-color: rgba(255, 152, 0, 0.1);
           border-radius: 8px;
-          border-left: 3px solid #FF9800;
+          border-left: 4px solid;
           word-wrap: break-word;
           overflow-wrap: break-word;
 
@@ -108,7 +107,6 @@
           }
 
           mat-icon {
-            color: #FF9800;
             font-size: 1.125rem;
             width: 1.125rem;
             height: 1.125rem;
@@ -117,7 +115,6 @@
           }
 
           .detail-text {
-            color: #e0e0e0;
             font-size: 0.95rem;
             line-height: 1.5;
             font-family: 'Inter', sans-serif;
@@ -125,6 +122,50 @@
             white-space: normal;
             word-break: break-word;
             hyphens: auto;
+          }
+
+          // Advertencias críticas (rojo)
+          &.warning-critical {
+            background-color: rgba(244, 67, 54, 0.15);
+            border-left-color: #F44336;
+
+            mat-icon {
+              color: #F44336;
+            }
+
+            .detail-text {
+              color: #ffcdd2;
+              font-weight: 600;
+            }
+          }
+
+          // Advertencias altas (naranja intenso)
+          &.warning-high {
+            background-color: rgba(255, 152, 0, 0.15);
+            border-left-color: #FF9800;
+
+            mat-icon {
+              color: #FF9800;
+            }
+
+            .detail-text {
+              color: #ffe0b2;
+              font-weight: 500;
+            }
+          }
+
+          // Advertencias normales (amarillo/naranja suave)
+          &.warning-normal {
+            background-color: rgba(255, 193, 7, 0.12);
+            border-left-color: #FFC107;
+
+            mat-icon {
+              color: #FFC107;
+            }
+
+            .detail-text {
+              color: #e0e0e0;
+            }
           }
         }
       }
@@ -156,7 +197,7 @@
     background-color: #3a3a42;
     display: flex;
     justify-content: flex-end;
-    gap: 16px;
+    gap: 20px;
 
     button {
       display: flex;
@@ -178,13 +219,13 @@
       }
 
       &.cancel-btn {
-        color: #b0b0b0;
+        color: #ffffff;
         background: transparent;
-        border: 2px solid #666666;
+        border: 2px solid #888888;
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.1);
-          border-color: #888888;
+          background-color: rgba(255, 255, 255, 0.15);
+          border-color: #aaaaaa;
           color: #ffffff;
           transform: translateY(-1px);
         }
@@ -200,7 +241,7 @@
             background-color: #d32f2f;
             border-color: #d32f2f;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
           }
         }
 
@@ -237,7 +278,7 @@
 
     @media (max-width: 600px) {
       flex-direction: column-reverse;
-      gap: 12px;
+      gap: 16px;
       
       button {
         width: 100%;

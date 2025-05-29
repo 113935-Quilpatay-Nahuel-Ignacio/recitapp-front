@@ -19,8 +19,10 @@
         Detalles importantes:
       </h4>
       <div class="details-list">
-        <div *ngFor="let detail of data.details" class="detail-item">
-          <mat-icon>error_outline</mat-icon>
+        <div *ngFor="let detail of data.details" 
+             class="detail-item" 
+             [class]="getWarningClass(detail)">
+          <mat-icon>warning</mat-icon>
           <span class="detail-text">{{ detail }}</span>
         </div>
       </div>

@@ -57,9 +57,28 @@ export class ConfirmDialogComponent {
       case 'danger':
         return 'warn';
       case 'warning':
-        return 'accent';
+        return 'warn';
       default:
         return 'primary';
     }
+  }
+
+  getWarningClass(detail: string): string {
+    const detailLower = detail.toLowerCase();
+    
+    if (detailLower.includes('rol privilegiado') || 
+        detailLower.includes('admin') || 
+        detailLower.includes('moderador') ||
+        detailLower.includes('¡atención!')) {
+      return 'warning-critical';
+    }
+    
+    if (detailLower.includes('transacciones') || 
+        detailLower.includes('tickets') ||
+        detailLower.includes('historial')) {
+      return 'warning-high';
+    }
+    
+    return 'warning-normal';
   }
 } 

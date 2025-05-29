@@ -644,12 +644,12 @@ footer {
       transition: all 0.2s ease-in-out !important;
       
       &.cancel-btn {
-        color: #b0b0b0 !important;
-        border: 2px solid #666666 !important;
+        color: #ffffff !important;
+        border: 2px solid #888888 !important;
         
         &:hover {
-          background-color: rgba(255, 255, 255, 0.1) !important;
-          border-color: #888888 !important;
+          background-color: rgba(255, 255, 255, 0.15) !important;
+          border-color: #aaaaaa !important;
           color: #ffffff !important;
           transform: translateY(-1px) !important;
         }
@@ -668,7 +668,7 @@ footer {
           background-color: #d32f2f !important;
           border-color: #d32f2f !important;
           transform: translateY(-1px) !important;
-          box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3) !important;
+          box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4) !important;
         }
       }
       
@@ -705,6 +705,48 @@ footer {
       overflow-wrap: break-word !important;
       white-space: normal !important;
       hyphens: auto !important;
+    }
+    
+    // Jerarquía de advertencias
+    .warning-critical {
+      background-color: rgba(244, 67, 54, 0.15) !important;
+      border-left-color: #F44336 !important;
+      
+      mat-icon {
+        color: #F44336 !important;
+      }
+      
+      .detail-text {
+        color: #ffcdd2 !important;
+        font-weight: 600 !important;
+      }
+    }
+    
+    .warning-high {
+      background-color: rgba(255, 152, 0, 0.15) !important;
+      border-left-color: #FF9800 !important;
+      
+      mat-icon {
+        color: #FF9800 !important;
+      }
+      
+      .detail-text {
+        color: #ffe0b2 !important;
+        font-weight: 500 !important;
+      }
+    }
+    
+    .warning-normal {
+      background-color: rgba(255, 193, 7, 0.12) !important;
+      border-left-color: #FFC107 !important;
+      
+      mat-icon {
+        color: #FFC107 !important;
+      }
+      
+      .detail-text {
+        color: #e0e0e0 !important;
+      }
     }
     
     // Contenido del diálogo
