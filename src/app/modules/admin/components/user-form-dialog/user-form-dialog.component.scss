@@ -174,24 +174,6 @@
   }
 }
 
-// Role option styling
-.role-option {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  .role-label {
-    font-weight: 500;
-    color: #ffffff;
-  }
-
-  .role-description {
-    font-size: 0.75rem;
-    color: #b0b0b0;
-    line-height: 1.2;
-  }
-}
-
 // Form field customizations
 mat-form-field {
   width: 100%;
@@ -261,6 +243,11 @@ mat-form-field {
     .mat-mdc-option {
       color: #ffffff;
       background-color: #3a3a42;
+      font-size: 14px;
+      padding: 12px 16px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
 
       &:hover {
         background-color: rgba(76, 175, 80, 0.1);
@@ -269,20 +256,11 @@ mat-form-field {
       &.mdc-list-item--selected {
         background-color: rgba(76, 175, 80, 0.2);
       }
-
-      .role-option {
-        .role-label {
-          color: #ffffff;
-        }
-
-        .role-description {
-          color: #b0b0b0;
-        }
-      }
     }
 
     .mat-mdc-select-panel {
       background-color: #3a3a42;
+      border-radius: 6px;
     }
   }
 

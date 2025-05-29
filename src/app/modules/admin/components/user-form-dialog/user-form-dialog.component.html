@@ -138,15 +138,13 @@
             <mat-label>Rol del Usuario</mat-label>
             <mat-select formControlName="roleName">
               <mat-option *ngFor="let role of availableRoles" [value]="role.value">
-                <div class="role-option">
-                  <span class="role-label">{{ role.label }}</span>
-                  <span class="role-description">{{ role.description }}</span>
-                </div>
+                {{ role.label }}
               </mat-option>
             </mat-select>
             <mat-error *ngIf="userForm.get('roleName')?.invalid && userForm.get('roleName')?.touched">
               {{ getErrorMessage('roleName') }}
             </mat-error>
+            <mat-hint>Selecciona el tipo de usuario y sus permisos</mat-hint>
           </mat-form-field>
         </div>
 
