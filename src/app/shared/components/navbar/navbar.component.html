@@ -1,107 +1,118 @@
 <!-- src/app/shared/components/navbar/navbar.component.html -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" routerLink="/">RecitApp</a>
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" routerLink="/">
+            <i class="fas fa-music me-2"></i>
+            <span>RecitApp</span>
+        </a>
+
+        <!-- Mobile Toggle -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
             aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarMain">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- Left Navigation - Public Links -->
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/artists" routerLinkActive="active">Artistas</a>
+                    <a class="nav-link" routerLink="/artists" routerLinkActive="active">
+                        <i class="fas fa-microphone me-1"></i>
+                        <span>Artistas</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/events" routerLinkActive="active">Eventos</a>
+                    <a class="nav-link" routerLink="/events" routerLinkActive="active">
+                        <i class="fas fa-calendar-alt me-1"></i>
+                        <span>Eventos</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/venues" routerLinkActive="active">Recintos</a>
+                    <a class="nav-link" routerLink="/venues" routerLinkActive="active">
+                        <i class="fas fa-building me-1"></i>
+                        <span>Recintos</span>
+                    </a>
                 </li>
                 
-                <!-- Enlaces para usuarios autenticados con roles específicos -->
-                <li class="nav-item" *ngIf="isEventRegistrar">
-                    <a class="nav-link" routerLink="/events/new" routerLinkActive="active">Crear Evento</a>
-                </li>
-                <li class="nav-item" *ngIf="isEventRegistrar">
-                    <a class="nav-link" routerLink="/artists/management" routerLinkActive="active">Gestión Artistas</a>
+                <!-- Creator Links - Only for Event Registrars and Admins -->
+                <li class="nav-item dropdown" *ngIf="isEventRegistrar">
+                    <a class="nav-link dropdown-toggle" href="#" id="creatorDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-plus-circle me-1"></i>
+                        <span>Crear</span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="creatorDropdown">
+                        <li><a class="dropdown-item" routerLink="/events/new" routerLinkActive="active">
+                            <i class="fas fa-calendar-plus me-2"></i>Nuevo Evento
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/venues/new" routerLinkActive="active">
+                            <i class="fas fa-building me-2"></i>Nuevo Recinto
+                        </a></li>
+                        <li *ngIf="isEventRegistrar"><hr class="dropdown-divider"></li>
+                        <li *ngIf="isEventRegistrar"><a class="dropdown-item" routerLink="/artists/management" routerLinkActive="active">
+                            <i class="fas fa-users-cog me-2"></i>Gestión Artistas
+                        </a></li>
+                    </ul>
                 </li>
             </ul>
 
+            <!-- Right Navigation - User Area -->
             <ul class="navbar-nav">
-                <!-- Menú desplegable Gestión de Pagos - Solo usuarios autenticados -->
+                <!-- Payment Management - Only for authenticated users -->
                 <li class="nav-item dropdown" *ngIf="isAuthenticated">
                     <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        Gestión de Pagos
+                        <i class="fas fa-credit-card me-1"></i>
+                        <span class="d-none d-lg-inline">Pagos</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="paymentsDropdown">
-                        <li><a class="dropdown-item" routerLink="/transactions/history" routerLinkActive="active">Historial de Transacciones</a></li>
-                        <li><a class="dropdown-item" routerLink="/transactions/payment" routerLinkActive="active">Realizar Pago</a></li>
-                        <li><a class="dropdown-item" routerLink="/transactions/wallet" routerLinkActive="active">Billetera Virtual</a></li>
+                        <li><h6 class="dropdown-header">Transacciones</h6></li>
+                        <li><a class="dropdown-item" routerLink="/transactions/history" routerLinkActive="active">
+                            <i class="fas fa-history me-2"></i>Historial
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/transactions/payment" routerLinkActive="active">
+                            <i class="fas fa-credit-card me-2"></i>Realizar Pago
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/transactions/wallet" routerLinkActive="active">
+                            <i class="fas fa-wallet me-2"></i>Billetera
+                        </a></li>
                         <li *ngIf="isAdmin"><hr class="dropdown-divider"></li>
-                        <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/report" routerLinkActive="active">Reporte de Transacciones</a></li>
-                        <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/manage-payment-methods" routerLinkActive="active">Administrar Métodos de Pago</a></li>
-                    </ul>
-                </li>
-
-                <!-- Menú desplegable Mi Cuenta - Solo usuarios autenticados -->
-                <li class="nav-item dropdown" *ngIf="isAuthenticated">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ userDisplayName || 'Mi cuenta' }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><h6 class="dropdown-header">{{ currentUser?.email }}</h6></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/user/profile">
-                            <i class="fas fa-user me-2"></i>Perfil
+                        <li *ngIf="isAdmin"><h6 class="dropdown-header">Administración</h6></li>
+                        <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/report" routerLinkActive="active">
+                            <i class="fas fa-chart-line me-2"></i>Reportes
                         </a></li>
-                        <li><a class="dropdown-item" routerLink="/user/purchases">
-                            <i class="fas fa-shopping-bag me-2"></i>Mis compras
-                        </a></li>
-                        <li><a class="dropdown-item" routerLink="/tickets">
-                            <i class="fas fa-ticket-alt me-2"></i>Mis entradas
-                        </a></li>
-                        <li><a class="dropdown-item" routerLink="/user/following">
-                            <i class="fas fa-heart me-2"></i>Mis seguimientos
-                        </a></li>
-                        <li><a class="dropdown-item" routerLink="/notifications">
-                            <i class="fas fa-bell me-2"></i>Notificaciones
-                        </a></li>
-                        <li><a class="dropdown-item" routerLink="/user/preferences">
-                            <i class="fas fa-cog me-2"></i>Preferencias
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" (click)="logout()">
-                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+                        <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/transactions/manage-payment-methods" routerLinkActive="active">
+                            <i class="fas fa-cogs me-2"></i>Métodos de Pago
                         </a></li>
                     </ul>
                 </li>
 
-                <!-- Menú desplegable Admin - Solo administradores -->
+                <!-- Admin Menu - Only for administrators -->
                 <li class="nav-item dropdown" *ngIf="isAdmin">
-                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                    <a class="nav-link dropdown-toggle admin-link" href="#" id="adminDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-cog me-1"></i>Admin
+                        <i class="fas fa-shield-alt me-1"></i>
+                        <span class="d-none d-lg-inline">Admin</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                        <li><h6 class="dropdown-header">Panel de Control</h6></li>
                         <li><a class="dropdown-item" routerLink="/admin/dashboard">
                             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                         </a></li>
                         <li><a class="dropdown-item" routerLink="/admin/users">
                             <i class="fas fa-users me-2"></i>Usuarios
                         </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Configuración</h6></li>
                         <li><a class="dropdown-item" routerLink="/admin/genres">
                             <i class="fas fa-music me-2"></i>Géneros Musicales
                         </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/venues/new">
-                            <i class="fas fa-building me-2"></i>Crear Recinto
-                        </a></li>
                         <li><a class="dropdown-item" routerLink="/admin/manage-reservations">
-                            <i class="fas fa-calendar-check me-2"></i>Gestión de Reservas
+                            <i class="fas fa-calendar-check me-2"></i>Reservas
                         </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Reportes y Herramientas</h6></li>
                         <li><a class="dropdown-item" routerLink="/admin/event-sales-report">
                             <i class="fas fa-chart-bar me-2"></i>Reporte de Ventas
                         </a></li>
@@ -114,15 +125,53 @@
                     </ul>
                 </li>
 
-                <!-- Enlaces de autenticación - Solo usuarios no autenticados -->
+                <!-- User Account Menu - Only for authenticated users -->
+                <li class="nav-item dropdown" *ngIf="isAuthenticated">
+                    <a class="nav-link dropdown-toggle user-menu" href="#" id="userDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span class="d-none d-md-inline">{{ userDisplayName || 'Mi cuenta' }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><h6 class="dropdown-header">{{ currentUser?.email }}</h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" routerLink="/user/profile">
+                            <i class="fas fa-user me-2"></i>Mi Perfil
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/user/purchases">
+                            <i class="fas fa-shopping-bag me-2"></i>Mis Compras
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/tickets">
+                            <i class="fas fa-ticket-alt me-2"></i>Mis Entradas
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/user/following">
+                            <i class="fas fa-heart me-2"></i>Mis Seguimientos
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" routerLink="/notifications">
+                            <i class="fas fa-bell me-2"></i>Notificaciones
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/user/preferences">
+                            <i class="fas fa-cog me-2"></i>Configuración
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" (click)="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- Authentication Links - Only for non-authenticated users -->
                 <li class="nav-item" *ngIf="!isAuthenticated">
                     <a class="nav-link" routerLink="/auth/login" routerLinkActive="active">
-                        <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                        <i class="fas fa-sign-in-alt me-1"></i>
+                        <span>Iniciar Sesión</span>
                     </a>
                 </li>
                 <li class="nav-item" *ngIf="!isAuthenticated">
-                    <a class="nav-link" routerLink="/auth/register" routerLinkActive="active">
-                        <i class="fas fa-user-plus me-1"></i>Registrarse
+                    <a class="nav-link btn btn-outline-light ms-2" routerLink="/auth/register" routerLinkActive="active">
+                        <i class="fas fa-user-plus me-1"></i>
+                        <span>Registrarse</span>
                     </a>
                 </li>
             </ul>
