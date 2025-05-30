@@ -257,10 +257,10 @@ export class ArtistFormComponent implements OnInit {
   // Additional method for platform-specific URL validation (could be used in the future)
   validatePlatformUrl(platform: string) {
     return (control: any): { [key: string]: any } | null => {
-      const value = control.value;
-      if (!value) {
-        return null;
-      }
+    const value = control.value;
+    if (!value) {
+      return null;
+    }
 
       let platformPattern: RegExp;
       switch (platform) {

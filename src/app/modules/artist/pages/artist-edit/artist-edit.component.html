@@ -76,8 +76,8 @@
                                                class="form-control form-control-lg"
                                                id="name"
                                                placeholder="Ingresa el nombre del artista"
-                                               [ngClass]="{ 'is-invalid': submitted && f['name'].errors }" />
-                                        <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                                [ngClass]="{ 'is-invalid': submitted && f['name'].errors }" />
+                            <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
                                             <div *ngIf="f['name'].errors['required']">
                                                 <i class="bi bi-exclamation-circle me-1"></i>
                                                 El nombre del artista es obligatorio
@@ -85,9 +85,9 @@
                                             <div *ngIf="f['name'].errors['maxlength']">
                                                 <i class="bi bi-exclamation-circle me-1"></i>
                                                 El nombre no puede exceder los 100 caracteres
-                                            </div>
-                                        </div>
-                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                                     <!-- Profile Image -->
                                     <div class="mb-4">
@@ -103,7 +103,7 @@
                                             <i class="bi bi-info-circle me-1"></i>
                                             URL de una imagen que represente al artista
                                         </small>
-                                    </div>
+                        </div>
 
                                     <!-- Biography -->
                                     <div class="mb-4">
@@ -128,7 +128,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                        </div>
                             </div>
 
                             <!-- Right Column: Social Media Platforms -->
@@ -208,8 +208,8 @@
                                                     <i class="bi bi-exclamation-circle me-1"></i>
                                                     URL inválida. Debe ser una URL válida de SoundCloud.
                                                 </div>
-                                            </div>
-                                        </div>
+                            </div>
+                        </div>
 
                                         <!-- Instagram -->
                                         <div class="col-12">
@@ -233,7 +233,7 @@
                                                     URL inválida. Debe ser una URL válida de Instagram.
                                                 </div>
                                             </div>
-                                        </div>
+                            </div>
 
                                         <!-- Bandcamp -->
                                         <div class="col-12">
@@ -272,17 +272,17 @@
                                         <button type="button" 
                                                 class="btn btn-outline-secondary px-4"
                                                 [routerLink]="['/artists', artistId]"
-                                                [disabled]="loading">
+                                [disabled]="loading">
                                             <i class="bi bi-x-lg me-1"></i>
                                             Cancelar
-                                        </button>
+                            </button>
                                         <button type="submit" 
                                                 class="btn btn-warning px-4" 
                                                 [disabled]="loading || artistForm.invalid">
-                                            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
                                             <i *ngIf="!loading" class="bi bi-check-lg me-2"></i>
-                                            Guardar cambios
-                                        </button>
+                                Guardar cambios
+                            </button>
                                     </div>
                                 </div>
                             </div>
