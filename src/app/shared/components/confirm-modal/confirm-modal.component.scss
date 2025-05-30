@@ -1,0 +1,377 @@
+.confirm-modal {
+  background-color: #2c2c34;
+  color: #ffffff;
+  min-width: 500px;
+  max-width: 100%;
+  border-radius: 8px;
+
+  .dialog-header {
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #404040;
+    background-color: #3a3a42;
+    margin-bottom: 0;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      mat-icon {
+        font-size: 1.75rem;
+        width: 1.75rem;
+        height: 1.75rem;
+
+        &.icon--info {
+          color: #2196F3;
+        }
+
+        &.icon--warning {
+          color: #FF9800;
+        }
+
+        &.icon--danger {
+          color: #F44336;
+        }
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #ffffff;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.025em;
+      }
+    }
+  }
+
+  .dialog-content {
+    padding: 24px;
+    background-color: #2c2c34;
+    max-height: 60vh;
+    overflow-y: auto;
+
+    .main-message {
+      margin-bottom: 24px;
+      padding: 16px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid #FF9800;
+
+      .message {
+        margin: 0;
+        color: #ffffff;
+        line-height: 1.6;
+        font-size: 1.1rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        text-align: center;
+        white-space: pre-wrap;
+      }
+    }
+
+    .details {
+      h4 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 16px 0;
+        color: #FF9800;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        mat-icon {
+          font-size: 1.25rem;
+          width: 1.25rem;
+          height: 1.25rem;
+          color: #FF9800;
+        }
+      }
+
+      .details-list {
+        .detail-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 16px;
+          margin-bottom: 12px;
+          background-color: rgba(255, 255, 255, 0.03);
+          border-radius: 8px;
+          border-left: 3px solid transparent;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          mat-icon {
+            font-size: 1.125rem;
+            width: 1.125rem;
+            height: 1.125rem;
+            margin-top: 2px;
+          }
+
+          .detail-text {
+            flex: 1;
+            color: #e0e0e0;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+          }
+
+          &.warning-critical {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #F44336;
+
+            mat-icon {
+              color: #F44336;
+            }
+
+            .detail-text {
+              color: #ffcdd2;
+              font-weight: 500;
+            }
+          }
+
+          &.warning-high {
+            background-color: rgba(255, 152, 0, 0.1);
+            border-left-color: #FF9800;
+
+            mat-icon {
+              color: #FF9800;
+            }
+
+            .detail-text {
+              color: #ffe0b2;
+            }
+          }
+
+          &.warning-normal {
+            background-color: rgba(33, 150, 243, 0.1);
+            border-left-color: #2196F3;
+
+            mat-icon {
+              color: #2196F3;
+            }
+
+            .detail-text {
+              color: #bbdefb;
+            }
+          }
+        }
+      }
+    }
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 152, 0, 0.6);
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba(255, 152, 0, 0.8);
+      }
+    }
+  }
+
+  .dialog-actions {
+    padding: 20px 24px 24px 24px;
+    border-top: 1px solid #404040;
+    background-color: #3a3a42;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 140px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      text-transform: none;
+      font-size: 0.9rem;
+      letter-spacing: 0.025em;
+
+      mat-icon {
+        font-size: 1.125rem;
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+
+      &.cancel-btn {
+        color: #ffffff;
+        background: transparent;
+        border: 2px solid #888888;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.15);
+          border-color: #aaaaaa;
+          color: #ffffff;
+          transform: translateY(-1px);
+        }
+      }
+
+      &.confirm-btn {
+        &.mat-warn {
+          background-color: #F44336;
+          color: white;
+          border: 2px solid #F44336;
+
+          &:hover {
+            background-color: #d32f2f;
+            border-color: #d32f2f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+          }
+        }
+
+        &.mat-accent {
+          background-color: #FF9800;
+          color: white;
+          border: 2px solid #FF9800;
+
+          &:hover {
+            background-color: #f57c00;
+            border-color: #f57c00;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+          }
+        }
+
+        &.mat-primary {
+          background-color: #4CAF50;
+          color: white;
+          border: 2px solid #4CAF50;
+
+          &:hover {
+            background-color: #45a049;
+            border-color: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+          }
+        }
+      }
+
+      // Smooth transitions
+      transition: all 0.2s ease-in-out;
+    }
+
+    @media (max-width: 600px) {
+      flex-direction: column-reverse;
+      gap: 16px;
+      
+      button {
+        width: 100%;
+        justify-content: center;
+        min-width: unset;
+      }
+    }
+  }
+
+  // Específicos por tipo de diálogo con gradientes sutiles
+  &.confirm-modal--danger {
+    .dialog-header {
+      background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.05));
+      border-bottom-color: rgba(244, 67, 54, 0.3);
+    }
+
+    .dialog-content .main-message {
+      border-left-color: #F44336;
+    }
+
+    .dialog-content::-webkit-scrollbar-thumb {
+      background: rgba(244, 67, 54, 0.6);
+
+      &:hover {
+        background: rgba(244, 67, 54, 0.8);
+      }
+    }
+  }
+
+  &.confirm-modal--warning {
+    .dialog-header {
+      background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 152, 0, 0.05));
+      border-bottom-color: rgba(255, 152, 0, 0.3);
+    }
+
+    .dialog-content .main-message {
+      border-left-color: #FF9800;
+    }
+  }
+
+  &.confirm-modal--info {
+    .dialog-header {
+      background: linear-gradient(135deg, rgba(33, 150, 243, 0.15), rgba(33, 150, 243, 0.05));
+      border-bottom-color: rgba(33, 150, 243, 0.3);
+    }
+
+    .dialog-content .main-message {
+      border-left-color: #2196F3;
+    }
+
+    .dialog-content::-webkit-scrollbar-thumb {
+      background: rgba(33, 150, 243, 0.6);
+
+      &:hover {
+        background: rgba(33, 150, 243, 0.8);
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    min-width: 320px;
+    
+    .dialog-content {
+      padding: 20px;
+      max-height: 50vh;
+      
+      .main-message {
+        padding: 12px;
+        margin-bottom: 20px;
+        
+        .message {
+          font-size: 1rem;
+        }
+      }
+      
+      .details {
+        .details-list {
+          .detail-item {
+            padding: 12px;
+            
+            .detail-text {
+              font-size: 0.9rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Global Material overrides for this dialog
+::ng-deep {
+  .recitapp-modal-container {
+    .mat-mdc-dialog-container {
+      background-color: #2c2c34 !important;
+      color: #ffffff !important;
+      border-radius: 8px !important;
+      max-width: 95vw !important;
+      max-height: 90vh !important;
+    }
+  }
+} 

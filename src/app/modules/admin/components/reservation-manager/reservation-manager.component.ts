@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Para ngModel en input de eventId
 import { ReservationAdminService, ClearedReservationsResponse } from '../../services/reservation-admin.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -14,6 +15,7 @@ import { catchError, tap } from 'rxjs/operators';
 })
 export class ReservationManagerComponent implements OnInit {
   private reservationAdminService = inject(ReservationAdminService);
+  private modalService = inject(ModalService);
 
   expiredReservationIds$: Observable<number[] | null> = of(null);
   isLoadingExpiredIds = false;
@@ -49,27 +51,42 @@ export class ReservationManagerComponent implements OnInit {
   }
 
   confirmAndClearExpiredReservations(): void {
-    if (!confirm('¿Está seguro de que desea liberar todas las reservas expiradas? Estos tickets volverán a estar disponibles.')) {
-      return;
-    }
-    this.isClearingReservations = true;
-    this.clearReservationsSuccess = null;
-    this.clearReservationsError = null;
+    this.modalService.showConfirm({
+      title: 'Liberar Reservas Expiradas',
+      message: '¿Está seguro de que desea liberar todas las reservas expiradas? Estos tickets volverán a estar disponibles.',
+      type: 'warning',
+      confirmText: 'Sí, liberar reservas',
+      cancelText: 'Cancelar',
+      details: [
+        'Las reservas expiradas serán liberadas automáticamente',
+        'Los tickets volverán a estar disponibles para compra',
+        'Esta acción no se puede deshacer'
+      ]
+    }).subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+      this.isClearingReservations = true;
+      this.clearReservationsSuccess = null;
+      this.clearReservationsError = null;
 
-    this.reservationAdminService.clearExpiredReservations().pipe(
-      tap((response: ClearedReservationsResponse) => {
-        this.isClearingReservations = false;
-        this.clearReservationsSuccess = `Se liberaron ${response.clearedCount} reserva(s) expirada(s).`;
-        // Opcional: Volver a cargar las IDs expiradas para actualizar la lista/contador
-        this.fetchExpiredReservationIds(); 
-      }),
-      catchError(err => {
-        console.error('Error clearing expired reservations:', err);
-        this.clearReservationsError = err.error?.message || err.message || 'Error al limpiar reservas expiradas.';
-        this.isClearingReservations = false;
-        return of(null);
-      })
-    ).subscribe();
+      this.reservationAdminService.clearExpiredReservations().pipe(
+        tap((response: ClearedReservationsResponse) => {
+          this.isClearingReservations = false;
+          this.modalService.success(`Se liberaron ${response.clearedCount} reserva(s) expirada(s).`, 'Reservas Liberadas').subscribe(() => {
+            // Opcional: Volver a cargar las IDs expiradas para actualizar la lista/contador
+            this.fetchExpiredReservationIds();
+          });
+        }),
+        catchError(err => {
+          console.error('Error clearing expired reservations:', err);
+          this.clearReservationsError = err.error?.message || err.message || 'Error al limpiar reservas expiradas.';
+          this.isClearingReservations = false;
+          this.modalService.error(this.clearReservationsError || 'Error al limpiar reservas expiradas.', 'Error de Liberación');
+          return of(null);
+        })
+      ).subscribe();
+    });
   }
 
   fetchReservedTicketsCount(): void {

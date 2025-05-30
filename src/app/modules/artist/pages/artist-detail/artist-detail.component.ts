@@ -7,6 +7,7 @@ import { ArtistDetailDTO } from '../../models/artist-detail';
 import { FollowArtistButtonComponent } from '../../../user/components/follow-artist-button/follow-artist-button.component';
 import { SessionService } from '../../../../core/services/session.service';
 import { DropdownDirective } from '../../../../shared/directives/dropdown.directive';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-artist-detail',
@@ -29,7 +30,8 @@ export class ArtistDetailComponent implements OnInit {
     private router: Router,
     private artistService: ArtistService,
     private userService: UserService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -62,11 +64,22 @@ export class ArtistDetailComponent implements OnInit {
   }
 
   confirmDeactivate(): void {
-    if (
-      confirm(`¿Estás seguro de que deseas desactivar a ${this.artist?.name}?`)
-    ) {
-      this.deactivateArtist();
-    }
+    this.modalService.showConfirm({
+      title: 'Confirmar Desactivación',
+      message: `¿Estás seguro de que deseas desactivar a ${this.artist?.name}?`,
+      type: 'warning',
+      confirmText: 'Sí, desactivar',
+      cancelText: 'Cancelar',
+      details: [
+        'El artista no aparecerá en búsquedas públicas',
+        'No se podrán crear nuevos eventos con este artista',
+        'Los eventos existentes no se verán afectados'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.deactivateArtist();
+      }
+    });
   }
 
   deactivateArtist(): void {
@@ -77,10 +90,12 @@ export class ArtistDetailComponent implements OnInit {
       next: () => {
         this.loading = false;
         this.loadArtistDetails();
+        this.modalService.success(`Artista "${this.artist?.name}" desactivado correctamente.`);
       },
       error: (err) => {
         this.error = err.error?.message || 'Error al desactivar el artista';
         this.loading = false;
+        this.modalService.error(this.error, 'Error de Desactivación');
       },
     });
   }
@@ -92,7 +107,7 @@ export class ArtistDetailComponent implements OnInit {
     // Si no existe activateArtist, podríamos usar updateArtist con active: true
     // Por ahora comentamos esta funcionalidad hasta verificar el servicio
     this.loading = false;
-    alert('Funcionalidad de activar artista en desarrollo');
+    this.modalService.info('Funcionalidad de activar artista en desarrollo', 'Función No Disponible');
     
     // this.artistService.activateArtist(this.artistId).subscribe({
     //   next: () => {

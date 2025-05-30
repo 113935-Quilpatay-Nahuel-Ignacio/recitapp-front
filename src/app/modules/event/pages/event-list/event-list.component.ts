@@ -13,6 +13,7 @@ import { Venue } from '../../../venue/models/venue';
 import { VenueService } from '../../../venue/services/venue.service';
 import { Artist } from '../../../artist/models/artist';
 import { ArtistService } from '../../../artist/services/artist.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-event-list',
@@ -55,7 +56,8 @@ export class EventListComponent implements OnInit {
     private eventService: EventService,
     private venueService: VenueService,
     private artistService: ArtistService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -226,32 +228,46 @@ export class EventListComponent implements OnInit {
       return;
     }
 
-    if (!confirm(`¿Estás seguro de que deseas eliminar PERMANENTEMENTE todos los eventos CANCELADOS antes del ${this.cleanupCutoffDate}? Esta acción no se puede deshacer.`)) {
-      return;
-    }
-
-    this.isCleaningUp = true;
-    this.cleanupErrorMessage = '';
-    this.cleanupSuccessMessage = '';
-
-    // The input type="date" should provide it in this format.
-    const formattedDate = `${this.cleanupCutoffDate}T00:00:00`; // Append time for LocalDateTime
-
-    this.eventService.cleanupCanceledEvents(formattedDate).subscribe({
-      next: (response) => {
-        this.isCleaningUp = false;
-        // Assuming response might contain details like how many events were deleted.
-        // For now, a generic success message.
-        this.cleanupSuccessMessage = response?.message || 'Eventos cancelados eliminados correctamente.';
-        alert(this.cleanupSuccessMessage); // Temporary alert
-        this.loadEvents(); // Refresh the list of events
-      },
-      error: (err) => {
-        this.isCleaningUp = false;
-        this.cleanupErrorMessage = `Error al eliminar eventos cancelados: ${err.error?.message || err.message}`;
-        console.error('Error cleaning up canceled events:', err);
-        alert(this.cleanupErrorMessage); // Temporary alert
+    this.modalService.showConfirm({
+      title: 'Confirmar Limpieza de Eventos',
+      message: `¿Estás seguro de que deseas eliminar PERMANENTEMENTE todos los eventos CANCELADOS antes del ${this.cleanupCutoffDate}? Esta acción no se puede deshacer.`,
+      type: 'danger',
+      confirmText: 'Sí, eliminar',
+      cancelText: 'Cancelar',
+      details: [
+        'Se eliminarán permanentemente todos los eventos cancelados',
+        'Esta acción no se puede deshacer',
+        'Los datos se perderán para siempre'
+      ]
+    }).subscribe(confirmed => {
+      if (!confirmed) {
+        return;
       }
+
+      this.isCleaningUp = true;
+      this.cleanupErrorMessage = '';
+      this.cleanupSuccessMessage = '';
+
+      // The input type="date" should provide it in this format.
+      const formattedDate = `${this.cleanupCutoffDate}T00:00:00`; // Append time for LocalDateTime
+
+      this.eventService.cleanupCanceledEvents(formattedDate).subscribe({
+        next: (response) => {
+          this.isCleaningUp = false;
+          // Assuming response might contain details like how many events were deleted.
+          // For now, a generic success message.
+          this.cleanupSuccessMessage = response?.message || 'Eventos cancelados eliminados correctamente.';
+          this.modalService.success(this.cleanupSuccessMessage, 'Limpieza Completada').subscribe(() => {
+            this.loadEvents(); // Refresh the list of events
+          });
+        },
+        error: (err) => {
+          this.isCleaningUp = false;
+          this.cleanupErrorMessage = `Error al eliminar eventos cancelados: ${err.error?.message || err.message}`;
+          console.error('Error cleaning up canceled events:', err);
+          this.modalService.error(this.cleanupErrorMessage, 'Error de Limpieza');
+        }
+      });
     });
   }
 

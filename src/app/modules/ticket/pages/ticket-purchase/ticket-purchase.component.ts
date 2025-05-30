@@ -2,20 +2,21 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Observable, EMPTY } from 'rxjs';
+import { map as rxjsMap, tap, catchError, finalize } from 'rxjs/operators';
+import { EventSectionOfferService } from '../../services/event-section-offer.service';
+import { BookingService } from '../../services/booking.service';
+import { EventService } from '../../../event/services/event.service';
+import { EventSectionOffer } from '../../models/event-section-offer';
+import { TicketPurchaseRequestDTO, TicketRequest } from '../../models/dto/ticket-purchase-request.dto';
+import { TicketPurchaseResponseDTO } from '../../models/dto/ticket-purchase-response.dto';
+import { EventDTO } from '../../../event/models/event';
+import { Event } from '../../models/event';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 // import { TicketTypeService } from '../../services/ticket-type.service'; // OLD
-import { EventSectionOfferService } from '../../services/event-section-offer.service'; // NEW
-import { BookingService } from '../../services/booking.service';
 // import { TicketType } from '../../models/ticket-type.model'; // OLD
-import { EventSectionOffer } from '../../models/event-section-offer.model'; // NEW
 // import { BookingPayload, BookingDetailPayload } from '../../models/booking.model'; // OLD - BookingPayload is TicketPurchaseRequestDTO
-import { EventService } from '../../../event/services/event.service';
-import { Event } from '../../../event/models/event.model';
-import { EventDTO } from '../../../event/models/event';
-import { catchError, finalize, tap, map as rxjsMap } from 'rxjs/operators';
-import { EMPTY, Observable } from 'rxjs';
-import { TicketPurchaseRequestDTO, TicketPurchaseResponseDTO, TicketRequest } from '../../models/booking.model';
-
 
 @Component({
   selector: 'app-ticket-purchase',
@@ -43,6 +44,7 @@ export class TicketPurchaseComponent implements OnInit {
     private eventSectionOfferService: EventSectionOfferService, // Injected new service
     private bookingService: BookingService,
     private eventService: EventService,
+    private modalService: ModalService,
   ) {
     // Form structure needs a major rethink to match TicketPurchaseRequestDTO
     // For now, let's initialize it simply. We will build it dynamically.
@@ -209,10 +211,12 @@ export class TicketPurchaseComponent implements OnInit {
       )
       // Use TicketPurchaseResponseDTO for the subscribed value
       .subscribe((bookingResponse: TicketPurchaseResponseDTO) => { 
-        alert('Booking successful! Transaction ID: ' + bookingResponse.transactionId); 
-        this.purchaseForm.reset();
-        this.attendeeTickets.clear();
-        this.loadSectionOffers(); // Refresh section offers (e.g., for availability)
+        this.modalService.success(`¡Reserva exitosa! ID de transacción: ${bookingResponse.transactionId}`, 'Compra Exitosa').subscribe(() => {
+          this.purchaseForm.reset();
+          this.attendeeTickets.clear();
+          this.loadSectionOffers(); // Refresh section offers (e.g., for availability)
+          this.router.navigate(['/tickets']); // Navigate to tickets page or transaction history
+        });
       });
   }
 }

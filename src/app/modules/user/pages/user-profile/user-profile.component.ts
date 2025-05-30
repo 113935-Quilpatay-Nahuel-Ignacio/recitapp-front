@@ -12,6 +12,7 @@ import { UserService } from '../../services/user.service';
 import { User, UserUpdate } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../../../../core/services/session.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -37,7 +38,8 @@ export class UserProfileComponent implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -205,12 +207,15 @@ export class UserProfileComponent implements OnInit {
         this.showDeleteModal = false;
         this.loading = false;
         // Aquí podrías redirigir a una página de confirmación o al login
-        alert('Cuenta eliminada exitosamente');
+        this.modalService.success('Cuenta eliminada exitosamente', 'Eliminación Exitosa').subscribe(() => {
+          this.router.navigate(['/login']);
+        });
       },
       error: (err) => {
         this.error = err.error?.message || 'Error al eliminar la cuenta';
         this.loading = false;
         this.showDeleteModal = false;
+        this.modalService.error(this.error, 'Error de Eliminación');
       },
     });
   }

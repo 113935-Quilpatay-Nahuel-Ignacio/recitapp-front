@@ -1,0 +1,57 @@
+<div class="prompt-modal">
+  <div mat-dialog-title class="dialog-header">
+    <div class="header-content">
+      <mat-icon class="icon--info">
+        edit
+      </mat-icon>
+      <h2>{{ data.title }}</h2>
+    </div>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <div class="main-message">
+      <p class="message">{{ data.message }}</p>
+    </div>
+
+    <form [formGroup]="promptForm" class="prompt-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ data.placeholder || 'Ingrese su respuesta' }}</mat-label>
+        <input 
+          *ngIf="data.inputType === 'text'"
+          matInput 
+          formControlName="inputValue"
+          [placeholder]="data.placeholder || 'Ingrese su respuesta'"
+          (keydown)="onKeyDown($event)"
+          autocomplete="off">
+        <textarea 
+          *ngIf="data.inputType === 'textarea'"
+          matInput 
+          formControlName="inputValue"
+          [placeholder]="data.placeholder || 'Ingrese su respuesta'"
+          rows="4"
+          (keydown)="onKeyDown($event)">
+        </textarea>
+        <mat-error *ngIf="inputValue?.hasError('required')">
+          Este campo es obligatorio
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button 
+            class="cancel-btn"
+            (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+      {{ data.cancelText }}
+    </button>
+    <button mat-raised-button 
+            color="primary"
+            class="confirm-btn"
+            [disabled]="!isValid"
+            (click)="onConfirm()">
+      <mat-icon>check</mat-icon>
+      {{ data.confirmText }}
+    </button>
+  </div>
+</div> 

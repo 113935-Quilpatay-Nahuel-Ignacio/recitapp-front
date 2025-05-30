@@ -8,6 +8,7 @@ import { UserService } from '../../../user/services/user.service';
 import { FollowVenueButtonComponent } from '../../../user/components/follow-venue-button/follow-venue-button.component';
 import { SessionService } from '../../../../core/services/session.service';
 import { DropdownDirective } from '../../../../shared/directives/dropdown.directive';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-venue-detail',
@@ -43,7 +44,8 @@ export class VenueDetailComponent implements OnInit {
     private router: Router,
     private venueService: VenueService,
     private userService: UserService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -187,13 +189,22 @@ export class VenueDetailComponent implements OnInit {
   }
 
   confirmDeactivate(): void {
-    if (
-      confirm(
-        `¿Estás seguro de que deseas desactivar el recinto ${this.venue?.name}?`
-      )
-    ) {
-      this.deactivateVenue();
-    }
+    this.modalService.showConfirm({
+      title: 'Confirmar Desactivación',
+      message: `¿Estás seguro de que deseas desactivar el recinto ${this.venue?.name}?`,
+      type: 'warning',
+      confirmText: 'Sí, desactivar',
+      cancelText: 'Cancelar',
+      details: [
+        'El recinto no aparecerá en búsquedas públicas',
+        'No se podrán crear nuevos eventos en este recinto',
+        'Los eventos existentes no se verán afectados'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.deactivateVenue();
+      }
+    });
   }
 
   deactivateVenue(): void {
@@ -206,23 +217,33 @@ export class VenueDetailComponent implements OnInit {
       next: (updatedVenue) => {
         this.venue = updatedVenue;
         this.loading.venue = false;
+        this.modalService.success(`Recinto "${this.venue.name}" desactivado correctamente.`);
       },
       error: (err) => {
         this.error.venue =
           err.error?.message || 'Error al desactivar el recinto';
         this.loading.venue = false;
+        this.modalService.error(this.error.venue, 'Error de Desactivación');
       },
     });
   }
 
   confirmActivate(): void {
-    if (
-      confirm(
-        `¿Estás seguro de que deseas activar el recinto ${this.venue?.name}?`
-      )
-    ) {
-      this.activateVenue();
-    }
+    this.modalService.showConfirm({
+      title: 'Confirmar Activación',
+      message: `¿Estás seguro de que deseas activar el recinto ${this.venue?.name}?`,
+      type: 'info',
+      confirmText: 'Sí, activar',
+      cancelText: 'Cancelar',
+      details: [
+        'El recinto volverá a aparecer en búsquedas públicas',
+        'Se podrán crear nuevos eventos en este recinto'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.activateVenue();
+      }
+    });
   }
 
   activateVenue(): void {
@@ -235,11 +256,13 @@ export class VenueDetailComponent implements OnInit {
       next: (updatedVenue) => {
         this.venue = updatedVenue;
         this.loading.venue = false;
+        this.modalService.success(`Recinto "${this.venue.name}" activado correctamente.`);
       },
       error: (err) => {
         this.error.venue =
           err.error?.message || 'Error al activar el recinto';
         this.loading.venue = false;
+        this.modalService.error(this.error.venue, 'Error de Activación');
       },
     });
   }
@@ -255,13 +278,15 @@ export class VenueDetailComponent implements OnInit {
   }
 
   confirmDelete(): void {
-    if (
-      confirm(
-        `¿Estás ABSOLUTAMENTE SEGURO de que deseas ELIMINAR PERMANENTEMENTE el recinto ${this.venue?.name}? Esta acción no se puede deshacer y solo funcionará si el recinto no tiene eventos asociados.`
-      )
-    ) {
-      this.deleteCurrentVenue();
-    }
+    this.modalService.confirmDeletion(this.venue?.name || 'este recinto', [
+      'Esta acción eliminará permanentemente el recinto',
+      'Solo funcionará si el recinto no tiene eventos asociados',
+      'No se puede deshacer esta operación'
+    ]).subscribe(confirmed => {
+      if (confirmed) {
+        this.deleteCurrentVenue();
+      }
+    });
   }
 
   deleteCurrentVenue(): void {
@@ -273,13 +298,15 @@ export class VenueDetailComponent implements OnInit {
     this.venueService.deleteVenue(this.venueId).subscribe({
       next: () => {
         this.loading.venue = false;
-        alert(`Recinto "${this.venue?.name}" eliminado correctamente.`);
-        this.router.navigate(['/venues']);
+        this.modalService.success(`Recinto "${this.venue?.name}" eliminado correctamente.`).subscribe(() => {
+          this.router.navigate(['/venues']);
+        });
       },
       error: (err) => {
         this.error.venue =
           err.error?.message || 'Error al eliminar el recinto. Es posible que tenga eventos asociados.';
         this.loading.venue = false;
+        this.modalService.error(this.error.venue, 'Error de Eliminación');
       },
     });
   }

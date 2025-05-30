@@ -11,6 +11,7 @@ import {
 import { HttpClientModule } from '@angular/common/http';
 import { MusicGenreService } from '../../services/music-genre.service';
 import { MusicGenre } from '../../models/music-genre';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-music-genre-admin',
@@ -46,7 +47,8 @@ export class MusicGenreAdminComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private genreService: MusicGenreService
+    private genreService: MusicGenreService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -145,28 +147,36 @@ export class MusicGenreAdminComponent implements OnInit {
   }
 
   deleteGenre(genre: MusicGenre): void {
-    if (
-      confirm(`¿Estás seguro de que deseas eliminar el género ${genre.name}?`)
-    ) {
-      this.genreService.deleteGenre(genre.id).subscribe({
-        next: () => {
-          this.success = `Género ${genre.name} eliminado correctamente`;
-          this.loadGenres();
+    this.modalService.showConfirm({
+      title: 'Eliminar Género Musical',
+      message: `¿Estás seguro de que deseas eliminar el género ${genre.name}?`,
+      type: 'danger',
+      confirmText: 'Sí, eliminar',
+      cancelText: 'Cancelar',
+      details: [
+        'Esta acción eliminará permanentemente el género musical',
+        'No se puede deshacer esta operación'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.genreService.deleteGenre(genre.id).subscribe({
+          next: () => {
+            this.modalService.success(`Género ${genre.name} eliminado correctamente`, 'Eliminación Exitosa').subscribe(() => {
+              this.loadGenres();
 
-          if (this.selectedGenre && this.selectedGenre.id === genre.id) {
-            this.newGenre();
-          }
-
-          setTimeout(() => {
-            this.success = '';
-          }, 3000);
-        },
-        error: (err) => {
-          this.error.list = err.error?.message || 'Error al eliminar el género';
-          console.error('Error deleting genre:', err);
-        },
-      });
-    }
+              if (this.selectedGenre && this.selectedGenre.id === genre.id) {
+                this.newGenre();
+              }
+            });
+          },
+          error: (err) => {
+            this.error.list = err.error?.message || 'Error al eliminar el género';
+            console.error('Error deleting genre:', err);
+            this.modalService.error(this.error.list, 'Error de Eliminación');
+          },
+        });
+      }
+    });
   }
 
   handleSuccess(action: string, genre: MusicGenre): void {

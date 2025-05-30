@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { EventDTO, EventStatusUpdateDTO, EventVerificationRequest } from '../../models/event';
 import { EventStatisticsDTO } from '../../models/event-statistics.dto';
+import { ModalService } from '../../../../shared/services/modal.service';
 // Podríamos necesitar importar Venue y Artist si queremos enlazar a sus detalles o mostrar más info
 // import { VenueService } from '../../../venue/services/venue.service';
 // import { ArtistService } from '../../../artist/services/artist.service';
@@ -40,7 +41,8 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     private router: Router, // Para navegación programática si es necesario
     private eventService: EventService,
     private datePipe: DatePipe,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -173,53 +175,82 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     }
 
     const eventName = this.event.name;
-    if (confirm(`¿Estás ABSOLUTAMENTE SEGURO de que deseas ELIMINAR PERMANENTEMENTE el evento "${eventName}"? Esta acción no se puede deshacer.`)) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.eventService.deleteEvent(this.event.id).subscribe({
-        next: () => {
-          this.isLoading = false;
-          alert(`Evento "${eventName}" eliminado correctamente.`); // Podríamos usar un servicio de notificaciones más elegante
-          this.router.navigate(['/events']);
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.errorMessage = `Error al eliminar el evento: ${err.error?.message || err.message}`;
-          console.error('Error deleting event:', err);
-        }
-      });
-    }
+    this.modalService.confirmDeletion(eventName, [
+      'Esta acción eliminará permanentemente todos los datos del evento',
+      'Se perderán todas las transacciones y tickets asociados',
+      'No se puede deshacer esta operación'
+    ]).subscribe(confirmed => {
+      if (confirmed) {
+        this.isLoading = true;
+        this.errorMessage = '';
+        this.eventService.deleteEvent(this.event!.id).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.modalService.success(`Evento "${eventName}" eliminado correctamente.`).subscribe(() => {
+              this.router.navigate(['/events']);
+            });
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.errorMessage = `Error al eliminar el evento: ${err.error?.message || err.message}`;
+            console.error('Error deleting event:', err);
+          }
+        });
+      }
+    });
   }
 
   promptChangeStatus(): void {
     if (!this.event || !this.event.id) return;
 
     const availableStatuses = this.eventStatuses.map(s => `${s.value} (${s.viewValue})`).join('\n');
-    const newStatus = prompt(`Evento: ${this.event.name}\nEstado actual: ${this.event.statusName}\n\nIngrese el nuevo estado (ej. EN_VENTA, CANCELADO, etc.):\n${availableStatuses}`);
     
-    if (newStatus && this.eventStatuses.some(s => s.value === newStatus.toUpperCase())) {
-      const notes = prompt('Notas adicionales para el cambio de estado (opcional):');
-      const statusData: EventStatusUpdateDTO = {
-        statusName: newStatus.toUpperCase(),
-        statusChangeNotes: notes || undefined
-      };
+    this.modalService.showPrompt({
+      title: 'Cambiar Estado del Evento',
+      message: `Evento: ${this.event.name}\nEstado actual: ${this.event.statusName}\n\nIngrese el nuevo estado:`,
+      placeholder: 'Ej: EN_VENTA, CANCELADO, etc.',
+      confirmText: 'Cambiar Estado',
+      cancelText: 'Cancelar'
+    }).subscribe(result => {
+      if (result.confirmed && result.value) {
+        const newStatus = result.value.toUpperCase();
+        if (this.eventStatuses.some(s => s.value === newStatus)) {
+          // Ask for notes
+          this.modalService.showPrompt({
+            title: 'Notas del Cambio',
+            message: 'Notas adicionales para el cambio de estado (opcional):',
+            placeholder: 'Descripción del motivo del cambio...',
+            confirmText: 'Confirmar Cambio',
+            cancelText: 'Cancelar',
+            required: false,
+            inputType: 'textarea'
+          }).subscribe(notesResult => {
+            if (notesResult.confirmed) {
+              const statusData: EventStatusUpdateDTO = {
+                statusName: newStatus,
+                statusChangeNotes: notesResult.value || undefined
+              };
 
-      this.isLoading = true;
-      this.eventService.updateEventStatus(this.event.id, statusData).subscribe({
-        next: (updatedEvent) => {
-          this.event = updatedEvent; // Actualizar el evento local
-          this.isLoading = false;
-          alert('Estado del evento actualizado correctamente.');
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.errorMessage = `Error al actualizar el estado: ${err.error?.message || err.message}`;
-          console.error('Error updating event status:', err);
+              this.isLoading = true;
+              this.eventService.updateEventStatus(this.event!.id, statusData).subscribe({
+                next: (updatedEvent) => {
+                  this.event = updatedEvent;
+                  this.isLoading = false;
+                  this.modalService.success('Estado del evento actualizado correctamente.');
+                },
+                error: (err) => {
+                  this.isLoading = false;
+                  this.errorMessage = `Error al actualizar el estado: ${err.error?.message || err.message}`;
+                  console.error('Error updating event status:', err);
+                }
+              });
+            }
+          });
+        } else {
+          this.modalService.error('Estado ingresado no válido.', 'Error de Validación');
         }
-      });
-    } else if (newStatus !== null) { // Si el usuario ingresó algo pero no es válido
-      alert('Estado ingresado no válido.');
-    }
+      }
+    });
   }
 
   confirmVerifyEvent(): void {
@@ -228,39 +259,52 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
       return;
     }
     if (this.event.verified) {
-      this.verificationMessage = 'Este evento ya ha sido verificado.';
+      this.modalService.info('Este evento ya ha sido verificado.', 'Evento Verificado');
       return;
     }
 
     const eventName = this.event.name;
     const verificationRequestData: EventVerificationRequest = {
-      moderatorId: 4, // Hardcoded as requested, originally from curl example moderatorId: 2
-      verificationNotes: 'Evento verificado desde el frontend.', // Default notes
-      updateStatus: true, // As per curl example
-      newStatus: 'EN_VENTA' // As per curl example, ensure this is a valid status
+      moderatorId: 4, // Hardcoded as requested
+      verificationNotes: 'Evento verificado desde el frontend.',
+      updateStatus: true,
+      newStatus: 'EN_VENTA'
     };
 
-    if (confirm(`¿Estás seguro de que deseas VERIFICAR el evento "${eventName}" y cambiar su estado a EN VENTA?`)) {
-      this.isVerifying = true;
-      this.verificationMessage = '';
-      this.errorMessage = '';
+    this.modalService.showConfirm({
+      title: 'Verificar Evento',
+      message: `¿Estás seguro de que deseas VERIFICAR el evento "${eventName}" y cambiar su estado a EN VENTA?`,
+      type: 'warning',
+      confirmText: 'Sí, verificar',
+      cancelText: 'Cancelar',
+      details: [
+        'El evento será marcado como verificado',
+        'Su estado cambiará automáticamente a EN_VENTA',
+        'Esta acción registrará al moderador en el historial'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.isVerifying = true;
+        this.verificationMessage = '';
+        this.errorMessage = '';
 
-      this.eventService.verifyEvent(this.event.id, verificationRequestData).subscribe({
-        next: (updatedEvent) => {
-          this.event = updatedEvent;
-          this.isVerifying = false;
-          this.verificationMessage = `Evento "${eventName}" verificado y actualizado correctamente.`;
-          alert(this.verificationMessage);
-        },
-        error: (err) => {
-          this.isVerifying = false;
-          const detailError = err.error?.message || err.message;
-          this.verificationMessage = `Error al verificar el evento: ${detailError}`;
-          console.error('Error verifying event:', err);
-          alert(this.verificationMessage); // For immediate feedback on error
-        }
-      });
-    }
+        this.eventService.verifyEvent(this.event!.id, verificationRequestData).subscribe({
+          next: (updatedEvent) => {
+            this.event = updatedEvent;
+            this.isVerifying = false;
+            this.verificationMessage = `Evento "${eventName}" verificado y actualizado correctamente.`;
+            this.modalService.success(this.verificationMessage, 'Verificación Exitosa');
+          },
+          error: (err) => {
+            this.isVerifying = false;
+            const detailError = err.error?.message || err.message;
+            this.verificationMessage = `Error al verificar el evento: ${detailError}`;
+            console.error('Error verifying event:', err);
+            this.modalService.error(this.verificationMessage, 'Error de Verificación');
+          }
+        });
+      }
+    });
   }
 
   // TODO: Implementar lógica de navegación para ver detalles de Venue y Artist si es necesario

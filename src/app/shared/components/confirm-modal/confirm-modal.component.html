@@ -1,0 +1,47 @@
+<div class="confirm-modal" [class]="'confirm-modal--' + data.type">
+  <div mat-dialog-title class="dialog-header">
+    <div class="header-content">
+      <mat-icon [class]="'icon--' + data.type">
+        {{ getIcon() }}
+      </mat-icon>
+      <h2>{{ data.title }}</h2>
+    </div>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <div class="main-message">
+      <p class="message">{{ data.message }}</p>
+    </div>
+    
+    <div *ngIf="data.details && data.details.length > 0" class="details">
+      <h4>
+        <mat-icon>warning</mat-icon>
+        Detalles importantes:
+      </h4>
+      <div class="details-list">
+        <div *ngFor="let detail of data.details" 
+             class="detail-item" 
+             [class]="getWarningClass(detail)">
+          <mat-icon>warning</mat-icon>
+          <span class="detail-text">{{ detail }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button 
+            class="cancel-btn"
+            (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+      {{ data.cancelText }}
+    </button>
+    <button mat-raised-button 
+            [color]="getButtonColor()"
+            class="confirm-btn"
+            (click)="onConfirm()">
+      <mat-icon>{{ data.type === 'danger' ? 'delete_forever' : 'check' }}</mat-icon>
+      {{ data.confirmText }}
+    </button>
+  </div>
+</div> 

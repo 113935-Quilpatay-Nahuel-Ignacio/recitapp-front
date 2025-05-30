@@ -7,6 +7,7 @@ import { TransactionReceiptDTO } from '../../models/dto/transaction-receipt.dto'
 import { RefundRequestDTO } from '../../models/dto/refund-request.dto';
 import { TransactionStatusUpdateDTO } from '../../models/dto/transaction-status-update.dto';
 import { TransactionReceiptModalComponent } from '../../components/transaction-receipt-modal/transaction-receipt-modal.component';
+import { ModalService } from '../../../../shared/services/modal.service';
 import { catchError, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -34,7 +35,8 @@ export class TransactionHistoryComponent implements OnInit {
 
   constructor(
     private transactionService: TransactionService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -79,7 +81,7 @@ export class TransactionHistoryComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching receipt:', err);
-        alert('Failed to fetch receipt.');
+        this.modalService.error('Error al obtener el recibo de la transacción.', 'Error de Recibo');
         this.selectedReceipt = null; // Ensure modal doesn't show on error
       },
     });
@@ -93,71 +95,113 @@ export class TransactionHistoryComponent implements OnInit {
   // This would typically be an admin action or triggered by a payment gateway callback
   // For demonstration, let's add a mock way to change status to 'cancelled'
   cancelTransaction(transactionId: number): void {
-    const statusUpdate: TransactionStatusUpdateDTO = { statusName: 'FALLIDA' };
-    this.transactionService
-      .updateTransactionStatus(transactionId, statusUpdate)
-      .pipe(
-        switchMap(() => {
-          // Reload history to reflect the change
-          return this.transactionService.getPaymentHistory(this.userId!);
-        }),
-        catchError((err) => {
-          console.error('Error cancelling transaction or reloading history:', err);
-          alert('Failed to cancel transaction.');
-          return of([]);
-        })
-      )
-      .subscribe(updatedTransactions => {
-        this.transactions = updatedTransactions;
-        alert(`Transaction ${transactionId} status update initiated.`);
-      });
+    this.modalService.showConfirm({
+      title: 'Cancelar Transacción',
+      message: `¿Estás seguro de que deseas cancelar la transacción ${transactionId}?`,
+      type: 'warning',
+      confirmText: 'Sí, cancelar',
+      cancelText: 'No cancelar',
+      details: [
+        'Esta acción marcará la transacción como fallida',
+        'Se actualizará el historial de transacciones'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        const statusUpdate: TransactionStatusUpdateDTO = { statusName: 'FALLIDA' };
+        this.transactionService
+          .updateTransactionStatus(transactionId, statusUpdate)
+          .pipe(
+            switchMap(() => {
+              // Reload history to reflect the change
+              return this.transactionService.getPaymentHistory(this.userId!);
+            }),
+            catchError((err) => {
+              console.error('Error cancelling transaction or reloading history:', err);
+              this.modalService.error('Error al cancelar la transacción.', 'Error de Cancelación');
+              return of([]);
+            })
+          )
+          .subscribe(updatedTransactions => {
+            this.transactions = updatedTransactions;
+            this.modalService.success(`Actualización de estado de transacción ${transactionId} iniciada.`);
+          });
+      }
+    });
   }
 
   // Placeholder for RAPP113935-111: Register Refund
   // This would typically involve more complex UI/logic
   requestRefund(transactionId: number): void {
-    const reason = prompt('Please enter reason for refund:');
-    if (reason) {
-      const isFullRefund = confirm('Is this a full refund?');
-      let ticketIds: number[] | undefined;
-
-      if (!isFullRefund) {
-        const ticketIdsString = prompt(
-          'This is a partial refund. Please enter comma-separated Ticket IDs to refund:'
-        );
-        if (ticketIdsString) {
-          ticketIds = ticketIdsString.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
-        } else {
-          // User cancelled or entered no ticket IDs for partial refund
-          alert('Partial refund cancelled: No ticket IDs provided.');
-          return;
-        }
-        if (!ticketIds || ticketIds.length === 0) {
-            alert('Partial refund cancelled: Invalid or no ticket IDs provided.');
-            return;
-        }
+    this.modalService.showPrompt({
+      title: 'Solicitar Reembolso',
+      message: 'Por favor, ingrese el motivo del reembolso:',
+      placeholder: 'Motivo del reembolso...',
+      confirmText: 'Continuar',
+      cancelText: 'Cancelar',
+      inputType: 'textarea'
+    }).subscribe(reasonResult => {
+      if (reasonResult.confirmed && reasonResult.value) {
+        const reason = reasonResult.value;
+        
+        this.modalService.showConfirm({
+          title: 'Tipo de Reembolso',
+          message: '¿Es este un reembolso completo?',
+          type: 'info',
+          confirmText: 'Reembolso Completo',
+          cancelText: 'Reembolso Parcial'
+        }).subscribe(isFullRefund => {
+          if (isFullRefund) {
+            // Full refund
+            this.processRefund(transactionId, reason, true);
+          } else {
+            // Partial refund - ask for ticket IDs
+            this.modalService.showPrompt({
+              title: 'Reembolso Parcial',
+              message: 'Ingrese los IDs de tickets a reembolsar (separados por comas):',
+              placeholder: 'Ej: 1, 2, 3',
+              confirmText: 'Procesar Reembolso',
+              cancelText: 'Cancelar'
+            }).subscribe(ticketIdsResult => {
+              if (ticketIdsResult.confirmed && ticketIdsResult.value) {
+                const ticketIds = ticketIdsResult.value.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
+                
+                if (ticketIds.length === 0) {
+                  this.modalService.error('IDs de tickets inválidos o no proporcionados.', 'Error de Validación');
+                  return;
+                }
+                
+                this.processRefund(transactionId, reason, false, ticketIds);
+              } else {
+                this.modalService.info('Reembolso parcial cancelado: No se proporcionaron IDs de tickets.');
+              }
+            });
+          }
+        });
       }
+    });
+  }
 
-      const refundRequest: RefundRequestDTO = {
-        transactionId,
-        reason,
-        fullRefund: isFullRefund,
-      };
+  private processRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
+    const refundRequest: RefundRequestDTO = {
+      transactionId,
+      reason,
+      fullRefund,
+    };
 
-      if (!isFullRefund && ticketIds && ticketIds.length > 0) {
-        refundRequest.ticketIds = ticketIds;
-      }
-
-      this.transactionService.registerRefund(refundRequest).subscribe({
-        next: (refundTransaction) => {
-          alert(`Refund for transaction ${transactionId} processed. Refund ID: ${refundTransaction.id}`);
-          this.loadTransactions();
-        },
-        error: (err) => {
-          console.error('Error processing refund:', err);
-          alert('Failed to process refund.');
-        },
-      });
+    if (!fullRefund && ticketIds && ticketIds.length > 0) {
+      refundRequest.ticketIds = ticketIds;
     }
+
+    this.transactionService.registerRefund(refundRequest).subscribe({
+      next: (refundTransaction) => {
+        this.modalService.success(`Reembolso para transacción ${transactionId} procesado. ID de reembolso: ${refundTransaction.id}`).subscribe(() => {
+          this.loadTransactions();
+        });
+      },
+      error: (err) => {
+        console.error('Error processing refund:', err);
+        this.modalService.error('Error al procesar el reembolso.', 'Error de Reembolso');
+      },
+    });
   }
 }

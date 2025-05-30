@@ -10,6 +10,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, startWith, switchMap, tap } from 'rxjs/operators';
 import { TransactionService } from '../../services/transaction.service';
 import { PaymentMethodDTO } from '../../models/dto';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-payment-method-management',
@@ -28,6 +29,7 @@ export class PaymentMethodManagementComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private transactionService = inject(TransactionService);
+  private modalService = inject(ModalService);
 
   ngOnInit(): void {
     this.paymentMethodForm = this.fb.group({
@@ -72,29 +74,43 @@ export class PaymentMethodManagementComponent implements OnInit {
   }
 
   deletePaymentMethod(id: number): void {
-    if (confirm('Are you sure you want to delete this payment method?')) {
-      this.isLoading = true;
-      this.errorMessage = null;
-      this.successMessage = null;
-      this.transactionService
-        .deletePaymentMethod(id)
-        .pipe(
-          tap(() => {
-            this.isLoading = false;
-            this.successMessage = 'Payment method deleted successfully.';
-            this.loadPaymentMethods(); // Refresh list
-            this.cancelEdit();
-          }),
-          catchError((err) => {
-            this.isLoading = false;
-            this.errorMessage =
-              err.error?.message || 'Failed to delete payment method.';
-            console.error(err);
-            return of(null);
-          })
-        )
-        .subscribe();
-    }
+    this.modalService.showConfirm({
+      title: 'Eliminar Método de Pago',
+      message: '¿Estás seguro de que deseas eliminar este método de pago?',
+      type: 'danger',
+      confirmText: 'Sí, eliminar',
+      cancelText: 'Cancelar',
+      details: [
+        'Esta acción eliminará permanentemente el método de pago',
+        'No se puede deshacer esta operación'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.isLoading = true;
+        this.errorMessage = null;
+        this.successMessage = null;
+        this.transactionService
+          .deletePaymentMethod(id)
+          .pipe(
+            tap(() => {
+              this.isLoading = false;
+              this.modalService.success('Método de pago eliminado exitosamente.', 'Eliminación Exitosa').subscribe(() => {
+                this.loadPaymentMethods(); // Refresh list
+                this.cancelEdit();
+              });
+            }),
+            catchError((err) => {
+              this.isLoading = false;
+              this.errorMessage =
+                err.error?.message || 'Error al eliminar el método de pago.';
+              console.error(err);
+              this.modalService.error(this.errorMessage || 'Error al eliminar el método de pago.', 'Error de Eliminación');
+              return of(null);
+            })
+          )
+          .subscribe();
+      }
+    });
   }
 
   onSubmit(): void {

@@ -8,6 +8,7 @@ import { catchError, switchMap, tap } from 'rxjs/operators';
 import { HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SessionService } from '../../../../core/services/session.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -29,6 +30,7 @@ export class TicketDetailComponent implements OnInit {
   private ticketService = inject(TicketService);
   private fb = inject(FormBuilder);
   private sessionService = inject(SessionService);
+  private modalService = inject(ModalService);
 
   private ticketSubject = new BehaviorSubject<Ticket | null>(null);
   ticket$: Observable<Ticket | null> = this.ticketSubject.asObservable();
@@ -205,12 +207,13 @@ export class TicketDetailComponent implements OnInit {
         this.transferLoading = false;
         this.transferError = null;
         this.closeTransferModal();
-        alert('¡Entrada transferida con éxito! El nuevo dueño y asistente es el usuario encontrado.');
+        this.modalService.success('¡Entrada transferida con éxito! El nuevo dueño y asistente es el usuario encontrado.', 'Transferencia Exitosa');
       }),
       catchError(err => {
         this.transferError = (err.error as any)?.message || 'Error al transferir la entrada por búsqueda.';
         this.transferLoading = false;
         console.error('Transfer error:', err);
+        this.modalService.error(this.transferError || 'Error al transferir la entrada por búsqueda.', 'Error de Transferencia');
         return of(null);
       })
     ).subscribe();
