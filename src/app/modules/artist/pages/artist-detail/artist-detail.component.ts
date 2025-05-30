@@ -19,7 +19,7 @@ export class ArtistDetailComponent implements OnInit {
   loading = false;
   error = '';
   userId = 4; // Hardcoded to 4 as per request
-  isAdmin = true; // For demo purposes, hardcoded admin status
+  isAdmin = false; // Set to false for regular users - change to true when testing admin features
 
   constructor(
     private route: ActivatedRoute,

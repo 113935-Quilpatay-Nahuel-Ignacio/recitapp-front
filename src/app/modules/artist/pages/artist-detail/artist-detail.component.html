@@ -1,21 +1,22 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="card shadow">
+            <div class="card shadow-lg">
                 <!-- Header with artist name and actions -->
-                <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h2 class="mb-0" *ngIf="artist">{{ artist.name }}</h2>
                     <h2 class="mb-0" *ngIf="!artist">Detalles del artista</h2>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 align-items-center">
                         <app-follow-artist-button *ngIf="artist?.active" [artistId]="artistId" [userId]="userId"
                             (followStatusChanged)="onFollowStatusChanged($event)">
                         </app-follow-artist-button>
 
-                        <!-- Admin actions dropdown -->
+                        <!-- Admin actions dropdown - Only show for admins -->
                         <div class="dropdown" *ngIf="isAdmin">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                            <button class="btn btn-outline-light dropdown-toggle" type="button"
                                 id="adminActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-gear"></i>
+                                <i class="bi bi-gear me-1"></i>
+                                <span class="d-none d-md-inline">Admin</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminActionsDropdown">
                                 <li><a class="dropdown-item" [routerLink]="['/artists', artistId, 'edit']">
@@ -60,10 +61,10 @@
                         <!-- Left column with image and key actions -->
                         <div class="col-md-4 mb-4">
                             <div class="text-center mb-4">
-                                <img *ngIf="artist.profileImage" [src]="artist.profileImage" class="img-fluid rounded"
+                                <img *ngIf="artist.profileImage" [src]="artist.profileImage" class="img-fluid rounded shadow"
                                     alt="{{ artist.name }}">
                                 <div *ngIf="!artist.profileImage"
-                                    class="bg-secondary text-white d-flex align-items-center justify-content-center rounded"
+                                    class="bg-secondary text-white d-flex align-items-center justify-content-center rounded shadow"
                                     style="height: 200px;">
                                     <span class="display-4">{{ artist.name.charAt(0) }}</span>
                                 </div>
@@ -72,26 +73,31 @@
                             <!-- External platforms links -->
                             <div *ngIf="hasExternalLinks()" class="mb-4">
                                 <h4 class="h5 mb-3">Plataformas</h4>
-                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                <div class="social-platforms-grid">
                                     <a *ngIf="artist.spotifyUrl" [href]="artist.spotifyUrl" target="_blank"
-                                        class="btn btn-success btn-sm">
-                                        <i class="bi bi-spotify me-1"></i> Spotify
+                                        class="platform-link spotify">
+                                        <img src="assets/images/social-icons/spotify.svg" alt="Spotify" class="platform-icon">
+                                        <span>Spotify</span>
                                     </a>
                                     <a *ngIf="artist.youtubeUrl" [href]="artist.youtubeUrl" target="_blank"
-                                        class="btn btn-danger btn-sm">
-                                        <i class="bi bi-youtube me-1"></i> YouTube
+                                        class="platform-link youtube">
+                                        <img src="assets/images/social-icons/youtube.svg" alt="YouTube" class="platform-icon">
+                                        <span>YouTube</span>
                                     </a>
                                     <a *ngIf="artist.soundcloudUrl" [href]="artist.soundcloudUrl" target="_blank"
-                                        class="btn btn-warning btn-sm">
-                                        <i class="bi bi-soundwave me-1"></i> SoundCloud
+                                        class="platform-link soundcloud">
+                                        <img src="assets/images/social-icons/soundcloud.svg" alt="SoundCloud" class="platform-icon">
+                                        <span>SoundCloud</span>
                                     </a>
                                     <a *ngIf="artist.instagramUrl" [href]="artist.instagramUrl" target="_blank"
-                                        class="btn btn-primary btn-sm">
-                                        <i class="bi bi-instagram me-1"></i> Instagram
+                                        class="platform-link instagram">
+                                        <img src="assets/images/social-icons/instagram.svg" alt="Instagram" class="platform-icon">
+                                        <span>Instagram</span>
                                     </a>
                                     <a *ngIf="artist.bandcampUrl" [href]="artist.bandcampUrl" target="_blank"
-                                        class="btn btn-info btn-sm">
-                                        <i class="bi bi-music-note me-1"></i> Bandcamp
+                                        class="platform-link bandcamp">
+                                        <i class="bi bi-music-note me-2"></i>
+                                        <span>Bandcamp</span>
                                     </a>
                                 </div>
                             </div>
@@ -124,17 +130,17 @@
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <h4 class="h5 mb-3">Información adicional</h4>
-                                    <ul class="list-group">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
                                             <span>Estado</span>
                                             <span class="badge" [ngClass]="artist.active ? 'bg-success' : 'bg-danger'">
                                                 {{ artist.active ? 'Activo' : 'Inactivo' }}
                                             </span>
                                         </li>
-                                        <li class="list-group-item">
+                                        <li class="list-group-item bg-transparent">
                                             <span>Registrado el {{ artist.registrationDate | date:'dd/MM/yyyy' }}</span>
                                         </li>
-                                        <li class="list-group-item">
+                                        <li class="list-group-item bg-transparent">
                                             <span>Última actualización el {{ artist.updatedAt | date:'dd/MM/yyyy'
                                                 }}</span>
                                         </li>
