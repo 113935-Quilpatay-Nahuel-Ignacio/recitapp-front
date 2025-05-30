@@ -12,7 +12,7 @@ import { Artist } from '../../models/artist';
 })
 export class ArtistCardComponent implements OnInit {
   @Input() artist!: Artist;
-  defaultImage = 'assets/images/default-artist.jpg';
+  defaultImage = 'assets/images/default-artist-avatar.svg';
 
   constructor() {}
 

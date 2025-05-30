@@ -20,6 +20,7 @@ export class ArtistDetailComponent implements OnInit {
   error = '';
   userId = 4; // Hardcoded to 4 as per request
   isAdmin = false; // Set to false for regular users - change to true when testing admin features
+  defaultImage = 'assets/images/default-artist-avatar.svg'; // Default artist avatar
 
   constructor(
     private route: ActivatedRoute,
@@ -88,5 +89,9 @@ export class ArtistDetailComponent implements OnInit {
       this.artist?.instagramUrl ||
       this.artist?.bandcampUrl
     );
+  }
+
+  onImageError(event: any): void {
+    event.target.src = this.defaultImage;
   }
 }
