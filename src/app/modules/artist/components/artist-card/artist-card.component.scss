@@ -39,39 +39,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      transition: transform 0.2s ease;
+      background-color: rgba(255, 255, 255, 0.9);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
       &:hover {
         transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
-      &.spotify {
-        background-color: #1db954;
-      }
-
-      &.youtube {
-        background-color: #ff0000;
-      }
-
-      &.soundcloud {
-        background-color: #ff7700;
-      }
-
-      &.instagram {
-        background: linear-gradient(
-          45deg,
-          #405de6,
-          #5851db,
-          #833ab4,
-          #c13584,
-          #e1306c,
-          #fd1d1d
-        );
-      }
-
-      i {
-        font-size: 1rem;
+      .social-icon-img {
+        width: 18px;
+        height: 18px;
+        transition: transform 0.2s ease;
       }
     }
   }

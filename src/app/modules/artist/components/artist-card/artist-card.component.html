@@ -10,17 +10,17 @@
         <div *ngIf="artist.spotifyUrl || artist.youtubeUrl || artist.soundcloudUrl || artist.instagramUrl"
             class="social-media-icons">
             <a *ngIf="artist.spotifyUrl" [href]="artist.spotifyUrl" target="_blank" class="social-icon spotify">
-                <i class="bi bi-spotify"></i>
+                <img src="assets/images/social-icons/spotify.svg" alt="Spotify" class="social-icon-img">
             </a>
             <a *ngIf="artist.youtubeUrl" [href]="artist.youtubeUrl" target="_blank" class="social-icon youtube">
-                <i class="bi bi-youtube"></i>
+                <img src="assets/images/social-icons/youtube.svg" alt="YouTube" class="social-icon-img">
             </a>
             <a *ngIf="artist.soundcloudUrl" [href]="artist.soundcloudUrl" target="_blank"
                 class="social-icon soundcloud">
-                <i class="bi bi-cloud"></i>
+                <img src="assets/images/social-icons/soundcloud.svg" alt="SoundCloud" class="social-icon-img">
             </a>
             <a *ngIf="artist.instagramUrl" [href]="artist.instagramUrl" target="_blank" class="social-icon instagram">
-                <i class="bi bi-instagram"></i>
+                <img src="assets/images/social-icons/instagram.svg" alt="Instagram" class="social-icon-img">
             </a>
         </div>
     </div>
