@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, HostListener } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EventService } from '../../services/event.service';
@@ -16,7 +16,7 @@ import { EventStatisticsDTO } from '../../models/event-statistics.dto';
   styleUrls: ['./event-detail.component.scss'],
   providers: [DatePipe, DecimalPipe]
 })
-export class EventDetailComponent implements OnInit {
+export class EventDetailComponent implements OnInit, AfterViewInit {
   eventId: number | null = null;
   event: EventDTO | null = null;
   stats: EventStatisticsDTO | null = null;
@@ -26,6 +26,7 @@ export class EventDetailComponent implements OnInit {
   isAdmin = true; // Placeholder: Implementar lógica de roles/permisos real
   isVerifying = false; // Added for verification loading state
   verificationMessage = ''; // Added for verification feedback
+  dropdownOpen = false; // Control dropdown visibility manually
   eventStatuses: { value: string; viewValue: string }[] = [
     { value: 'PROXIMO', viewValue: 'Próximo' },
     { value: 'EN_VENTA', viewValue: 'En Venta' },
@@ -38,7 +39,8 @@ export class EventDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router, // Para navegación programática si es necesario
     private eventService: EventService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private elementRef: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -59,6 +61,29 @@ export class EventDetailComponent implements OnInit {
         console.error('No Event ID in URL');
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    // Add any necessary after view init logic here
+  }
+
+  // Dropdown control methods
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  closeDropdown(): void {
+    this.dropdownOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    const dropdown = this.elementRef.nativeElement.querySelector('.dropdown');
+    
+    if (dropdown && !dropdown.contains(target)) {
+      this.closeDropdown();
+    }
   }
 
   loadEventDetails(): void {

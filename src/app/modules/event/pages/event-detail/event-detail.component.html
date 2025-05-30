@@ -51,29 +51,35 @@
               </div>
               <div *ngIf="isAdmin" class="admin-actions">
                   <div class="dropdown">
-                      <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="eventActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      <button class="btn btn-outline-secondary dropdown-toggle" 
+                              type="button" 
+                              id="eventActionsDropdown" 
+                              [attr.aria-expanded]="dropdownOpen"
+                              (click)="toggleDropdown()">
                           <i class="bi bi-gear-fill me-2"></i>Acciones
                       </button>
-                      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="eventActionsDropdown">
+                      <ul class="dropdown-menu dropdown-menu-end" 
+                          [ngClass]="{ 'show': dropdownOpen }"
+                          aria-labelledby="eventActionsDropdown">
                           <li *ngIf="!event.verified">
-                              <button class="dropdown-item" type="button" (click)="confirmVerifyEvent()" [disabled]="isVerifying">
+                              <button class="dropdown-item" type="button" (click)="confirmVerifyEvent(); closeDropdown()" [disabled]="isVerifying">
                                   <span *ngIf="isVerifying" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                   <i *ngIf="!isVerifying" class="bi bi-check-circle-fill me-2 text-success"></i> Verificar Evento
                               </button>
                           </li>
                           <li>
-                              <a class="dropdown-item" [routerLink]="['/events', event.id, 'edit']">
+                              <a class="dropdown-item" [routerLink]="['/events', event.id, 'edit']" (click)="closeDropdown()">
                                   <i class="bi bi-pencil-square me-2"></i> Editar Evento
                               </a>
                           </li>
                           <li>
-                              <button class="dropdown-item" type="button" (click)="promptChangeStatus()">
+                              <button class="dropdown-item" type="button" (click)="promptChangeStatus(); closeDropdown()">
                                   <i class="bi bi-toggles me-2"></i> Cambiar Estado
                               </button>
                           </li>
                           <li><hr class="dropdown-divider"></li>
                           <li>
-                              <button class="dropdown-item text-danger" (click)="confirmDeleteEvent()" type="button">
+                              <button class="dropdown-item text-danger" (click)="confirmDeleteEvent(); closeDropdown()" type="button">
                                   <i class="bi bi-trash3-fill me-2"></i> Eliminar Evento
                               </button>
                           </li>
