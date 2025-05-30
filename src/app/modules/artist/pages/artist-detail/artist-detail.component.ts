@@ -106,6 +106,14 @@ export class ArtistDetailComponent implements OnInit {
     // });
   }
 
+  toggleArtistStatus(): void {
+    if (this.artist?.active) {
+      this.deactivateArtist();
+    } else {
+      this.activateArtist();
+    }
+  }
+
   hasExternalLinks(): boolean {
     return !!(
       this.artist?.spotifyUrl ||

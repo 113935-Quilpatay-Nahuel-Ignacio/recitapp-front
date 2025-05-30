@@ -16,7 +16,7 @@ import { Artist } from '../../models/artist';
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './artist-edit.component.html',
-  //styleUrls: ['./artist-edit.component.scss'],
+  styleUrls: ['./artist-edit.component.scss'],
 })
 export class ArtistEditComponent implements OnInit {
   artistForm!: FormGroup;

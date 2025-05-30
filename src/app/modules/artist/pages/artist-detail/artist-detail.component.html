@@ -24,51 +24,46 @@
                                     <span class="d-md-none">Admin</span>
                                 </span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end admin-dropdown-menu shadow-lg" 
-                                aria-labelledby="adminActionsDropdown">
-                                <li class="dropdown-header-container">
+                            <div class="admin-dropdown-menu dropdown-menu" aria-labelledby="adminActionsDropdown">
+                                <!-- Management Section -->
+                                <div class="dropdown-header-container">
                                     <h6 class="dropdown-header">
-                                        <i class="bi bi-person-gear me-2"></i>Gestión del Artista
+                                        <i class="bi bi-gear-fill"></i>
+                                        Gestión del Artista
                                     </h6>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item admin-dropdown-item" 
-                                       [routerLink]="['/artists', artistId, 'edit']">
-                                        <div class="item-content">
-                                            <i class="bi bi-pencil-square me-3"></i>
-                                            <span>Editar información y plataformas</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li class="dropdown-header-container">
+                                </div>
+                                <a class="admin-dropdown-item dropdown-item" [routerLink]="['/artists', artistId, 'edit']">
+                                    <div class="item-content">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Editar información y plataformas</span>
+                                    </div>
+                                </a>
+                                
+                                <!-- Advanced Actions Section -->
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-header-container">
                                     <h6 class="dropdown-header">
-                                        <i class="bi bi-shield-exclamation me-2"></i>Acciones Avanzadas
+                                        <i class="bi bi-tools"></i>
+                                        Acciones Avanzadas
                                     </h6>
-                                </li>
-                                <li *ngIf="artist?.active">
-                                    <a class="dropdown-item admin-dropdown-item action-warning" 
-                                       href="javascript:void(0)"
-                                       (click)="confirmDeactivate()">
-                                        <div class="item-content">
-                                            <i class="bi bi-slash-circle me-3"></i>
-                                            <span>Desactivar artista</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li *ngIf="!artist?.active">
-                                    <a class="dropdown-item admin-dropdown-item action-success" 
-                                       href="javascript:void(0)"
-                                       (click)="activateArtist()">
-                                        <div class="item-content">
-                                            <i class="bi bi-check-circle me-3"></i>
-                                            <span>Activar artista</span>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
+                                </div>
+                                <a class="admin-dropdown-item dropdown-item action-warning" 
+                                   (click)="toggleArtistStatus()"
+                                   *ngIf="artist && artist.active">
+                                    <div class="item-content">
+                                        <i class="bi bi-pause-circle-fill"></i>
+                                        <span>Desactivar artista</span>
+                                    </div>
+                                </a>
+                                <a class="admin-dropdown-item dropdown-item action-success" 
+                                   (click)="toggleArtistStatus()"
+                                   *ngIf="artist && !artist.active">
+                                    <div class="item-content">
+                                        <i class="bi bi-play-circle-fill"></i>
+                                        <span>Activar artista</span>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
