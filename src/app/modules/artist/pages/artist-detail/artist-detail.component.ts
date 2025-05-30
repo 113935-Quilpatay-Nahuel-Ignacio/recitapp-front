@@ -5,6 +5,7 @@ import { ArtistService } from '../../services/artist.service';
 import { UserService } from '../../../user/services/user.service';
 import { ArtistDetailDTO } from '../../models/artist-detail';
 import { FollowArtistButtonComponent } from '../../../user/components/follow-artist-button/follow-artist-button.component';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-artist-detail',
@@ -18,7 +19,7 @@ export class ArtistDetailComponent implements OnInit {
   artist: ArtistDetailDTO | null = null;
   loading = false;
   error = '';
-  userId = 4; // Hardcoded to 4 as per request
+  userId: number | null = null;
   isAdmin = false; // Set to false for regular users - change to true when testing admin features
   defaultImage = 'assets/images/default-artist-avatar.svg'; // Default artist avatar
 
@@ -26,16 +27,18 @@ export class ArtistDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private artistService: ArtistService,
-    private userService: UserService
+    private userService: UserService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      const id = params.get('id');
-      if (id) {
-        this.artistId = +id;
-        this.loadArtistDetails();
-      }
+    this.userId = this.sessionService.getCurrentUserId();
+    const currentUser = this.sessionService.getCurrentUser();
+    this.isAdmin = currentUser?.role?.name === 'ADMIN';
+    
+    this.route.params.subscribe((params) => {
+      this.artistId = +params['id'];
+      this.loadArtistDetails();
     });
   }
 

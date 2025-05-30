@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { NotificationPreferences } from '../../models/notification-preferences';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-notification-preferences',
@@ -12,9 +13,9 @@ import { NotificationPreferences } from '../../models/notification-preferences';
   templateUrl: './notification-preferences.component.html',
 })
 export class NotificationPreferencesComponent implements OnInit {
-  userId: number = 4; // Hardcoded to 4 as per request
+  userId: number | null = null;
   preferences: NotificationPreferences = {
-    userId: 4, // Also update here for consistency if used directly
+    userId: 0, // Will be updated dynamically
     receiveReminderEmails: true,
     receiveEventPush: true,
     receiveArtistPush: true,
@@ -27,30 +28,49 @@ export class NotificationPreferencesComponent implements OnInit {
   error = '';
   success = false;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private sessionService: SessionService
+  ) {}
 
   ngOnInit(): void {
-    this.loadPreferences();
+    this.userId = this.sessionService.getCurrentUserId();
+    if (this.userId) {
+      this.preferences.userId = this.userId;
+      this.loadPreferences();
+    } else {
+      this.error = 'Usuario no autenticado';
+    }
   }
 
   loadPreferences(): void {
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+
     this.loadingPreferences = true;
+    this.error = '';
 
     this.userService.getNotificationPreferences(this.userId).subscribe({
-      next: (prefs) => {
-        this.preferences = prefs;
+      next: (preferences) => {
+        this.preferences = preferences;
         this.loadingPreferences = false;
       },
       error: (err) => {
         this.error =
-          err.error?.message ||
-          'Error al cargar preferencias de notificaciones';
+          err.error?.message || 'Error al cargar preferencias de notificación';
         this.loadingPreferences = false;
       },
     });
   }
 
-  savePreferences(): void {
+  updatePreferences(): void {
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+
     this.loading = true;
     this.error = '';
     this.success = false;
@@ -58,19 +78,15 @@ export class NotificationPreferencesComponent implements OnInit {
     this.userService
       .updateNotificationPreferences(this.userId, this.preferences)
       .subscribe({
-        next: (updatedPrefs) => {
-          this.preferences = updatedPrefs;
+        next: (updatedPreferences) => {
+          this.preferences = updatedPreferences;
           this.success = true;
           this.loading = false;
-
-          setTimeout(() => {
-            this.success = false;
-          }, 3000);
         },
         error: (err) => {
           this.error =
             err.error?.message ||
-            'Error al actualizar preferencias de notificaciones';
+            'Error al actualizar preferencias de notificación';
           this.loading = false;
         },
       });

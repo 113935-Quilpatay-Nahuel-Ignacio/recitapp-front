@@ -7,6 +7,7 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -27,6 +28,7 @@ export class TicketDetailComponent implements OnInit {
   private router = inject(Router);
   private ticketService = inject(TicketService);
   private fb = inject(FormBuilder);
+  private sessionService = inject(SessionService);
 
   private ticketSubject = new BehaviorSubject<Ticket | null>(null);
   ticket$: Observable<Ticket | null> = this.ticketSubject.asObservable();
@@ -43,7 +45,7 @@ export class TicketDetailComponent implements OnInit {
   editingTicketId: number | null = null;
   isLoading = true;
   currentTicketId: number | null = null;
-  currentUserId: number | null = 4; // Placeholder User ID
+  currentUserId: number | null = null;
 
   constructor() {
     this.attendeeForm = this.fb.group({
@@ -60,6 +62,20 @@ export class TicketDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.currentUserId = this.sessionService.getCurrentUserId();
+    
+    if (!this.currentUserId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+
+    this.route.params.subscribe((params) => {
+      this.currentTicketId = +params['id'];
+      this.loadTicketDetails();
+    });
+  }
+
+  loadTicketDetails(): void {
     this.ticket$ = this.route.paramMap.pipe(
       switchMap((params) => {
         const id = params.get('id');

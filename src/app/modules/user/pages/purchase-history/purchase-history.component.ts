@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { PurchaseHistory } from '../../models/purchase-history';
 import { Router } from '@angular/router';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-purchase-history',
@@ -14,19 +15,34 @@ import { Router } from '@angular/router';
 })
 export class PurchaseHistoryComponent implements OnInit {
   purchases: PurchaseHistory[] = [];
-  userId: number = 0;
+  userId: number | null = null;
   loading = false;
   error = '';
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(
+    private userService: UserService, 
+    private router: Router,
+    private sessionService: SessionService
+  ) {}
 
   ngOnInit(): void {
-    // Por simplicidad, usamos el ID 2 para desarrollo
-    this.userId = 4; // Posteriormente esto vendrá de la autenticación
+    // Get current user ID from session
+    this.userId = this.sessionService.getCurrentUserId();
+    
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+    
     this.loadPurchaseHistory();
   }
 
   loadPurchaseHistory(): void {
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+
     this.loading = true;
 
     this.userService.getUserPurchaseHistory(this.userId).subscribe({

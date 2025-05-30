@@ -7,6 +7,132 @@
   padding-bottom: 2rem;
 }
 
+// Header section with title and admin dropdown
+.page-header-custom {
+  margin-bottom: 2rem;
+  
+  h1 {
+    color: var(--dark-text);
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 0;
+  }
+  
+  .dropdown {
+    .btn-outline-primary {
+      border: 2px solid var(--primary-green);
+      color: var(--primary-green);
+      background-color: transparent;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      
+      &:hover, &:focus {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+      }
+      
+      .bi-gear {
+        margin-right: 0.25rem;
+      }
+    }
+    
+    .dropdown-menu {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      margin-top: 0.5rem;
+      
+      .dropdown-item {
+        color: var(--dark-text);
+        padding: 0.75rem 1.25rem;
+        transition: all 0.2s ease;
+        
+        &:hover, &:focus {
+          background-color: var(--dark-card-hover);
+          color: var(--primary-green);
+        }
+        
+        i {
+          width: 18px;
+          margin-right: 0.5rem;
+        }
+      }
+      
+      .dropdown-divider {
+        border-color: var(--dark-border);
+        margin: 0.5rem 0;
+      }
+    }
+  }
+}
+
+// Enhanced search input
+.search-input-group {
+  .input-group-text {
+    background-color: var(--dark-card-hover);
+    border: 2px solid var(--dark-border);
+    border-right: none;
+    border-radius: 0.5rem 0 0 0.5rem;
+    
+    .bi-search {
+      color: var(--primary-green);
+      font-size: 1rem;
+    }
+  }
+  
+  .form-control {
+    border-left: none;
+    border-radius: 0;
+    
+    &:focus {
+      border-left: none;
+      z-index: 3;
+    }
+  }
+  
+  .btn-outline-primary {
+    border-radius: 0 0.5rem 0.5rem 0;
+    border-left: none;
+    
+    &:hover, &:focus {
+      border-left: 2px solid var(--primary-green);
+    }
+  }
+}
+
+// Clear filters button
+.clear-filters-btn {
+  border: 2px solid var(--dark-border);
+  color: var(--dark-text-muted);
+  background-color: transparent;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: var(--dark-card-hover);
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+    transform: translateY(-1px);
+  }
+  
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+// Legacy styles (keep existing functionality)
 // Header section
 .page-header {
   margin-bottom: 2rem;

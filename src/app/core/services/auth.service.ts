@@ -180,6 +180,14 @@ export class AuthService {
   }
 
   /**
+   * Obtener ID del usuario actual
+   */
+  getCurrentUserId(): number | null {
+    const user = this.getCurrentUser();
+    return user?.id || null;
+  }
+
+  /**
    * Verificar si el usuario está autenticado
    */
   isAuthenticated(): boolean {

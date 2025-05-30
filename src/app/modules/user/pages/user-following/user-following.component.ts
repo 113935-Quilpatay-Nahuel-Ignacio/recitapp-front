@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../../services/user.service';
+import { SessionService } from '../../../../core/services/session.service';
 import { ArtistFollower } from '../../../artist/models/artist';
 import { VenueFollower } from '../../../venue/models/venue';
 
@@ -14,29 +15,43 @@ import { VenueFollower } from '../../../venue/models/venue';
   templateUrl: './user-following.component.html'
 })
 export class UserFollowingComponent implements OnInit {
-  userId: number = 2; // Mock user ID, en producción utilizarías autenticación
   followedArtists: ArtistFollower[] = [];
   followedVenues: VenueFollower[] = [];
   activeTab: 'artists' | 'venues' = 'artists';
-
   loading = {
     artists: false,
     venues: false,
   };
-
   error = {
     artists: '',
     venues: '',
   };
+  userId: number | null = null;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private sessionService: SessionService
+  ) {}
 
   ngOnInit(): void {
+    this.userId = this.sessionService.getCurrentUserId();
+    
+    if (!this.userId) {
+      this.error.artists = 'Usuario no autenticado';
+      this.error.venues = 'Usuario no autenticado';
+      return;
+    }
+    
     this.loadFollowedArtists();
     this.loadFollowedVenues();
   }
 
   loadFollowedArtists(): void {
+    if (!this.userId) {
+      this.error.artists = 'Usuario no autenticado';
+      return;
+    }
+
     this.loading.artists = true;
     this.error.artists = '';
 
@@ -46,14 +61,18 @@ export class UserFollowingComponent implements OnInit {
         this.loading.artists = false;
       },
       error: (err) => {
-        this.error.artists =
-          err.error?.message || 'Error al cargar artistas seguidos';
+        this.error.artists = err.error?.message || 'Error al cargar artistas seguidos';
         this.loading.artists = false;
       },
     });
   }
 
   loadFollowedVenues(): void {
+    if (!this.userId) {
+      this.error.venues = 'Usuario no autenticado';
+      return;
+    }
+
     this.loading.venues = true;
     this.error.venues = '';
 
@@ -63,14 +82,18 @@ export class UserFollowingComponent implements OnInit {
         this.loading.venues = false;
       },
       error: (err) => {
-        this.error.venues =
-          err.error?.message || 'Error al cargar recintos seguidos';
+        this.error.venues = err.error?.message || 'Error al cargar recintos seguidos';
         this.loading.venues = false;
       },
     });
   }
 
   unfollowArtist(artistId: number): void {
+    if (!this.userId) {
+      this.error.artists = 'Usuario no autenticado';
+      return;
+    }
+
     this.userService.unfollowArtist(this.userId, artistId).subscribe({
       next: () => {
         this.followedArtists = this.followedArtists.filter(
@@ -85,6 +108,11 @@ export class UserFollowingComponent implements OnInit {
   }
 
   unfollowVenue(venueId: number): void {
+    if (!this.userId) {
+      this.error.venues = 'Usuario no autenticado';
+      return;
+    }
+
     this.userService.unfollowVenue(this.userId, venueId).subscribe({
       next: () => {
         this.followedVenues = this.followedVenues.filter(

@@ -3,36 +3,47 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { NotificationPreferenceDTO } from '../models/notification-preference.dto';
 import { Notification } from '../models/notification.model';
+import { SessionService } from '../../../core/services/session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
   private http = inject(HttpClient);
+  private sessionService = inject(SessionService);
   // TODO: Replace with actual API URL from environment config
   private apiUrlBase = '/api'; // Example base API URL 
-  private userId = '4'; // Placeholder for actual logged-in user ID, updated to 4
 
   constructor() { }
 
   // RAPP113935-122 & RAPP113935-128: User Notification Preferences
   getNotificationPreferences(): Observable<NotificationPreferenceDTO> {
-    return this.http.get<NotificationPreferenceDTO>(
-      `${this.apiUrlBase}/users/${this.userId}/notification-preferences`
-    );
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    return this.http.get<NotificationPreferenceDTO>(`${this.apiUrlBase}/users/${userId}/notification-preferences`);
   }
 
   updateNotificationPreferences(
     preferencesDTO: NotificationPreferenceDTO
   ): Observable<NotificationPreferenceDTO> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
     return this.http.put<NotificationPreferenceDTO>(
-      `${this.apiUrlBase}/users/${this.userId}/notification-preferences`,
+      `${this.apiUrlBase}/users/${userId}/notification-preferences`,
       preferencesDTO
     );
   }
 
   // RAPP113935-125: Consultar historial de notificaciones
   getNotificationHistory(startDate?: string, endDate?: string): Observable<Notification[]> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
     let params = new HttpParams();
     if (startDate) {
       params = params.append('startDate', startDate);
@@ -41,7 +52,7 @@ export class NotificationService {
       params = params.append('endDate', endDate);
     }
     return this.http.get<Notification[]>(
-      `${this.apiUrlBase}/notifications/user/${this.userId}/history`,
+      `${this.apiUrlBase}/notifications/user/${userId}/history`,
       { params }
     );
   }
@@ -50,8 +61,12 @@ export class NotificationService {
   getNotifications(): Observable<Notification[]> {
     // API provides /unread endpoint. Or could use history with date filters.
     // For simplicity, using /unread for now.
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
     return this.http.get<Notification[]>(
-      `${this.apiUrlBase}/notifications/user/${this.userId}/unread`
+      `${this.apiUrlBase}/notifications/user/${userId}/unread`
     );
   }
 
@@ -61,6 +76,10 @@ export class NotificationService {
   // or rely on a specific API if available (not obvious from controller for unread new events).
 
   markNotificationAsRead(notificationId: string): Observable<Notification> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
     return this.http.patch<Notification>(
       `${this.apiUrlBase}/notifications/${notificationId}/read`,
       {}
@@ -68,8 +87,12 @@ export class NotificationService {
   }
 
   markMultipleAsRead(notificationIds: string[]): Observable<void> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
     return this.http.patch<void>(
-      `${this.apiUrlBase}/notifications/user/${this.userId}/read-multiple`,
+      `${this.apiUrlBase}/notifications/user/${userId}/read-multiple`,
       notificationIds
     );
   }

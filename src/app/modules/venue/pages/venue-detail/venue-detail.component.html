@@ -20,8 +20,7 @@
                     <h2 class="mb-0">{{ venue.name }}</h2>
                     <div class="d-flex gap-2">
                         <!-- Follow button -->
-                        <app-follow-venue-button *ngIf="venue.active" [venueId]="venueId" [userId]="userId"
-                            (followStatusChanged)="onFollowStatusChanged($event)">
+                        <app-follow-venue-button *ngIf="venue.active" [venueId]="venueId">
                         </app-follow-venue-button>
 
                         <!-- Admin actions dropdown -->

@@ -1,69 +1,72 @@
 <div class="transaction-history-container">
-  <h2>Transaction History for User: {{ userId }}</h2>
+  <h2>Historial de Transacciones</h2>
 
-  <button (click)="loadTransactionHistory()" class="refresh-button">
-    Refresh History
+  <button (click)="loadTransactions()" class="refresh-button">
+    Actualizar Historial
   </button>
 
-  <div *ngIf="errorMessage" class="error-message-banner">
-    {{ errorMessage }}
+  <div *ngIf="error" class="error-message-banner">
+    {{ error }}
   </div>
 
-  <div *ngIf="transactions$ | async as transactions; else loading">
-    <div *ngIf="transactions.length > 0; else noTransactions" class="transactions-table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Payment Method</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let tx of transactions">
-            <td>{{ tx.id }}</td>
-            <td>{{ tx.transactionDate | date: 'medium' }}</td>
-            <td>{{ tx.description || 'N/A' }}</td>
-            <td>{{ tx.totalAmount | currency }}</td>
-            <td>
-              <span [ngClass]="'status-' + tx.statusName.toLowerCase()">{{ tx.statusName }}</span>
-            </td>
-            <td>{{ tx.paymentMethodName }}</td>
-            <td>
-              <button 
-                (click)="viewReceipt(tx.id)" 
-                class="action-button"
-                [disabled]="tx.statusName !== 'COMPLETADA' && tx.statusName !== 'REEMBOLSADA'">
-                View Receipt
-              </button>
-              <button 
-                *ngIf="tx.statusName === 'INICIADA' || tx.statusName === 'PROCESANDO'" 
-                (click)="cancelTransaction(tx.id)" 
-                class="action-button cancel-button">
-                Cancel
-              </button>
-              <button 
-                *ngIf="tx.statusName === 'COMPLETADA' && !tx.isRefund" 
-                (click)="requestRefund(tx.id)" 
-                class="action-button refund-button">
-                Refund
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <div *ngIf="!loading && transactions.length > 0; else loadingOrEmpty" class="transactions-table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th>Estado</th>
+          <th>Método de Pago</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tx of transactions">
+          <td>{{ tx.id }}</td>
+          <td>{{ tx.transactionDate | date: 'medium' }}</td>
+          <td>{{ tx.description || 'N/A' }}</td>
+          <td>{{ tx.totalAmount | currency }}</td>
+          <td>
+            <span [ngClass]="'status-' + tx.statusName.toLowerCase()">{{ tx.statusName }}</span>
+          </td>
+          <td>{{ tx.paymentMethodName }}</td>
+          <td>
+            <button 
+              (click)="viewReceipt(tx.id)" 
+              class="action-button"
+              [disabled]="tx.statusName !== 'COMPLETADA' && tx.statusName !== 'REEMBOLSADA'">
+              Ver Recibo
+            </button>
+            <button 
+              *ngIf="tx.statusName === 'INICIADA' || tx.statusName === 'PROCESANDO'" 
+              (click)="cancelTransaction(tx.id)" 
+              class="action-button cancel-button">
+              Cancelar
+            </button>
+            <button 
+              *ngIf="tx.statusName === 'COMPLETADA' && !tx.isRefund" 
+              (click)="requestRefund(tx.id)" 
+              class="action-button refund-button">
+              Reembolso
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingOrEmpty>
+    <div *ngIf="loading" class="text-center py-4">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando historial de transacciones...</p>
     </div>
-    <ng-template #noTransactions>
-      <p>No transactions found for this user.</p>
-    </ng-template>
-  </div>
-
-  <ng-template #loading>
-    <p>Loading transaction history...</p>
+    <div *ngIf="!loading && transactions.length === 0" class="text-center py-4">
+      <p>No se encontraron transacciones para este usuario.</p>
+    </div>
   </ng-template>
 </div>
 

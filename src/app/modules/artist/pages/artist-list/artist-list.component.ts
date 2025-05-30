@@ -7,6 +7,7 @@ import { Artist } from '../../models/artist';
 import { MusicGenre } from '../../models/music-genre';
 import { ArtistCardComponent } from '../../components/artist-card/artist-card.component';
 import { HttpClientModule } from '@angular/common/http';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-artist-list',
@@ -29,15 +30,24 @@ export class ArtistListComponent implements OnInit {
   showInactive: boolean = false;
   loading: boolean = false;
   error: string = '';
+  isAdmin: boolean = false;
 
   // Pagination
   currentPage: number = 1;
   itemsPerPage: number = 12;
   totalItems: number = 0;
 
-  constructor(private artistService: ArtistService, private router: Router) {}
+  constructor(
+    private artistService: ArtistService, 
+    private router: Router,
+    private sessionService: SessionService
+  ) {}
 
   ngOnInit(): void {
+    // Check if user is admin
+    const currentUser = this.sessionService.getCurrentUser();
+    this.isAdmin = currentUser?.role?.name === 'ADMIN';
+    
     this.loadGenres();
     this.loadArtists();
   }
@@ -52,6 +62,17 @@ export class ArtistListComponent implements OnInit {
         console.error('Error loading genres:', err);
       },
     });
+  }
+
+  /**
+   * Formatear nombre de género para mostrar de forma legible
+   */
+  formatGenreName(genreName: string): string {
+    return genreName
+      .toLowerCase()
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 
   loadArtists(): void {

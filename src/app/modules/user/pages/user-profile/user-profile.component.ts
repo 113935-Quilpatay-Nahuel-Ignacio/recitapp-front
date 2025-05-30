@@ -5,11 +5,13 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  AbstractControl,
 } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { User, UserUpdate } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -21,7 +23,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class UserProfileComponent implements OnInit {
   profileForm!: FormGroup;
   user: User | null = null;
-  userId: number = 0;
+  userId: number | null = null;
   loading = false;
   submitted = false;
   error = '';
@@ -34,14 +36,19 @@ export class UserProfileComponent implements OnInit {
     private formBuilder: FormBuilder,
     private userService: UserService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
     this.showDeleteModal = false;
-    // Por simplicidad, podemos usar el ID 2 para desarrollo o
-    // obtenemos el ID del usuario autenticado (cuando tengamos autenticación)
-    this.userId = 4; // Hardcoded to 4 as per request
+    // Get current user ID from session
+    this.userId = this.sessionService.getCurrentUserId();
+    
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
 
     this.profileForm = this.formBuilder.group(
       {
@@ -88,6 +95,11 @@ export class UserProfileComponent implements OnInit {
   }
 
   loadUserProfile(): void {
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+
     this.loading = true;
 
     this.userService.getUserById(this.userId).subscribe({
@@ -105,7 +117,7 @@ export class UserProfileComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Error al cargar datos del usuario';
+        this.error = err.error?.message || 'Error al cargar el perfil';
         this.loading = false;
       },
     });
@@ -116,66 +128,89 @@ export class UserProfileComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.submitted = true;
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
 
     if (this.profileForm.invalid) {
+      this.markFormGroupTouched(this.profileForm);
       return;
     }
 
     this.loading = true;
     this.error = '';
+    this.success = false;
 
     const updateData: UserUpdate = {
-      email: this.f['email'].value,
-      firstName: this.f['firstName'].value,
-      lastName: this.f['lastName'].value,
-      country: this.f['country'].value,
-      city: this.f['city'].value,
+      email: this.profileForm.value.email,
+      firstName: this.profileForm.value.firstName,
+      lastName: this.profileForm.value.lastName,
+      country: this.profileForm.value.country,
+      city: this.profileForm.value.city,
+      password: this.profileForm.value.password || undefined,
     };
-
-    if (this.f['password'].value) {
-      updateData.password = this.f['password'].value;
-    }
 
     this.userService.updateUser(this.userId, updateData).subscribe({
       next: (updatedUser) => {
-        this.success = true;
         this.user = updatedUser;
+        this.success = true;
         this.loading = false;
+
+        if (updateData.password) {
+          this.profileForm.get('password')?.setValue('');
+          this.profileForm.get('confirmPassword')?.setValue('');
+        }
 
         setTimeout(() => {
           this.success = false;
         }, 3000);
       },
       error: (err) => {
-        this.error = err.error?.message || 'Error al actualizar perfil';
+        this.error = err.error?.message || 'Error al actualizar el perfil';
         this.loading = false;
       },
     });
   }
 
-  openDeleteModal(): void {
+  showDeleteConfirmation(): void {
     this.showDeleteModal = true;
   }
 
-  closeDeleteModal(): void {
+  hideDeleteConfirmation(): void {
     this.showDeleteModal = false;
-    this.deletionError = '';
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 
   deleteAccount(): void {
-    this.deletionLoading = true;
-    this.deletionError = '';
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+
+    this.loading = true;
 
     this.userService.deleteUser(this.userId).subscribe({
       next: () => {
-        // Redirigir a la página de inicio o de registro
-        this.router.navigate(['/']);
+        this.showDeleteModal = false;
+        this.loading = false;
+        // Aquí podrías redirigir a una página de confirmación o al login
+        alert('Cuenta eliminada exitosamente');
       },
       error: (err) => {
-        this.deletionError =
-          err.error?.message || 'Error al eliminar la cuenta';
-        this.deletionLoading = false;
+        this.error = err.error?.message || 'Error al eliminar la cuenta';
+        this.loading = false;
+        this.showDeleteModal = false;
       },
     });
   }

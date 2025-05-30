@@ -6,6 +6,7 @@ import { Venue, VenueSection, VenueStatistics } from '../../models/venue';
 import { EventDTO } from '../../../event/models/event';
 import { UserService } from '../../../user/services/user.service';
 import { FollowVenueButtonComponent } from '../../../user/components/follow-venue-button/follow-venue-button.component';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-venue-detail',
@@ -32,45 +33,26 @@ export class VenueDetailComponent implements OnInit {
     events: '',
     stats: '',
   };
-  userId = 4; // Hardcoded to 4 as per request
-  isAdmin = true; // For demo purposes, hardcoded admin status
+  userId: number | null = null;
+  isAdmin = false;
   currentTab: 'info' | 'events' | 'sections' | 'stats' = 'info';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private venueService: VenueService,
-    private userService: UserService
+    private userService: UserService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      const idParam = params.get('id');
-      if (idParam) {
-        const numericId = Number(idParam);
-        if (!isNaN(numericId)) {
-          this.venueId = numericId;
-          this.loadVenueDetails();
-          this.loadVenueSections();
-          this.loadUpcomingEvents();
-          this.loadVenueStatistics();
-        } else {
-          // ID inválido en la ruta, mostrar error y no cargar datos
-          console.error('Invalid ID parameter in route for VenueDetail:', idParam);
-          this.error.venue = 'El ID del recinto en la URL no es válido.';
-          this.error.sections = 'ID de recinto inválido para cargar secciones.';
-          this.error.events = 'ID de recinto inválido para cargar eventos.';
-          this.error.stats = 'ID de recinto inválido para cargar estadísticas.';
-          // Considerar redirigir a una página de error o a la lista de recintos
-          // this.router.navigate(['/venues']); 
-        }
-      } else {
-        // No hay ID en la ruta, esto no debería pasar para un componente de detalle
-        console.error('No ID parameter found in route for VenueDetail');
-        this.error.venue = 'No se especificó un ID de recinto en la URL.';
-        this.error.stats = 'No se especificó un ID de recinto para cargar estadísticas.';
-        // this.router.navigate(['/venues']); 
-      }
+    this.userId = this.sessionService.getCurrentUserId();
+    const currentUser = this.sessionService.getCurrentUser();
+    this.isAdmin = currentUser?.role?.name === 'ADMIN';
+    
+    this.route.params.subscribe((params) => {
+      this.venueId = +params['id'];
+      this.loadVenueDetails();
     });
   }
 
@@ -240,13 +222,6 @@ export class VenueDetailComponent implements OnInit {
         this.loading.venue = false;
       },
     });
-  }
-
-  onFollowStatusChanged(following: boolean): void {
-    // Refresh venue details or update UI as needed
-    console.log(
-      `Usuario ${following ? 'ahora sigue' : 'dejó de seguir'} este recinto`
-    );
   }
 
   // Method to handle navigation to Google Maps

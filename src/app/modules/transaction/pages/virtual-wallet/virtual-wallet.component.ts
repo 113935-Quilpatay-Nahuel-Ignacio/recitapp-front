@@ -1,21 +1,17 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
 import { catchError, switchMap, tap, map } from 'rxjs/operators';
 import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction';
 import { WalletTransactionDTO } from '../../models/dto/wallet-transaction.dto';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-virtual-wallet',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './virtual-wallet.component.html',
   styleUrl: './virtual-wallet.component.scss',
 })
@@ -25,12 +21,30 @@ export class VirtualWalletComponent implements OnInit {
   recentTransactions$!: Observable<Transaction[]>;
   errorMessage: string | null = null;
   isLoading = false;
-  userId = 4; // Changed to 4
+  userId: number | null = null;
 
   private fb = inject(FormBuilder);
   private transactionService = inject(TransactionService);
+  private sessionService = inject(SessionService);
+
+  walletBalance: any = null;
+  loading = false;
+  error = '';
+  success = '';
+
+  // Recharge form
+  rechargeAmount: number = 0;
+  rechargeLoading = false;
+  rechargeError = '';
 
   ngOnInit(): void {
+    this.userId = this.sessionService.getCurrentUserId();
+    
+    if (!this.userId) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+    
     this.walletForm = this.fb.group({
       amount: [null, [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]{1,2})?$/)]],
       currency: ['USD', Validators.required],
@@ -137,4 +151,7 @@ export class VirtualWalletComponent implements OnInit {
         this.isLoading = false;
       });
   }
+
+  // Note: rechargeWallet method removed as it doesn't exist in TransactionService
+  // The wallet adjustment functionality is available through the adjustBalance method above
 } 

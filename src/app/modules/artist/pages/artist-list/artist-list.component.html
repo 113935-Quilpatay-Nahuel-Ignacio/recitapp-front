@@ -1,17 +1,51 @@
 <div class="container py-4">
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="text-center mb-4">Artistas</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4 page-header-custom">
+                <h1 class="mb-0">Artistas</h1>
+                
+                <!-- Admin dropdown -->
+                <div class="dropdown" *ngIf="isAdmin">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" 
+                            id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-gear me-1"></i>
+                        <span class="d-none d-md-inline">Admin</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                        <li>
+                            <a class="dropdown-item" routerLink="/artists/new">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Artista
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" routerLink="/artists">
+                                <i class="bi bi-list me-2"></i>Gestionar Artistas
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item" routerLink="/genres">
+                                <i class="bi bi-music-note-list me-2"></i>Gestionar Géneros
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-12 col-md-5">
-                            <div class="input-group">
+                            <div class="input-group search-input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-search text-muted"></i>
+                                </span>
                                 <input type="text" class="form-control" placeholder="Buscar por nombre..."
                                     [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
                                 <button class="btn btn-outline-primary" type="button" (click)="onSearch()">
-                                    <i class="bi bi-search"></i>
+                                    Buscar
                                 </button>
                             </div>
                         </div>
@@ -20,7 +54,7 @@
                             <select class="form-select" [(ngModel)]="selectedGenreId" (change)="onGenreChange()">
                                 <option [ngValue]="null">Todos los géneros</option>
                                 <option *ngFor="let genre of genres" [ngValue]="genre.id">
-                                    {{ genre.name }}
+                                    {{ formatGenreName(genre.name) }}
                                 </option>
                             </select>
                         </div>
@@ -36,8 +70,8 @@
                         </div>
 
                         <div class="col-6 col-md-1 text-end">
-                            <button class="btn btn-outline-secondary" (click)="clearFilters()"
-                                *ngIf="searchTerm || selectedGenreId">
+                            <button class="btn clear-filters-btn" (click)="clearFilters()"
+                                *ngIf="searchTerm || selectedGenreId" title="Limpiar filtros">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -45,8 +79,8 @@
                 </div>
             </div>
 
-            <!-- Add new artist button (admin only) -->
-            <div class="d-flex justify-content-end mb-4">
+            <!-- Add new artist button (admin only) - Solo mostrar si no hay dropdown admin -->
+            <div class="d-flex justify-content-end mb-4" *ngIf="!isAdmin">
                 <button class="btn btn-primary" routerLink="/artists/new">
                     <i class="bi bi-plus-lg me-2"></i>Nuevo Artista
                 </button>
