@@ -9,7 +9,9 @@
   <!-- Filtros -->
   <div class="card mb-4 shadow-sm filter-card">
     <div class="card-body">
-      <h5 class="card-title">Filtrar Eventos</h5>
+      <h5 class="card-title">
+        <i class="bi bi-funnel-fill me-2"></i>Filtrar Eventos
+      </h5>
       <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
         <div class="row g-3 align-items-end">
           <div class="col-md-3">
@@ -21,7 +23,7 @@
             <input type="date" id="endDate" formControlName="endDate" class="form-control" />
           </div>
           <div class="col-md-12 mt-2 mb-3">
-            <div class="btn-group btn-group-sm" role="group" aria-label="Filtros rápidos de fecha">
+            <div class="btn-group btn-group-sm status-filter-buttons" role="group" aria-label="Filtros rápidos de fecha">
               <button type="button" class="btn btn-outline-secondary" (click)="filterToday()">Hoy</button>
               <button type="button" class="btn btn-outline-secondary" (click)="filterThisWeek()">Esta Semana</button>
               <button type="button" class="btn btn-outline-secondary" (click)="filterThisMonth()">Este Mes</button>
@@ -55,8 +57,12 @@
             </select>
           </div>
           <div class="col-md-12 text-end mt-3 filter-actions">
-            <button type="submit" class="btn btn-primary me-2">Aplicar Filtros</button>
-            <button type="button" (click)="clearFilters()" class="btn btn-outline-secondary">Limpiar Filtros</button>
+            <button type="submit" class="btn btn-primary me-2">
+              <i class="bi bi-search me-2"></i>Aplicar Filtros
+            </button>
+            <button type="button" (click)="clearFilters()" class="btn btn-outline-secondary">
+              <i class="bi bi-x-circle me-2"></i>Limpiar Filtros
+            </button>
           </div>
         </div>
       </form>
@@ -66,7 +72,9 @@
   <!-- Acciones Administrativas -->
   <div class="card mb-4 shadow-sm admin-card" *ngIf="isAdmin">
     <div class="card-body">
-      <h5 class="card-title">Acciones Administrativas</h5>
+      <h5 class="card-title">
+        <i class="bi bi-shield-fill-check me-2"></i>Acciones Administrativas
+      </h5>
       <div class="row g-3 align-items-end">
         <div class="col-md-3">
           <label for="cleanupCutoffDate" class="form-label">Eliminar cancelados antes de:</label>
@@ -81,10 +89,10 @@
         </div>
       </div>
       <div *ngIf="cleanupSuccessMessage" class="alert alert-success mt-3" role="alert">
-        {{ cleanupSuccessMessage }}
+        <i class="bi bi-check-circle-fill me-2"></i>{{ cleanupSuccessMessage }}
       </div>
       <div *ngIf="cleanupErrorMessage" class="alert alert-danger mt-3" role="alert">
-        {{ cleanupErrorMessage }}
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ cleanupErrorMessage }}
       </div>
     </div>
   </div>
@@ -98,41 +106,49 @@
   </div>
 
   <div *ngIf="!isLoading && errorMessage" class="alert alert-warning text-center">
-    {{ errorMessage }}
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
   </div>
 
   <!-- Lista de Eventos -->
-  <div *ngIf="!isLoading && events.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 events-grid">
-    <div class="col" *ngFor="let event of events">
+  <div *ngIf="!isLoading && events.length > 0" class="events-grid">
+    <div *ngFor="let event of events">
       <div class="card h-100 shadow-hover event-card">
-        <img *ngIf="event.flyerImage" [src]="event.flyerImage" class="card-img-top event-flyer-image" [alt]="event.name">
-        <div *ngIf="!event.flyerImage" class="card-img-top event-flyer-placeholder d-flex align-items-center justify-content-center bg-light">
-            <i class="bi bi-calendar-event display-4 text-muted"></i>
+        <div class="card-img-wrapper">
+          <img *ngIf="event.flyerImage" 
+               [src]="event.flyerImage" 
+               class="card-img-top event-image" 
+               [alt]="event.name"
+               (error)="onImageError($event)">
+          <div class="event-image-placeholder" [style.display]="event.flyerImage ? 'none' : 'flex'">
+            <i class="bi bi-calendar-event"></i>
+          </div>
         </div>
         <div class="card-body d-flex flex-column">
           <h5 class="card-title">{{ event.name }}</h5>
-          <p class="card-text text-muted small mb-1">
-            <i class="bi bi-calendar-week me-1"></i> {{ formatEventDate(event.startDateTime) }}
+          <p class="card-text event-date">
+            <i class="bi bi-calendar-week"></i> {{ formatEventDate(event.startDateTime) }}
           </p>
-          <p class="card-text text-muted small mb-2">
-            <i class="bi bi-geo-alt-fill me-1"></i> {{ event.venueName }}
+          <p class="card-text venue-info">
+            <i class="bi bi-geo-alt-fill"></i> {{ event.venueName }}
           </p>
-          <p class="card-text text-muted small mb-2" *ngIf="event.mainArtistName">
-            <i class="bi bi-person-fill me-1"></i> {{ event.mainArtistName }}
+          <p class="card-text venue-info" *ngIf="event.mainArtistName">
+            <i class="bi bi-person-fill"></i> {{ event.mainArtistName }}
           </p>
           <p class="card-text event-description">{{ event.description | slice:0:100 }}{{ (event.description && event.description.length > 100) ? '...' : '' }}</p>
           <div class="mt-auto pt-2">
-            <a [routerLink]="['/events', event.id]" class="btn btn-outline-primary w-100">Ver Detalles</a>
+            <a [routerLink]="['/events', event.id]" class="btn btn-outline-primary w-100 mb-2">
+              <i class="bi bi-eye me-2"></i>Ver Detalles
+            </a>
           </div>
         </div>
-        <div class="card-footer text-center">
-            <span class="badge" [ngClass]="{
-                'bg-success': event.statusName === 'EN_VENTA',
-                'bg-info': event.statusName === 'PROXIMO',
-                'bg-warning text-dark': event.statusName === 'AGOTADO',
-                'bg-danger': event.statusName === 'CANCELADO',
-                'bg-secondary': event.statusName === 'FINALIZADO'
-              }">{{ formatStatusName(event.statusName) }}</span>
+        <div class="card-footer text-center event-status">
+          <span class="badge" [ngClass]="{
+              'bg-success': event.statusName === 'EN_VENTA',
+              'bg-info': event.statusName === 'PROXIMO',
+              'bg-warning text-dark': event.statusName === 'AGOTADO',
+              'bg-danger': event.statusName === 'CANCELADO',
+              'bg-secondary': event.statusName === 'FINALIZADO'
+            }">{{ formatStatusName(event.statusName) }}</span>
         </div>
       </div>
     </div>
@@ -141,14 +157,14 @@
   <!-- Mensaje si no hay eventos después de aplicar filtros (y no hay error) -->
   <div *ngIf="!isLoading && !errorMessage && events.length === 0 && allEvents.length === 0 && (filterForm.dirty || filterForm.touched)" class="empty-state">
     <div class="alert alert-info text-center">
-      No se encontraron eventos que coincidan con los filtros aplicados.
+      <i class="bi bi-search me-2"></i>No se encontraron eventos que coincidan con los filtros aplicados.
     </div>
   </div>
   
   <!-- Mensaje si no hay eventos en general (carga inicial) -->
   <div *ngIf="!isLoading && !errorMessage && events.length === 0 && allEvents.length === 0 && !filterForm.dirty && !filterForm.touched" class="empty-state">
     <div class="alert alert-info text-center">
-      Actualmente no hay eventos para mostrar. 
+      <i class="bi bi-calendar-plus me-2"></i>Actualmente no hay eventos para mostrar. 
       <a routerLink="/events/new" class="alert-link">¡Registra uno nuevo!</a>
     </div>
   </div>

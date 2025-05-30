@@ -1,114 +1,203 @@
-<div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <h2>{{ isEditMode ? 'Editar Evento' : 'Registrar Nuevo Evento' }}</h2>
-
-      <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
-        <!-- Mensajes de error/éxito -->
-        <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-          {{ errorMessage }}
-        </div>
-        <div *ngIf="successMessage" class="alert alert-success mt-3">
-          {{ successMessage }}
-        </div>
-
-        <!-- Nombre del Evento -->
-        <div class="mb-3">
-          <label for="name" class="form-label">Nombre del Evento</label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            class="form-control"
-            [ngClass]="{ 'is-invalid': f['name'].touched && f['name'].errors }"
-          />
-          <div *ngIf="f['name'].touched && f['name'].errors?.['required']" class="invalid-feedback">
-            El nombre es requerido.
+<div class="event-form">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-xl-6">
+        <div class="form-container">
+          <!-- Header -->
+          <div class="page-header">
+            <h2 class="page-title">
+              <i class="bi bi-calendar-event me-2"></i>
+              {{ isEditMode ? 'Editar Evento' : 'Registrar Nuevo Evento' }}
+            </h2>
+            <p class="page-subtitle">
+              {{ isEditMode ? 'Modifica los detalles del evento' : 'Completa la información para crear un nuevo evento' }}
+            </p>
           </div>
-        </div>
 
-        <!-- Descripción -->
-        <div class="mb-3">
-          <label for="description" class="form-label">Descripción</label>
-          <textarea
-            id="description"
-            formControlName="description"
-            class="form-control"
-            rows="3"
-          ></textarea>
-        </div>
+          <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" novalidate>
+            <!-- Mensajes de feedback -->
+            <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
+            </div>
+            <div *ngIf="successMessage" class="alert alert-success" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage }}
+            </div>
 
-        <!-- Fecha y Hora de Inicio -->
-        <div class="mb-3">
-          <label for="startDateTime" class="form-label">Fecha y Hora de Inicio</label>
-          <input
-            type="datetime-local"
-            id="startDateTime"
-            formControlName="startDateTime"
-            class="form-control"
-            [ngClass]="{ 'is-invalid': f['startDateTime'].touched && f['startDateTime'].errors }"
-          />
-          <div *ngIf="f['startDateTime'].touched && f['startDateTime'].errors?.['required']" class="invalid-feedback">
-            La fecha y hora de inicio son requeridas.
-          </div>
-        </div>
+            <!-- Información Básica -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <i class="bi bi-info-circle me-2"></i>Información Básica
+              </h3>
+              
+              <div class="row g-3">
+                <!-- Nombre del Evento -->
+                <div class="col-12">
+                  <label for="name" class="form-label">Nombre del Evento</label>
+                  <input
+                    type="text"
+                    id="name"
+                    formControlName="name"
+                    class="form-control"
+                    placeholder="Ingresa el nombre del evento"
+                    [ngClass]="{ 'is-invalid': f['name'].touched && f['name'].errors }"
+                  />
+                  <div *ngIf="f['name'].touched && f['name'].errors?.['required']" class="invalid-feedback">
+                    El nombre del evento es requerido
+                  </div>
+                </div>
 
-        <!-- Fecha y Hora de Fin -->
-        <div class="mb-3">
-          <label for="endDateTime" class="form-label">Fecha y Hora de Fin (Opcional)</label>
-          <input
-            type="datetime-local"
-            id="endDateTime"
-            formControlName="endDateTime"
-            class="form-control"
-          />
-        </div>
+                <!-- Descripción -->
+                <div class="col-12">
+                  <label for="description" class="form-label">Descripción</label>
+                  <textarea
+                    id="description"
+                    formControlName="description"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Describe el evento, artistas, género musical, etc."
+                  ></textarea>
+                  <small class="form-text text-muted">
+                    Información que ayude a los usuarios a conocer más sobre el evento
+                  </small>
+                </div>
 
-        <!-- Recinto -->
-        <div class="mb-3">
-          <label for="venueId" class="form-label">Recinto</label>
-          <select
-            id="venueId"
-            formControlName="venueId"
-            class="form-select"
-            [ngClass]="{ 'is-invalid': f['venueId'].touched && f['venueId'].errors }"
-          >
-            <option [ngValue]="null" disabled>Selecciona un recinto</option>
-            <option *ngFor="let venue of venues" [ngValue]="venue.id">
-              {{ venue.name }}
-            </option>
-          </select>
-          <div *ngIf="f['venueId'].touched && f['venueId'].errors?.['required']" class="invalid-feedback">
-            El recinto es requerido.
-          </div>
-        </div>
+                <!-- Imagen del Evento -->
+                <div class="col-12">
+                  <label for="flyerImage" class="form-label">URL de la Imagen del Evento (Flyer)</label>
+                  
+                  <input
+                    type="url"
+                    id="flyerImage"
+                    formControlName="flyerImage"
+                    class="form-control mb-2"
+                    placeholder="https://ejemplo.com/imagen-evento.jpg"
+                  />
+                  <small class="form-text text-muted d-block mb-2">
+                    <i class="bi bi-info-circle me-1"></i>
+                    URL de una imagen que represente al evento
+                  </small>
 
-        <!-- Artista Principal -->
-        <div class="mb-3">
-          <label for="mainArtistId" class="form-label">Artista Principal (Opcional)</label>
-          <select
-            id="mainArtistId"
-            formControlName="mainArtistId"
-            class="form-select"
-          >
-            <option [ngValue]="null">Selecciona un artista (o ninguno)</option>
-            <option *ngFor="let artist of artists" [ngValue]="artist.id">
-              {{ artist.name }}
-            </option>
-          </select>
-        </div>
+                  <!-- Vista previa de imagen -->
+                  <div *ngIf="f['flyerImage'].value" class="image-preview mt-3">
+                    <div class="preview-container">
+                      <img 
+                        [src]="f['flyerImage'].value" 
+                        class="preview-image"
+                        [alt]="f['name'].value || 'Vista previa del evento'"
+                        (error)="onImageError($event)"
+                        (load)="onImageLoad($event)"
+                      />
+                      <div class="preview-overlay">
+                        <small class="text-light">Vista previa de la imagen</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <!-- Botón de Envío -->
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-            <button type="button" class="btn btn-secondary me-md-2" [routerLink]="isEditMode ? ['/events', eventId] : ['/events']">
-                Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="eventForm.invalid || isLoading">
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1"></span>
+            <!-- Fechas y Horarios -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <i class="bi bi-clock me-2"></i>Fechas y Horarios
+              </h3>
+              
+              <div class="row g-3">
+                <!-- Fecha y Hora de Inicio -->
+                <div class="col-md-6">
+                  <label for="startDateTime" class="form-label">Fecha y Hora de Inicio</label>
+                  <input
+                    type="datetime-local"
+                    id="startDateTime"
+                    formControlName="startDateTime"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': f['startDateTime'].touched && f['startDateTime'].errors }"
+                  />
+                  <div *ngIf="f['startDateTime'].touched && f['startDateTime'].errors?.['required']" class="invalid-feedback">
+                    La fecha y hora de inicio son requeridas
+                  </div>
+                </div>
+
+                <!-- Fecha y Hora de Fin -->
+                <div class="col-md-6">
+                  <label for="endDateTime" class="form-label">Fecha y Hora de Fin</label>
+                  <input
+                    type="datetime-local"
+                    id="endDateTime"
+                    formControlName="endDateTime"
+                    class="form-control"
+                  />
+                  <small class="form-text text-muted">Opcional - Deja vacío si es un evento de horario abierto</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ubicación y Artistas -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <i class="bi bi-geo-alt me-2"></i>Ubicación y Artistas
+              </h3>
+              
+              <div class="row g-3">
+                <!-- Recinto -->
+                <div class="col-md-6">
+                  <label for="venueId" class="form-label">Recinto</label>
+                  <select
+                    id="venueId"
+                    formControlName="venueId"
+                    class="form-select"
+                    [ngClass]="{ 'is-invalid': f['venueId'].touched && f['venueId'].errors }"
+                  >
+                    <option [ngValue]="null" disabled>Selecciona un recinto</option>
+                    <option *ngFor="let venue of venues" [ngValue]="venue.id">
+                      {{ venue.name }}
+                    </option>
+                  </select>
+                  <div *ngIf="f['venueId'].touched && f['venueId'].errors?.['required']" class="invalid-feedback">
+                    Debes seleccionar un recinto
+                  </div>
+                </div>
+
+                <!-- Artista Principal -->
+                <div class="col-md-6">
+                  <label for="mainArtistId" class="form-label">Artista Principal</label>
+                  <select
+                    id="mainArtistId"
+                    formControlName="mainArtistId"
+                    class="form-select"
+                  >
+                    <option [ngValue]="null">Selecciona un artista (opcional)</option>
+                    <option *ngFor="let artist of artists" [ngValue]="artist.id">
+                      {{ artist.name }}
+                    </option>
+                  </select>
+                  <small class="form-text text-muted">
+                    Puedes dejarlo vacío si hay múltiples artistas o no hay un artista principal definido
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                [routerLink]="isEditMode ? ['/events', eventId] : ['/events']">
+                <i class="bi bi-arrow-left me-2"></i>Cancelar
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary" 
+                [disabled]="eventForm.invalid || isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <i *ngIf="!isLoading" class="bi bi-check-lg me-2"></i>
                 {{ isEditMode ? 'Actualizar Evento' : 'Crear Evento' }}
-            </button>
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>

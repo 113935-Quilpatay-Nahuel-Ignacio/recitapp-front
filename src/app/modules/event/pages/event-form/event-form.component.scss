@@ -1,0 +1,423 @@
+@import '../../../../shared/styles/global-component-styles';
+
+.event-form {
+  @include app-form-component;
+  
+  .container-fluid {
+    padding: 2rem 1rem;
+  }
+  
+  .form-container {
+    background: transparent;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    
+    form {
+      background: var(--dark-card);
+      margin: 0;
+      border-radius: 0 0 0.75rem 0.75rem;
+    }
+  }
+  
+  // Custom datetime input styling
+  input[type="datetime-local"] {
+    background-color: var(--dark-input-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text-primary);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+      background-color: var(--dark-input-focus-bg);
+    }
+    
+    &:hover:not(:focus) {
+      border-color: var(--dark-border-hover);
+    }
+    
+    // Custom styling for date/time picker icons
+    &::-webkit-calendar-picker-indicator {
+      background-color: var(--primary-green);
+      border-radius: 3px;
+      cursor: pointer;
+      filter: invert(1);
+      padding: 2px;
+      
+      &:hover {
+        background-color: var(--primary-green-hover);
+      }
+    }
+    
+    // Firefox datetime input styling
+    &::-moz-datetime-edit,
+    &::-moz-datetime-edit-fields-wrapper {
+      background-color: transparent;
+      color: var(--dark-text-primary);
+    }
+  }
+  
+  // Enhanced select styling
+  .form-select {
+    background-color: var(--dark-input-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text-primary);
+    border-radius: 0.5rem;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2322c55e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+      background-color: var(--dark-input-focus-bg);
+    }
+    
+    &:hover:not(:focus) {
+      border-color: var(--dark-border-hover);
+    }
+    
+    option {
+      background-color: var(--dark-card);
+      color: var(--dark-text-primary);
+      padding: 0.5rem;
+    }
+  }
+  
+  // Enhanced textarea styling
+  textarea.form-control {
+    background-color: var(--dark-input-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text-primary);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 100px;
+    
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+      background-color: var(--dark-input-focus-bg);
+    }
+    
+    &:hover:not(:focus) {
+      border-color: var(--dark-border-hover);
+    }
+    
+    &::placeholder {
+      color: var(--dark-text-muted);
+      opacity: 0.7;
+    }
+  }
+  
+  // Enhanced text input styling
+  input[type="text"].form-control {
+    background-color: var(--dark-input-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text-primary);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+      background-color: var(--dark-input-focus-bg);
+    }
+    
+    &:hover:not(:focus) {
+      border-color: var(--dark-border-hover);
+    }
+    
+    &::placeholder {
+      color: var(--dark-text-muted);
+      opacity: 0.7;
+    }
+  }
+  
+  // Label improvements
+  .form-label {
+    color: var(--dark-text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    
+    &::after {
+      content: "*";
+      color: var(--danger-red);
+      margin-left: 0.25rem;
+      font-weight: bold;
+    }
+    
+    // Remove asterisk for optional fields
+    &:not([for$="*"]) {
+      &::after {
+        display: none;
+      }
+    }
+  }
+  
+  // Form text improvements
+  .form-text {
+    color: var(--dark-text-muted);
+    font-size: 0.825rem;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+    
+    &.text-muted {
+      opacity: 0.8;
+    }
+  }
+  
+  // Invalid feedback styling
+  .invalid-feedback {
+    color: var(--danger-red);
+    font-size: 0.825rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+  }
+  
+  // Form section enhancements
+  .form-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    
+    // Consistent spacing between form sections
+    &:not(:last-of-type) {
+      margin-bottom: 2rem;
+    }
+    
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark-text-primary);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary-green);
+      display: flex;
+      align-items: center;
+      
+      i {
+        color: var(--primary-green);
+        margin-right: 0.5rem;
+      }
+    }
+    
+    // Consistent spacing within sections
+    .row.g-3 {
+      margin-top: 0.5rem;
+    }
+    
+    // Form group spacing
+    .col-12,
+    .col-md-6 {
+      margin-bottom: 1rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  // URL input and preview styles
+  input[type="url"].form-control {
+    background-color: var(--dark-input-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text-primary);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+      background-color: var(--dark-input-focus-bg);
+    }
+    
+    &:hover:not(:focus) {
+      border-color: var(--dark-border-hover);
+    }
+    
+    &::placeholder {
+      color: var(--dark-text-muted);
+      opacity: 0.7;
+    }
+  }
+
+  // Image preview styles
+  .image-preview {
+    .preview-container {
+      position: relative;
+      max-width: 300px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 2px solid var(--dark-border);
+      
+      .preview-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+        transition: opacity 0.3s ease;
+      }
+      
+      .preview-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        padding: 0.5rem;
+        
+        small {
+          color: #ffffff;
+          font-weight: 500;
+        }
+      }
+      
+      &:hover {
+        border-color: var(--primary-green);
+        
+        .preview-image {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+  
+  // Form actions enhancements
+  .form-actions {
+    padding: 2rem 1.5rem 1.5rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--dark-border);
+    background: var(--dark-card-subtle);
+    border-radius: 0 0 0.75rem 0.75rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    
+    .btn {
+      min-width: 120px;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      
+      &.btn-primary {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+        
+        &:hover:not(:disabled) {
+          background-color: var(--primary-green-hover);
+          border-color: var(--primary-green-hover);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+      
+      &.btn-secondary {
+        background-color: transparent;
+        border-color: var(--dark-border);
+        color: var(--dark-text-secondary);
+        
+        &:hover {
+          background-color: var(--dark-card-hover);
+          border-color: var(--dark-border-hover);
+          color: var(--dark-text-primary);
+        }
+      }
+    }
+  }
+  
+  // Page header improvements
+  .page-header {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem 0.75rem 0 0;
+    
+    .page-title {
+      margin-bottom: 0.5rem;
+      color: var(--dark-text-primary);
+      font-weight: 700;
+      font-size: 1.75rem;
+      
+      i {
+        color: var(--primary-green);
+      }
+    }
+    
+    .page-subtitle {
+      margin: 0;
+      color: var(--dark-text-secondary);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+  }
+  
+  // Alert messages spacing
+  .alert {
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    
+    &.alert-danger {
+      background-color: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger-red);
+      color: #fca5a5;
+    }
+    
+    &.alert-success {
+      background-color: rgba(34, 197, 94, 0.1);
+      border-color: var(--primary-green);
+      color: #86efac;
+    }
+  }
+  
+  // Required field indicator for labels containing required fields
+  label[for="name"]::after,
+  label[for="startDateTime"]::after,
+  label[for="venueId"]::after {
+    content: " *";
+    color: var(--danger-red);
+    font-weight: bold;
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      
+      .btn {
+        width: 100%;
+      }
+    }
+    
+    .form-section .section-title {
+      font-size: 1rem;
+    }
+  }
+}

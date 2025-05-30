@@ -216,26 +216,22 @@ export class ArtistFormComponent implements OnInit {
   }
 
   onImagePreview(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      // Here you would typically upload the file to your server
-      // For this example, we'll just create a data URL for preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-        this.artistForm.patchValue({
-          profileImage: this.imagePreview,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+    // No longer needed for URL-based images
   }
 
   onImageRemove(): void {
-    this.imagePreview = null;
-    this.artistForm.patchValue({
-      profileImage: '',
-    });
+    // No longer needed for URL-based images
+  }
+
+  // Métodos para manejar errores y carga de imágenes URL
+  onImageError(event: any): void {
+    // Si hay error cargando la imagen URL, ocultar la vista previa
+    event.target.style.display = 'none';
+  }
+
+  onImageLoad(event: any): void {
+    // Si la imagen URL se carga correctamente, mostrarla
+    event.target.style.display = 'block';
   }
 
   validateUrl(control: any): { [key: string]: any } | null {

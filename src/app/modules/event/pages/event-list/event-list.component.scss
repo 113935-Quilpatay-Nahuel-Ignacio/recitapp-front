@@ -9,15 +9,27 @@
 
 // Event-specific customizations
 .event-card {
-  .event-image {
+  .card-img-wrapper {
+    position: relative;
     height: 200px;
+    overflow: hidden;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+  
+  .event-image {
+    height: 100%;
     object-fit: cover;
     width: 100%;
     transition: transform 0.3s ease;
   }
   
   .event-image-placeholder {
-    height: 200px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
     background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
     display: flex;
     align-items: center;
@@ -41,7 +53,7 @@
       margin-bottom: 0.5rem;
       
       i {
-        margin-right: 0.25rem;
+        margin-right: 0.5rem;
       }
     }
     
@@ -52,14 +64,24 @@
       
       i {
         color: var(--info-blue);
-        margin-right: 0.25rem;
+        margin-right: 0.5rem;
       }
     }
     
-    .event-status {
+    .event-description {
+      color: var(--dark-text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+  }
+  
+  .card-footer {
+    &.event-status {
       .badge {
         font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-weight: 600;
         
         &.bg-success {
           background-color: var(--success-green) !important;

@@ -193,32 +193,30 @@
                                         <i class="bi bi-image me-2"></i>Imagen de Perfil
                                     </h6>
                                     
-                                    <div class="image-upload-section">
-                                        <div class="row">
-                                            <div class="col-4">
-                                                <div class="image-preview-container">
-                                                    <img [src]="imagePreview || defaultImage" 
-                                                         alt="Vista previa de la imagen"
-                                                         class="img-fluid rounded shadow">
+                                    <div class="image-url-section">
+                                        <div class="mb-3">
+                                            <label for="profileImageUrl" class="form-label">URL de la Imagen de Perfil</label>
+                                            <input type="url" 
+                                                   class="form-control mb-2" 
+                                                   id="profileImageUrl"
+                                                   formControlName="profileImage"
+                                                   placeholder="https://ejemplo.com/imagen-artista.jpg">
+                                            <small class="form-text text-muted">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                URL de una imagen que represente al artista
+                                            </small>
                                         </div>
-                                            </div>
-                                            <div class="col-8">
-                                                <div class="image-controls">
-                                                    <input type="file" 
-                                                           class="form-control mb-2" 
-                                                           id="profileImageFile"
-                                                           accept="image/*" 
-                                                           (change)="onImagePreview($event)">
-                                                    <small class="text-muted d-block mb-2">
-                                                        <i class="bi bi-info-circle me-1"></i>
-                                                        Formatos: JPG, PNG. Máximo: 2MB
-                                                    </small>
-                                                    <button type="button" 
-                                                            class="btn btn-outline-danger btn-sm"
-                                                            *ngIf="imagePreview" 
-                                                            (click)="onImageRemove()">
-                                                <i class="bi bi-trash me-1"></i>Eliminar imagen
-                                            </button>
+                                        
+                                        <!-- Vista previa de imagen -->
+                                        <div *ngIf="artistForm.get('profileImage')?.value" class="image-preview mt-3">
+                                            <div class="preview-container">
+                                                <img [src]="artistForm.get('profileImage')?.value" 
+                                                     alt="Vista previa del artista"
+                                                     class="preview-image"
+                                                     (error)="onImageError($event)"
+                                                     (load)="onImageLoad($event)">
+                                                <div class="preview-overlay">
+                                                    <small class="text-light">Vista previa de la imagen</small>
                                                 </div>
                                             </div>
                                         </div>
