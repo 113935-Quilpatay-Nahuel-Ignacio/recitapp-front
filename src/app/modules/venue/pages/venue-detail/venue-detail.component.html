@@ -270,6 +270,18 @@
 
                         <!-- Sections tab -->
                         <div *ngSwitchCase="'sections'">
+                            <!-- Reload sections button -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Secciones del Recinto</h5>
+                                <button type="button" class="btn btn-outline-info btn-sm" 
+                                        (click)="loadVenueSections()" 
+                                        [disabled]="loading.sections">
+                                    <span *ngIf="loading.sections" class="spinner-border spinner-border-sm me-2"></span>
+                                    <i *ngIf="!loading.sections" class="bi bi-arrow-clockwise me-1"></i>
+                                    {{ loading.sections ? 'Cargando...' : 'Recargar Secciones' }}
+                                </button>
+                            </div>
+
                             <!-- Loading spinner -->
                             <div *ngIf="loading.sections" class="text-center py-4">
                                 <div class="spinner-border" role="status">
@@ -283,44 +295,49 @@
                             </div>
 
                             <!-- No sections message -->
-                            <div *ngIf="!loading.sections && sections.length === 0" class="text-center py-4">
-                                <p class="text-muted">No hay secciones definidas para este recinto.</p>
+                            <div *ngIf="!loading.sections && sections.length === 0 && !error.sections" class="text-center py-4">
+                                <p class="text-muted mb-3">No hay secciones definidas para este recinto.</p>
+                                <a *ngIf="isAdmin" [routerLink]="['/venues', venueId, 'edit']" [fragment]="'sections'"
+                                    class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-2"></i>Gestionar secciones
+                                </a>
                             </div>
 
                             <!-- Sections list -->
-                            <div *ngIf="!loading.sections && sections.length > 0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Nombre</th>
-                                                <th>Capacidad</th>
-                                                <th>Precio Base</th>
-                                                <th>Estado</th>
-                                                <th>Descripción</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr *ngFor="let section of sections">
-                                                <td>{{ section.name }}</td>
-                                                <td>{{ formatCapacity(section.capacity) }}</td>
-                                                <td>{{ section.basePrice ? '$' + section.basePrice : 'No definido' }}
-                                                </td>
-                                                <td>
+                            <div *ngIf="!loading.sections && sections.length > 0" [style.opacity]="loading.sections ? '0.5' : '1'">
+                                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                    <div class="col" *ngFor="let section of sections">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5 class="card-title">{{ section.name }}</h5>
                                                     <span class="badge"
                                                         [ngClass]="section.active ? 'bg-success' : 'bg-danger'">
                                                         {{ section.active ? 'Activa' : 'Inactiva' }}
                                                     </span>
-                                                </td>
-                                                <td>{{ section.description || 'Sin descripción' }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                </div>
+                                                <p class="card-text mb-2">
+                                                    <i class="bi bi-people me-1"></i>
+                                                    <strong>Capacidad:</strong> {{ formatCapacity(section.capacity) }}
+                                                </p>
+                                                <p class="card-text mb-2" *ngIf="section.basePrice">
+                                                    <i class="bi bi-currency-dollar me-1"></i>
+                                                    <strong>Precio base:</strong> ${{ section.basePrice }}
+                                                </p>
+                                                <p class="card-text text-muted" *ngIf="section.description">
+                                                    {{ section.description }}
+                                                </p>
+                                                <p class="card-text text-muted" *ngIf="!section.description">
+                                                    Sin descripción
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Edit sections button for admins -->
-                            <div *ngIf="isAdmin" class="mt-4 text-center">
+                            <div *ngIf="isAdmin && !loading.sections" class="mt-4 text-center">
                                 <a [routerLink]="['/venues', venueId, 'edit']" [fragment]="'sections'"
                                     class="btn btn-outline-primary">
                                     <i class="bi bi-pencil me-2"></i>Gestionar secciones

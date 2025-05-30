@@ -1,0 +1,553 @@
+// Shared styles for venue components
+// This file contains common styles used across venue-related components
+
+// Base host styling for all venue components
+@mixin venue-component-base {
+  display: block;
+  background-color: var(--dark-bg);
+  min-height: 100vh;
+}
+
+// Container styling
+@mixin venue-container {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+// Card styling mixin
+@mixin venue-card {
+  background-color: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  color: var(--dark-text);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-header {
+    background-color: var(--dark-card-hover) !important;
+    border-bottom: 1px solid var(--dark-border);
+    color: var(--dark-text);
+    border-radius: 0.75rem 0.75rem 0 0;
+
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--dark-text);
+      font-weight: 600;
+    }
+  }
+
+  .card-body {
+    background-color: var(--dark-card);
+    color: var(--dark-text);
+  }
+
+  .card-title {
+    color: var(--dark-text);
+    font-weight: 600;
+  }
+
+  .card-text {
+    color: var(--dark-text-muted);
+  }
+
+  .card-footer {
+    background-color: var(--dark-card-hover);
+    border-top: 1px solid var(--dark-border);
+
+    &.bg-transparent {
+      background-color: transparent !important;
+      border-top: 1px solid var(--dark-border);
+    }
+  }
+}
+
+// Form control styling mixin
+@mixin venue-form-controls {
+  .form-label {
+    color: var(--dark-text);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control {
+    background-color: var(--dark-card-hover);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: var(--dark-text-muted);
+    }
+
+    &:focus {
+      background-color: var(--dark-card-hover);
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+      color: var(--dark-text);
+    }
+
+    &.is-invalid {
+      border-color: var(--danger-red);
+
+      &:focus {
+        border-color: var(--danger-red);
+        box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+      }
+    }
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .form-check-input {
+    background-color: var(--dark-card-hover);
+    border-color: var(--dark-border);
+
+    &:checked {
+      background-color: var(--primary-green);
+      border-color: var(--primary-green);
+    }
+
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    }
+  }
+
+  .form-check-label {
+    color: var(--dark-text);
+  }
+
+  .invalid-feedback {
+    color: var(--danger-red);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+  .form-text {
+    color: var(--dark-text-muted);
+    font-size: 0.875rem;
+  }
+}
+
+// Button styling mixin
+@mixin venue-buttons {
+  .btn {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &.btn-primary {
+      background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover));
+      border: none;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--primary-green-hover), var(--primary-green-dark));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    &.btn-outline-primary {
+      color: var(--primary-green);
+      border-color: var(--primary-green);
+      background-color: transparent;
+
+      &:hover {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+        color: white;
+      }
+    }
+
+    &.btn-outline-secondary {
+      color: var(--dark-text-muted);
+      border-color: var(--dark-border);
+      background-color: transparent;
+
+      &:hover {
+        background-color: var(--dark-card-hover);
+        border-color: var(--dark-border);
+        color: var(--dark-text);
+      }
+    }
+
+    &.btn-outline-danger {
+      color: var(--danger-red);
+      border-color: var(--danger-red);
+      background-color: transparent;
+
+      &:hover {
+        background-color: var(--danger-red);
+        border-color: var(--danger-red);
+        color: white;
+      }
+    }
+
+    &.btn-outline-info {
+      color: var(--info-blue);
+      border-color: var(--info-blue);
+      background-color: transparent;
+
+      &:hover {
+        background-color: var(--info-blue);
+        border-color: var(--info-blue);
+        color: white;
+      }
+    }
+
+    &.btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Tab navigation mixin
+@mixin venue-tabs {
+  .nav-tabs {
+    border-bottom: 1px solid var(--dark-border);
+    margin-bottom: 1.5rem;
+
+    .nav-item {
+      .nav-link {
+        background-color: transparent;
+        border: 1px solid transparent;
+        color: var(--dark-text-muted);
+        padding: 0.75rem 1.25rem;
+        font-weight: 500;
+        border-radius: 0.5rem 0.5rem 0 0;
+        transition: all 0.2s ease;
+        cursor: pointer;
+
+        &:hover {
+          color: var(--dark-text);
+          background-color: var(--dark-card-hover);
+          border-color: var(--dark-border);
+        }
+
+        &.active {
+          color: var(--primary-green);
+          background-color: var(--dark-card);
+          border-color: var(--dark-border) var(--dark-border) var(--dark-card);
+          font-weight: 600;
+        }
+
+        i {
+          margin-right: 0.5rem;
+          color: inherit;
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    .tab-pane {
+      min-height: 300px;
+    }
+  }
+}
+
+// Alert styling mixin
+@mixin venue-alerts {
+  .alert {
+    border-radius: 0.75rem;
+    border: none;
+
+    &.alert-danger {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    &.alert-success {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    &.alert-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+
+      i {
+        color: var(--warning-yellow);
+      }
+    }
+
+    &.alert-info {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+
+      i {
+        color: var(--info-blue);
+      }
+    }
+  }
+}
+
+// Badge styling mixin
+@mixin venue-badges {
+  .badge {
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+
+    &.bg-success {
+      background-color: var(--success-green) !important;
+      color: white;
+    }
+
+    &.bg-danger {
+      background-color: var(--danger-red) !important;
+      color: white;
+    }
+
+    &.bg-warning {
+      background-color: var(--warning-yellow) !important;
+      color: white;
+    }
+
+    &.bg-info {
+      background-color: var(--info-blue) !important;
+      color: white;
+    }
+  }
+}
+
+// Table styling mixin
+@mixin venue-tables {
+  .table {
+    color: var(--dark-text);
+
+    thead {
+      th {
+        background-color: var(--dark-card-hover);
+        color: var(--dark-text);
+        border-bottom: 1px solid var(--dark-border);
+        font-weight: 600;
+      }
+
+      &.table-light th {
+        background-color: var(--dark-card-hover) !important;
+        color: var(--dark-text) !important;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid var(--dark-border);
+
+        &:hover {
+          background-color: var(--dark-card-hover);
+        }
+
+        td {
+          color: var(--dark-text);
+          border-bottom: 1px solid var(--dark-border);
+        }
+      }
+    }
+  }
+
+  .table-responsive {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--dark-border);
+  }
+}
+
+// Dropdown styling mixin
+@mixin venue-dropdowns {
+  .dropdown-menu {
+    background-color: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+    .dropdown-item {
+      color: var(--dark-text);
+
+      &:hover {
+        background-color: var(--dark-card-hover);
+        color: var(--dark-text);
+      }
+
+      &.text-warning {
+        color: var(--warning-yellow) !important;
+
+        &:hover {
+          background-color: rgba(245, 158, 11, 0.1);
+          color: var(--warning-yellow) !important;
+        }
+      }
+
+      &.text-success {
+        color: var(--success-green) !important;
+
+        &:hover {
+          background-color: rgba(34, 197, 94, 0.1);
+          color: var(--success-green) !important;
+        }
+      }
+
+      &.text-danger {
+        color: var(--danger-red) !important;
+
+        &:hover {
+          background-color: rgba(239, 68, 68, 0.1);
+          color: var(--danger-red) !important;
+        }
+      }
+
+      i {
+        color: inherit;
+      }
+    }
+
+    .dropdown-divider {
+      border-color: var(--dark-border);
+    }
+  }
+}
+
+// Utility classes mixin
+@mixin venue-utilities {
+  .spinner-border {
+    color: var(--primary-green);
+
+    &.spinner-border-sm {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .text-muted {
+    color: var(--dark-text-muted) !important;
+  }
+
+  .text-primary {
+    color: var(--primary-green) !important;
+  }
+
+  .fw-medium {
+    font-weight: 500;
+  }
+
+  .img-fluid {
+    border-radius: 0.5rem;
+  }
+
+  .img-thumbnail {
+    background-color: var(--dark-card-hover);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+  }
+}
+
+// Input group styling mixin
+@mixin venue-input-groups {
+  .input-group {
+    .input-group-text {
+      background-color: var(--dark-card-hover);
+      border: 1px solid var(--dark-border);
+      color: var(--dark-text);
+
+      &.bg-primary {
+        background-color: var(--primary-green) !important;
+        border-color: var(--primary-green);
+      }
+
+      &.bg-info {
+        background-color: var(--info-blue) !important;
+        border-color: var(--info-blue);
+      }
+    }
+
+    .form-control {
+      border-left: none;
+
+      &:focus {
+        z-index: 3;
+      }
+    }
+
+    .btn {
+      border-left: none;
+
+      &.btn-outline-primary {
+        color: var(--primary-green);
+        border-color: var(--primary-green);
+        background-color: transparent;
+
+        &:hover {
+          background-color: var(--primary-green);
+          color: white;
+        }
+      }
+
+      &.btn-outline-secondary {
+        color: var(--dark-text-muted);
+        border-color: var(--dark-border);
+        background-color: transparent;
+
+        &:hover {
+          background-color: var(--dark-card-hover);
+          color: var(--dark-text);
+        }
+      }
+    }
+  }
+}
+
+// Responsive improvements mixin
+@mixin venue-responsive {
+  @media (max-width: 768px) {
+    .container {
+      padding-top: 1rem;
+    }
+
+    .nav-tabs .nav-link {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    .btn {
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+    }
+
+    .card-header .d-flex {
+      flex-direction: column;
+      align-items: stretch !important;
+      gap: 0.75rem;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .venue-placeholder {
+      height: 200px;
+    }
+  }
+} 

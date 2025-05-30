@@ -1,20 +1,37 @@
+// Login Component Styles - Using Unified App Styles
+// Following artist module patterns for consistency
+
+// Import and apply unified app styles
+@import '../../../shared/styles/global-component-styles';
+
+// Apply the form component styling pattern
+@include app-form-component;
+
+// Auth-specific customizations
 .auth-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-card) 100%);
   padding: 20px;
 }
 
 .auth-card {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 1rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
   padding: 40px;
   width: 100%;
   max-width: 400px;
   animation: slideUp 0.5s ease-out;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
 }
 
 @keyframes slideUp {
@@ -33,14 +50,16 @@
   margin-bottom: 30px;
 
   h2 {
-    color: #333;
+    color: var(--dark-text);
     margin-bottom: 10px;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 2rem;
   }
 
   p {
-    color: #666;
+    color: var(--dark-text-muted);
     margin: 0;
+    font-size: 1rem;
   }
 }
 
@@ -51,47 +70,68 @@
     label {
       display: block;
       margin-bottom: 8px;
-      color: #333;
-      font-weight: 500;
+      color: var(--dark-text);
+      font-weight: 600;
     }
 
     .form-control {
       width: 100%;
       padding: 12px 16px;
-      border: 2px solid #e1e5e9;
-      border-radius: 8px;
+      background-color: var(--dark-card-hover);
+      border: 2px solid var(--dark-border);
+      color: var(--dark-text);
+      border-radius: 0.5rem;
       font-size: 16px;
       transition: all 0.3s ease;
 
       &:focus {
         outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background-color: var(--dark-card-hover);
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+        color: var(--dark-text);
+        transform: translateY(-1px);
+      }
+
+      &::placeholder {
+        color: var(--dark-text-muted);
       }
 
       &.is-invalid {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        border-color: var(--danger-red);
+        
+        &:focus {
+          border-color: var(--danger-red);
+          box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+        }
       }
     }
 
     .invalid-feedback {
       display: block;
-      color: #dc3545;
+      color: var(--danger-red);
       font-size: 14px;
       margin-top: 5px;
+      font-weight: 500;
     }
   }
 
   .alert {
     padding: 12px 16px;
-    border-radius: 8px;
+    border-radius: 0.75rem;
     margin-bottom: 20px;
     border: none;
 
     &.alert-danger {
-      background-color: #f8d7da;
-      color: #721c24;
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    &.alert-success {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.3);
     }
   }
 
@@ -99,7 +139,7 @@
     width: 100%;
     padding: 12px;
     border: none;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -109,13 +149,11 @@
     justify-content: center;
 
     &.btn-primary {
-      background-color: var(--primary-green);
-      border-color: var(--primary-green);
+      background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover));
       color: white;
 
       &:hover:not(:disabled) {
-        background-color: var(--primary-green-hover);
-        border-color: var(--primary-green-hover);
+        background: linear-gradient(135deg, var(--primary-green-hover), var(--primary-green-dark));
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
       }
@@ -123,6 +161,7 @@
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        transform: none;
       }
     }
 
@@ -130,6 +169,7 @@
       width: 1rem;
       height: 1rem;
       border-width: 0.15em;
+      color: white;
     }
   }
 }
@@ -140,26 +180,31 @@
 
   .forgot-password-link {
     display: block;
-    color: #667eea;
+    color: var(--primary-green);
     text-decoration: none;
     margin-bottom: 15px;
     font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
 
     &:hover {
+      color: var(--primary-green-hover);
       text-decoration: underline;
     }
   }
 
   .register-link {
-    color: #666;
+    color: var(--dark-text-muted);
     font-size: 14px;
 
     a {
-      color: #667eea;
+      color: var(--primary-green);
       text-decoration: none;
       font-weight: 600;
+      transition: all 0.2s ease;
 
       &:hover {
+        color: var(--primary-green-hover);
         text-decoration: underline;
       }
     }
@@ -175,90 +220,41 @@
   .auth-card {
     padding: 30px 20px;
   }
-}
 
-// Estilos específicos para el componente de login
-.card {
-  border-radius: 12px;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  
-  &:hover {
-    transform: translateY(-2px);
-  }
-}
-
-.card-header {
-  border-radius: 12px 12px 0 0;
-  
-  .card-title {
-    font-weight: 600;
-    font-size: 1.5rem;
-  }
-}
-
-.form-control {
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 0.95rem;
-  transition: all 0.2s ease-in-out;
-  
-  &:focus {
-    transform: translateY(-1px);
-  }
-}
-
-.btn {
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  
-  &:hover {
-    transform: translateY(-1px);
-  }
-}
-
-.input-group .btn {
-  padding: 12px 16px;
-}
-
-.form-check-input {
-  border-radius: 4px;
-}
-
-.alert {
-  border-radius: 8px;
-  border: none;
-  font-weight: 500;
-}
-
-.card-footer {
-  border-radius: 0 0 12px 12px;
-  
-  a {
-    color: var(--primary-green);
-    transition: color 0.2s ease-in-out;
-    
-    &:hover {
-      color: var(--primary-green-hover);
-      text-decoration: underline !important;
+  .auth-header {
+    h2 {
+      font-size: 1.75rem;
     }
   }
 }
 
-// Animación para el spinner
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
+// Card specific styles for consistency
+.card {
+  border-radius: 1rem;
+  background-color: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
 }
 
-// Responsive adjustments
-@media (max-width: 576px) {
-  .card {
-    margin: 1rem;
-  }
+.card-header {
+  border-radius: 1rem 1rem 0 0;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+  color: white;
+  border-bottom: none;
   
-  .card-body {
-    padding: 1.5rem !important;
+  .card-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: white;
   }
+}
+
+.card-body {
+  background-color: var(--dark-card);
+  color: var(--dark-text);
 }

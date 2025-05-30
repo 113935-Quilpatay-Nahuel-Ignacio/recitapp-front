@@ -127,6 +127,25 @@ export class VenueDetailComponent implements OnInit {
 
   setTab(tab: 'info' | 'events' | 'sections' | 'stats'): void {
     this.currentTab = tab;
+    
+    // Load data automatically when switching tabs
+    switch (tab) {
+      case 'sections':
+        if (this.sections.length === 0 && !this.loading.sections) {
+          this.loadVenueSections();
+        }
+        break;
+      case 'events':
+        if (this.upcomingEvents.length === 0 && !this.loading.events) {
+          this.loadUpcomingEvents();
+        }
+        break;
+      case 'stats':
+        if (!this.venueStats && !this.loading.stats) {
+          this.loadVenueStatistics();
+        }
+        break;
+    }
   }
 
   // Fix for the date formatting error by safely handling undefined values

@@ -96,54 +96,19 @@
                                     <div class="venue-social">
                                         <a *ngIf="venue.instagramUrl" [href]="venue.instagramUrl" target="_blank"
                                             class="social-link instagram me-2">
-                                            <i class="bi bi-instagram"></i>
+                                            <img src="assets/images/social-icons/instagram.svg" alt="Instagram" class="social-icon-img">
                                         </a>
                                         <a *ngIf="venue.webUrl" [href]="venue.webUrl" target="_blank"
                                             class="social-link web">
-                                            <i class="bi bi-globe"></i>
+                                            <img src="assets/images/social-icons/web.svg" alt="Sitio Web" class="social-icon-img">
                                         </a>
                                     </div>
 
-                                    <!-- Acciones -->
+                                    <!-- Acción Ver detalles -->
                                     <div>
-                                        <a [routerLink]="['/venues', venue.id]"
-                                            class="btn btn-sm btn-outline-primary me-1">
-                                            <i class="bi bi-eye me-1"></i>Ver
+                                        <a [routerLink]="['/venues', venue.id]" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i>Ver detalles
                                         </a>
-                                        <a *ngIf="isAdmin" [routerLink]="['/venues', venue.id, 'edit']"
-                                            class="btn btn-sm btn-outline-secondary me-1">
-                                            <i class="bi bi-pencil me-1"></i>Editar
-                                        </a>
-
-                                        <!-- Nuevo Dropdown de Acciones Admin -->
-                                        <div *ngIf="isAdmin" class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                <span class="visually-hidden">Toggle Dropdown</span>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li *ngIf="venue.id">
-                                                    <a class="dropdown-item" href="javascript:void(0)"
-                                                       (click)="confirmActivate(venue.id!, venue.name)" *ngIf="!venue.active">
-                                                        <i class="bi bi-check-circle me-2"></i>Activar
-                                                    </a>
-                                                </li>
-                                                <li *ngIf="venue.id">
-                                                    <a class="dropdown-item" href="javascript:void(0)"
-                                                       (click)="confirmDeactivate(venue.id!, venue.name)" *ngIf="venue.active">
-                                                        <i class="bi bi-slash-circle me-2"></i>Desactivar
-                                                    </a>
-                                                </li>
-                                                <li *ngIf="venue.id"><hr class="dropdown-divider"></li>
-                                                <li *ngIf="venue.id">
-                                                    <a class="dropdown-item text-danger" href="javascript:void(0)"
-                                                       (click)="confirmDelete(venue.id!, venue.name)">
-                                                        <i class="bi bi-trash3 me-2"></i>Eliminar
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <!-- Fin Dropdown de Acciones Admin -->
                                     </div>
                                 </div>
                             </div>

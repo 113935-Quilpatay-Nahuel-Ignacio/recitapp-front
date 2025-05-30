@@ -189,15 +189,34 @@
                                     su capacidad y precio base.
                                 </div>
 
+                                <!-- Reload sections button (only in edit mode) -->
+                                <div *ngIf="isEditMode" class="d-flex justify-content-end mb-3">
+                                    <button type="button" class="btn btn-outline-info btn-sm" 
+                                            (click)="reloadSections()" 
+                                            [disabled]="sectionsLoading">
+                                        <span *ngIf="sectionsLoading" class="spinner-border spinner-border-sm me-2"></span>
+                                        <i *ngIf="!sectionsLoading" class="bi bi-arrow-clockwise me-1"></i>
+                                        {{ sectionsLoading ? 'Cargando...' : 'Recargar Secciones' }}
+                                    </button>
+                                </div>
+
+                                <!-- Sections loading indicator -->
+                                <div *ngIf="sectionsLoading" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando secciones...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Cargando secciones del recinto...</p>
+                                </div>
+
                                 <!-- Sections form array -->
-                                <div formArrayName="sections">
+                                <div formArrayName="sections" [style.opacity]="sectionsLoading ? '0.5' : '1'">
                                     <div *ngFor="let section of sections.controls; let i = index" [formGroupName]="i"
                                         class="card mb-3">
                                         <div
                                             class="card-header bg-light d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">Sección #{{ i + 1 }}</h5>
                                             <button type="button" class="btn btn-outline-danger btn-sm"
-                                                (click)="removeSection(i)">
+                                                (click)="removeSection(i)" [disabled]="sectionsLoading">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -209,7 +228,8 @@
                                                         *</label>
                                                     <input type="text" class="form-control" [id]="'sectionName-' + i"
                                                         formControlName="name"
-                                                        [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'name')?.errors}">
+                                                        [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'name')?.errors}"
+                                                        [disabled]="sectionsLoading">
                                                     <div *ngIf="submitted && getSectionControl(section, 'name')?.errors"
                                                         class="invalid-feedback">
                                                         <div
@@ -225,7 +245,8 @@
                                                         *</label>
                                                     <input type="number" class="form-control"
                                                         [id]="'sectionCapacity-' + i" formControlName="capacity"
-                                                        [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'capacity')?.errors}">
+                                                        [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'capacity')?.errors}"
+                                                        [disabled]="sectionsLoading">
                                                     <div *ngIf="submitted && getSectionControl(section, 'capacity')?.errors"
                                                         class="invalid-feedback">
                                                         <div
@@ -247,7 +268,8 @@
                                                         <span class="input-group-text">$</span>
                                                         <input type="number" class="form-control"
                                                             [id]="'sectionBasePrice-' + i" formControlName="basePrice"
-                                                            [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'basePrice')?.errors}">
+                                                            [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'basePrice')?.errors}"
+                                                            [disabled]="sectionsLoading">
                                                     </div>
                                                     <div *ngIf="submitted && getSectionControl(section, 'basePrice')?.errors"
                                                         class="invalid-feedback">
@@ -263,7 +285,8 @@
                                                     <label class="form-label d-block">Estado</label>
                                                     <div class="form-check form-switch">
                                                         <input class="form-check-input" type="checkbox"
-                                                            [id]="'sectionActive-' + i" formControlName="active">
+                                                            [id]="'sectionActive-' + i" formControlName="active"
+                                                            [disabled]="sectionsLoading">
                                                         <label class="form-check-label"
                                                             [for]="'sectionActive-' + i">Sección activa</label>
                                                     </div>
@@ -274,7 +297,8 @@
                                                     <label [for]="'sectionDescription-' + i"
                                                         class="form-label">Descripción</label>
                                                     <textarea class="form-control" [id]="'sectionDescription-' + i"
-                                                        formControlName="description" rows="2"></textarea>
+                                                        formControlName="description" rows="2"
+                                                        [disabled]="sectionsLoading"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -282,7 +306,9 @@
 
                                     <!-- Add section button -->
                                     <div class="d-grid">
-                                        <button type="button" class="btn btn-outline-primary" (click)="addSection()">
+                                        <button type="button" class="btn btn-outline-primary" 
+                                                (click)="addSection()" 
+                                                [disabled]="sectionsLoading">
                                             <i class="bi bi-plus-circle me-2"></i> Agregar Sección
                                         </button>
                                     </div>

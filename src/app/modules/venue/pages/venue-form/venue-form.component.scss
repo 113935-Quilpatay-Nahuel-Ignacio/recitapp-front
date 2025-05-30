@@ -1,55 +1,114 @@
-.card {
-  border-radius: 0.5rem;
-  overflow: hidden;
+// Venue Form Component Styles - Using Unified App Styles
+// Following artist module patterns for consistency
+
+// Import and apply unified app styles
+@import '../../../../shared/styles/global-component-styles';
+
+// Apply the form component styling pattern
+@include app-form-component;
+
+// Additional specific styles for venue form
+.sections-loading {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
-.nav-tabs {
-  border-bottom-width: 2px;
+.section-card {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
 
-  .nav-link {
-    color: #6c757d;
-    font-weight: 500;
+.reload-button {
+  transition: all 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
 
-    &.active {
-      color: #0d6efd;
+// Import shared venue styles
+@import '../../../venue/styles/shared-venue-styles';
+
+// Apply base styles
+:host {
+  @include venue-component-base;
+}
+
+.container {
+  @include venue-container;
+}
+
+.card {
+  @include venue-card;
+}
+
+// Apply all venue mixins
+@include venue-form-controls;
+@include venue-buttons;
+@include venue-tabs;
+@include venue-alerts;
+@include venue-utilities;
+@include venue-input-groups;
+@include venue-badges;
+
+// Section cards specific styling
+.card.mb-3 {
+  background-color: var(--dark-card-hover);
+  border: 1px solid var(--dark-border);
+  border-radius: 0.75rem;
+  
+  .card-header {
+    background-color: rgba(34, 197, 94, 0.1);
+    border-bottom: 1px solid var(--dark-border);
+    
+    h5 {
+      color: var(--primary-green);
       font-weight: 600;
     }
-
-    &:hover:not(.active) {
-      color: #0d6efd;
-      border-color: transparent;
+    
+    .btn-outline-danger {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
     }
   }
-}
-
-.form-label {
-  font-weight: 500;
-}
-
-.form-control,
-.input-group-text {
-  border-radius: 0.375rem;
-}
-
-.card-header {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-// Estilos para la previsualización de imagen
-.img-thumbnail {
-  margin-top: 0.5rem;
-  max-width: 100%;
-  max-height: 200px;
-  object-fit: contain;
-}
-
-// Mejoras para dispositivos móviles
-@media (max-width: 768px) {
+  
   .card-body {
-    padding: 1rem;
+    background-color: var(--dark-card-hover);
   }
+}
 
-  .tab-pane {
-    padding: 0.5rem;
+// Form action buttons styling
+.d-flex.justify-content-end {
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--dark-border);
+}
+
+// Apply responsive styles
+@include venue-responsive;
+
+// Additional responsive improvements specific to venue form
+@media (max-width: 768px) {
+  .d-flex.justify-content-end {
+    flex-direction: column;
+    
+    .btn {
+      width: 100%;
+    }
+  }
+  
+  .card-header .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+    
+    .btn-outline-danger {
+      margin-top: 0.5rem;
+      align-self: flex-end;
+      width: auto;
+    }
   }
 }

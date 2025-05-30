@@ -1,0 +1,424 @@
+// Ticket List Component Styles - Using Unified App Styles
+// Following artist module patterns for consistency
+
+// Import and apply unified app styles
+@import '../../../../shared/styles/global-component-styles';
+
+// Apply the list component styling pattern
+@include app-list-component;
+
+// Ticket-specific customizations
+.ticket-card {
+  .ticket-qr {
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--dark-border);
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .qr-placeholder {
+      color: var(--dark-text-muted);
+      font-size: 2rem;
+    }
+  }
+  
+  .ticket-info {
+    .ticket-id {
+      color: var(--primary-green);
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      font-family: 'Courier New', monospace;
+      
+      i {
+        margin-right: 0.25rem;
+      }
+    }
+    
+    .event-name {
+      color: var(--dark-text);
+      font-weight: 700;
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .event-details {
+      color: var(--dark-text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+      
+      i {
+        color: var(--info-blue);
+        margin-right: 0.25rem;
+        width: 14px;
+      }
+    }
+    
+    .ticket-status {
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        
+        &.bg-success {
+          background-color: var(--success-green) !important;
+        }
+        
+        &.bg-warning {
+          background-color: var(--warning-yellow) !important;
+        }
+        
+        &.bg-danger {
+          background-color: var(--danger-red) !important;
+        }
+        
+        &.bg-info {
+          background-color: var(--info-blue) !important;
+        }
+      }
+    }
+  }
+  
+  .ticket-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .btn {
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      
+      &.btn-outline-primary {
+        border-width: 1px;
+      }
+      
+      &.btn-outline-info {
+        border-width: 1px;
+      }
+      
+      &.btn-outline-secondary {
+        border-width: 1px;
+      }
+    }
+  }
+  
+  &.used-ticket {
+    opacity: 0.7;
+    
+    .ticket-info .event-name {
+      color: var(--dark-text-muted);
+    }
+    
+    .ticket-qr {
+      opacity: 0.6;
+    }
+  }
+  
+  &.expired-ticket {
+    border-color: rgba(239, 68, 68, 0.3);
+    
+    .ticket-info .event-name {
+      color: var(--danger-red);
+    }
+  }
+}
+
+// Ticket filter tabs
+.ticket-filter-tabs {
+  .nav-tabs {
+    border-bottom: 2px solid var(--dark-border);
+    margin-bottom: 2rem;
+    
+    .nav-link {
+      color: var(--dark-text-muted);
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-bottom: 3px solid transparent;
+      background: none;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        color: var(--primary-green);
+        border-bottom-color: rgba(34, 197, 94, 0.3);
+      }
+      
+      &.active {
+        color: var(--primary-green);
+        border-bottom-color: var(--primary-green);
+        background: none;
+      }
+      
+      i {
+        margin-right: 0.5rem;
+      }
+      
+      .badge {
+        margin-left: 0.5rem;
+        background-color: var(--dark-card-hover);
+        color: var(--dark-text-muted);
+        border-radius: 50px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+      }
+      
+      &.active .badge {
+        background-color: var(--primary-green);
+        color: white;
+      }
+    }
+  }
+}
+
+// Ticket search and filters
+.ticket-search-section {
+  .search-input-group {
+    .input-group-text {
+      i {
+        color: var(--primary-green);
+      }
+    }
+  }
+  
+  .filter-options {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1rem;
+    
+    .form-select {
+      min-width: 150px;
+    }
+    
+    .date-range {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      
+      .form-control {
+        min-width: 140px;
+      }
+      
+      span {
+        color: var(--dark-text-muted);
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Ticket statistics cards
+.ticket-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  
+  .stat-card {
+    background: linear-gradient(135deg, var(--dark-card), var(--dark-card-hover));
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      border-color: var(--primary-green);
+    }
+    
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+      
+      &.total {
+        background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover));
+        color: white;
+      }
+      
+      &.active {
+        background: linear-gradient(135deg, var(--success-green), #16a34a);
+        color: white;
+      }
+      
+      &.used {
+        background: linear-gradient(135deg, var(--info-blue), #2563eb);
+        color: white;
+      }
+      
+      &.expired {
+        background: linear-gradient(135deg, var(--danger-red), #dc2626);
+        color: white;
+      }
+    }
+    
+    .stat-number {
+      color: var(--dark-text);
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+      color: var(--dark-text-muted);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// Ticket list layout
+.tickets-grid {
+  display: grid;
+  gap: 1rem;
+  
+  .ticket-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    
+    .ticket-qr {
+      flex-shrink: 0;
+    }
+    
+    .ticket-info {
+      flex: 1;
+    }
+    
+    .ticket-actions {
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Empty state for tickets
+.no-tickets-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: var(--dark-text-muted);
+    font-size: 2.5rem;
+  }
+  
+  h3 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: var(--dark-text-muted);
+    margin-bottom: 1.5rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .btn-primary {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+  }
+}
+
+// Responsive improvements
+@media (max-width: 768px) {
+  .ticket-search-section {
+    .filter-options {
+      flex-direction: column;
+      align-items: stretch;
+      
+      .form-select {
+        min-width: auto;
+      }
+      
+      .date-range {
+        flex-direction: column;
+        
+        .form-control {
+          min-width: auto;
+        }
+      }
+    }
+  }
+  
+  .ticket-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tickets-grid {
+    .ticket-card {
+      flex-direction: column;
+      text-align: center;
+      
+      .ticket-qr {
+        align-self: center;
+      }
+      
+      .ticket-actions {
+        align-self: stretch;
+        
+        .btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+  .ticket-filter-tabs {
+    .nav-tabs {
+      .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .ticket-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .ticket-card {
+    .ticket-info {
+      .event-name {
+        font-size: 1rem;
+      }
+      
+      .event-details {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}

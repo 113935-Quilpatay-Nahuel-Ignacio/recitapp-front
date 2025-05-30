@@ -24,6 +24,7 @@ export class VenueFormComponent implements OnInit {
   isEditMode = false;
   venueId: number | null = null;
   loading = false;
+  sectionsLoading = false;
   submitted = false;
   success = false;
   error = '';
@@ -89,12 +90,7 @@ export class VenueFormComponent implements OnInit {
     this.loading = true;
     this.venueService.getVenueById(id).subscribe({
       next: (venue) => {
-        // Clear existing sections
-        while (this.sections.length) {
-          this.sections.removeAt(0);
-        }
-
-        // Update form values
+        // Update form values (excluding sections)
         this.venueForm.patchValue({
           name: venue.name,
           address: venue.address,
@@ -109,21 +105,49 @@ export class VenueFormComponent implements OnInit {
           active: venue.active,
         });
 
-        // Add sections if available
-        if (venue.sections && venue.sections.length > 0) {
-          venue.sections.forEach((section) => {
-            this.addSection(section);
-          });
-        } else {
-          this.addSection();
-        }
-
-        this.loading = false;
+        // Load sections from the specific endpoint
+        this.loadVenueSections(id);
       },
       error: (err) => {
         this.error =
           err.error?.message || 'Error al cargar los datos del recinto';
         this.loading = false;
+      },
+    });
+  }
+
+  loadVenueSections(venueId: number): void {
+    this.sectionsLoading = true;
+    this.venueService.getVenueSections(venueId).subscribe({
+      next: (sections) => {
+        // Clear existing sections
+        while (this.sections.length) {
+          this.sections.removeAt(0);
+        }
+
+        // Add loaded sections
+        if (sections && sections.length > 0) {
+          sections.forEach((section) => {
+            this.addSection(section);
+          });
+        } else {
+          // Add one empty section if no sections exist
+          this.addSection();
+        }
+
+        this.sectionsLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading venue sections:', err);
+        // Clear existing sections and add one empty section
+        while (this.sections.length) {
+          this.sections.removeAt(0);
+        }
+        this.addSection();
+        this.sectionsLoading = false;
+        
+        // Don't show error to user for sections, just log it
+        // They can still use the form to add sections manually
       },
     });
   }
@@ -158,6 +182,12 @@ export class VenueFormComponent implements OnInit {
 
   removeSection(index: number): void {
     this.sections.removeAt(index);
+  }
+
+  reloadSections(): void {
+    if (this.isEditMode && this.venueId) {
+      this.loadVenueSections(this.venueId);
+    }
   }
 
   // Helper method to get a specific control from a section form group

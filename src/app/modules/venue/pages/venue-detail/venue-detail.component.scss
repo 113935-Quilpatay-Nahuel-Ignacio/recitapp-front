@@ -1,11 +1,52 @@
-// Venue detail styles
+// Import shared venue styles
+@import '../../../venue/styles/shared-venue-styles';
+
+// Apply base styles
+:host {
+  @include venue-component-base;
+}
+
+.container {
+  @include venue-container;
+}
+
+.card {
+  @include venue-card;
+}
+
+// Apply all venue mixins
+@include venue-form-controls;
+@include venue-buttons;
+@include venue-tabs;
+@include venue-alerts;
+@include venue-utilities;
+@include venue-tables;
+@include venue-dropdowns;
+@include venue-badges;
+
+// Definition list styling specific to venue detail
+dl.row {
+  dt {
+    color: var(--dark-text-muted);
+    font-weight: 500;
+  }
+  
+  dd {
+    color: var(--dark-text);
+  }
+}
+
+// Venue detail specific styles
 .venue-placeholder {
   height: 250px;
   width: 100%;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
+  color: var(--dark-text-muted);
 
   i {
     opacity: 0.3;
+    color: var(--dark-text-muted);
   }
 }
 
@@ -13,6 +54,7 @@
 .event-image-container {
   height: 180px;
   overflow: hidden;
+  border-radius: 0.5rem;
 
   img {
     width: 100%;
@@ -29,36 +71,45 @@
   z-index: 1;
 }
 
-// Tab navigation styles
-.nav-tabs {
-  .nav-link {
-    cursor: pointer;
-
-    &.active {
-      font-weight: 500;
-    }
+// Information display improvements
+.mb-3 {
+  .text-muted {
+    display: inline-block;
+    min-width: 140px;
+    font-weight: 500;
+  }
+  
+  .ms-2 {
+    color: var(--dark-text);
   }
 }
 
-// Card transitions
-.card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-  }
+// Social links section
+.d-flex.gap-2 {
+  gap: 0.75rem !important;
 }
 
-// Responsive adjustments
+// Apply responsive styles
+@include venue-responsive;
+
+// Additional responsive improvements specific to venue detail
 @media (max-width: 992px) {
   .venue-placeholder {
     height: 200px;
   }
+  
+  .event-image-container {
+    height: 150px;
+  }
 }
 
 @media (max-width: 768px) {
-  .card-title {
-    font-size: 1.25rem;
+  .venue-placeholder {
+    height: 180px;
+  }
+  
+  .mb-3 .text-muted {
+    min-width: 120px;
+    font-size: 0.875rem;
   }
 }
