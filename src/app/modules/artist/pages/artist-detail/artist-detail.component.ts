@@ -6,11 +6,12 @@ import { UserService } from '../../../user/services/user.service';
 import { ArtistDetailDTO } from '../../models/artist-detail';
 import { FollowArtistButtonComponent } from '../../../user/components/follow-artist-button/follow-artist-button.component';
 import { SessionService } from '../../../../core/services/session.service';
+import { DropdownDirective } from '../../../../shared/directives/dropdown.directive';
 
 @Component({
   selector: 'app-artist-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FollowArtistButtonComponent],
+  imports: [CommonModule, RouterModule, FollowArtistButtonComponent, DropdownDirective],
   templateUrl: './artist-detail.component.html',
   styleUrls: ['./artist-detail.component.scss'],
 })
@@ -82,6 +83,27 @@ export class ArtistDetailComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  activateArtist(): void {
+    this.loading = true;
+    this.error = '';
+
+    // Si no existe activateArtist, podríamos usar updateArtist con active: true
+    // Por ahora comentamos esta funcionalidad hasta verificar el servicio
+    this.loading = false;
+    alert('Funcionalidad de activar artista en desarrollo');
+    
+    // this.artistService.activateArtist(this.artistId).subscribe({
+    //   next: () => {
+    //     this.loading = false;
+    //     this.loadArtistDetails();
+    //   },
+    //   error: (err: any) => {
+    //     this.error = err.error?.message || 'Error al activar el artista';
+    //     this.loading = false;
+    //   },
+    // });
   }
 
   hasExternalLinks(): boolean {

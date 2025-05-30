@@ -38,13 +38,13 @@ export class ArtistEditComponent implements OnInit {
 
     this.artistForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
-      biography: [''],
+      biography: ['', [Validators.maxLength(2000)]],
       profileImage: [''],
-      spotifyUrl: [''],
-      youtubeUrl: [''],
-      soundcloudUrl: [''],
-      instagramUrl: [''],
-      bandcampUrl: [''],
+      spotifyUrl: ['', [this.validateUrl]],
+      youtubeUrl: ['', [this.validateUrl]],
+      soundcloudUrl: ['', [this.validateUrl]],
+      instagramUrl: ['', [this.validateUrl]],
+      bandcampUrl: ['', [this.validateUrl]],
     });
 
     this.loadArtistDetails();
@@ -112,40 +112,42 @@ export class ArtistEditComponent implements OnInit {
         }, 2000);
       },
       error: (err) => {
-        this.error = err.error?.message || 'Error al actualizar el artista';
+        console.error('Error updating artist:', err);
+        
+        // Provide specific error messages based on the error type
+        if (err.status === 400) {
+          this.error = err.error?.message || 'Datos inválidos. Verifica la información ingresada.';
+        } else if (err.status === 409) {
+          this.error = 'Ya existe un artista con este nombre.';
+        } else if (err.status === 404) {
+          this.error = 'Artista no encontrado.';
+        } else if (err.status === 500) {
+          this.error = 'Error del servidor. Inténtalo de nuevo más tarde.';
+        } else if (err.status === 0) {
+          this.error = 'Error de conexión. Verifica tu conexión a internet.';
+        } else {
+          this.error = err.error?.message || 'Error al actualizar el artista. Inténtalo de nuevo.';
+        }
+        
         this.loading = false;
       },
     });
   }
 
-  // Method to handle platform updates separately
-  updatePlatforms(): void {
-    this.loading = true;
-    this.error = '';
+  // URL validation method
+  validateUrl(control: any): { [key: string]: any } | null {
+    const value = control.value;
+    if (!value) {
+      return null; // Empty values are allowed
+    }
 
-    const platformData = {
-      spotifyUrl: this.f['spotifyUrl'].value,
-      youtubeUrl: this.f['youtubeUrl'].value,
-      soundcloudUrl: this.f['soundcloudUrl'].value,
-      instagramUrl: this.f['instagramUrl'].value,
-      bandcampUrl: this.f['bandcampUrl'].value,
-    };
+    // Basic URL pattern validation
+    const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+    
+    if (!urlPattern.test(value)) {
+      return { invalidUrl: true };
+    }
 
-    this.artistService
-      .updateArtistPlatforms(this.artistId, platformData)
-      .subscribe({
-        next: () => {
-          this.success = true;
-          this.loading = false;
-
-          setTimeout(() => {
-            this.success = false;
-          }, 3000);
-        },
-        error: (err) => {
-          this.error = err.error?.message || 'Error al actualizar plataformas';
-          this.loading = false;
-        },
-      });
+    return null;
   }
 }

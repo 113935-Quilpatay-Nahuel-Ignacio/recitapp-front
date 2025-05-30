@@ -7,11 +7,12 @@ import { EventDTO } from '../../../event/models/event';
 import { UserService } from '../../../user/services/user.service';
 import { FollowVenueButtonComponent } from '../../../user/components/follow-venue-button/follow-venue-button.component';
 import { SessionService } from '../../../../core/services/session.service';
+import { DropdownDirective } from '../../../../shared/directives/dropdown.directive';
 
 @Component({
   selector: 'app-venue-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FollowVenueButtonComponent],
+  imports: [CommonModule, RouterModule, FollowVenueButtonComponent, DropdownDirective],
   templateUrl: './venue-detail.component.html',
   styleUrls: ['./venue-detail.component.scss'],
 })

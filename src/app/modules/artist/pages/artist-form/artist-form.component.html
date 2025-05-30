@@ -1,29 +1,56 @@
 <!-- src/app/modules/artist/pages/artist-form/artist-form.component.html -->
 <div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow">
-                <div class="card-header bg-light py-3">
-                    <h2 class="mb-0 text-center">
-                        {{ isEditMode ? 'Editar' : 'Registrar' }} Artista
-                    </h2>
+        <div class="col-lg-12">
+            <!-- Header Section -->
+            <div class="page-header-form mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="text-white mb-1">
+                            <i class="bi me-3" [ngClass]="isEditMode ? 'bi-pencil-square text-warning' : 'bi-plus-circle text-success'"></i>
+                            {{ isEditMode ? 'Editar' : 'Registrar' }} Artista
+                        </h1>
+                        <p class="text-muted mb-0">
+                            {{ isEditMode ? 'Actualiza la información del artista' : 'Agrega un nuevo artista a la plataforma' }}
+                        </p>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            <span class="d-none d-md-inline">{{ isEditMode ? 'Volver al detalle' : 'Volver a lista' }}</span>
+                            <span class="d-md-none">Volver</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-lg border-0 artist-form-card">
+                <div class="card-header border-0 py-3" 
+                     [ngClass]="isEditMode ? 'bg-gradient-edit' : 'bg-gradient-create'">
+                    <div class="d-flex align-items-center text-white">
+                        <i class="bi me-2" [ngClass]="isEditMode ? 'bi-person-gear' : 'bi-person-plus'"></i>
+                        <h5 class="mb-0 fw-semibold">{{ isEditMode ? 'Editar' : 'Nuevo' }} Artista</h5>
+                    </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body p-4">
                     <!-- Loading state -->
                     <div *ngIf="loading.form" class="text-center py-5">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Cargando...</span>
                         </div>
+                        <p class="text-muted mt-3 mb-0">{{ isEditMode ? 'Cargando datos del artista...' : 'Inicializando formulario...' }}</p>
                     </div>
 
                     <!-- Error message -->
                     <div *ngIf="error.form" class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
                         {{ error.form }}
                     </div>
 
                     <!-- Success message -->
                     <div *ngIf="success" class="alert alert-success">
+                        <i class="bi bi-check-circle-fill me-2"></i>
                         Artista {{ isEditMode ? 'actualizado' : 'registrado' }} correctamente.
                         Redirigiendo al detalle...
                     </div>
@@ -32,158 +59,277 @@
                     <form [formGroup]="artistForm" (ngSubmit)="onSubmit()" *ngIf="!loading.form">
                         <div class="row g-4">
                             <!-- Left Column: Basic Information -->
-                            <div class="col-md-6">
-                                <h4 class="mb-3">Información Básica</h4>
+                            <div class="col-lg-6">
+                                <div class="form-section">
+                                    <h6 class="form-section-title">
+                                        <i class="bi bi-info-circle me-2"></i>Información Básica
+                                    </h6>
 
-                                <!-- Name -->
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">Nombre del Artista *</label>
-                                    <input type="text" class="form-control" id="name" formControlName="name"
-                                        [ngClass]="{'is-invalid': artistForm.get('name')?.invalid && artistForm.get('name')?.touched}">
-                                    <div *ngIf="artistForm.get('name')?.invalid && artistForm.get('name')?.touched"
-                                        class="invalid-feedback">
-                                        <span *ngIf="artistForm.get('name')?.errors?.['required']">El nombre es
-                                            obligatorio.</span>
-                                        <span *ngIf="artistForm.get('name')?.errors?.['maxlength']">El nombre no puede
-                                            exceder los 100 caracteres.</span>
-                                    </div>
-                                </div>
-
-                                <!-- Biography -->
-                                <div class="mb-3">
-                                    <label for="biography" class="form-label">Biografía</label>
-                                    <textarea class="form-control" id="biography" formControlName="biography" rows="5">
-                                    </textarea>
-                                </div>
-
-                                <!-- Active Status (Edit mode only) -->
-                                <div class="mb-3" *ngIf="isEditMode">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="active"
-                                            formControlName="active">
-                                        <label class="form-check-label" for="active">
-                                            Artista activo
+                                    <!-- Name -->
+                                    <div class="mb-4">
+                                        <label for="name" class="form-label fw-semibold">
+                                            <i class="bi bi-person me-1 text-primary"></i>Nombre del Artista *
                                         </label>
-                                    </div>
-                                    <small class="text-muted">
-                                        Los artistas inactivos no aparecerán en la búsqueda por defecto.
-                                    </small>
-                                </div>
-
-                                <!-- Genres -->
-                                <div class="mb-3">
-                                    <label class="form-label">Géneros Musicales</label>
-
-                                    <!-- Loading state -->
-                                    <div *ngIf="loading.genres" class="text-center py-2">
-                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                            <span class="visually-hidden">Cargando...</span>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               id="name" 
+                                               formControlName="name"
+                                               placeholder="Ingresa el nombre del artista"
+                                               [ngClass]="{'is-invalid': artistForm.get('name')?.invalid && artistForm.get('name')?.touched}">
+                                        <div *ngIf="artistForm.get('name')?.invalid && artistForm.get('name')?.touched"
+                                             class="invalid-feedback">
+                                            <span *ngIf="artistForm.get('name')?.errors?.['required']">
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                El nombre es obligatorio
+                                            </span>
+                                            <span *ngIf="artistForm.get('name')?.errors?.['maxlength']">
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                El nombre no puede exceder los 100 caracteres
+                                            </span>
                                         </div>
                                     </div>
 
-                                    <!-- Error message -->
-                                    <div *ngIf="error.genres" class="alert alert-danger">
-                                        {{ error.genres }}
+                                    <!-- Biography -->
+                                    <div class="mb-4">
+                                        <label for="biography" class="form-label fw-semibold">
+                                            <i class="bi bi-file-text me-1 text-success"></i>Biografía
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="biography" 
+                                                  formControlName="biography"
+                                                  rows="6"
+                                                  placeholder="Escribe la biografía del artista..."
+                                                  [ngClass]="{'is-invalid': artistForm.get('biography')?.invalid && artistForm.get('biography')?.touched}"></textarea>
+                                        <small class="form-text text-muted">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Información sobre la trayectoria y estilo del artista (máximo 2000 caracteres)
+                                            <span class="float-end">{{ artistForm.get('biography')?.value?.length || 0 }}/2000</span>
+                                        </small>
+                                        <div *ngIf="artistForm.get('biography')?.invalid && artistForm.get('biography')?.touched" class="invalid-feedback">
+                                            <span *ngIf="artistForm.get('biography')?.errors?.['maxlength']">
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                La biografía no puede exceder los 2000 caracteres
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <!-- Genre selection -->
-                                    <div *ngIf="!loading.genres && genres.length > 0" class="border rounded p-3">
-                                        <div class="mb-2" *ngFor="let genre of genres">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
-                                                    [id]="'genre-' + genre.id" [value]="genre.id"
-                                                    [checked]="artistForm.get('genreIds')?.value?.includes(genre.id)"
-                                                    (change)="updateGenres($event, genre.id)">
-                                                <label class="form-check-label" [for]="'genre-' + genre.id">
-                                                    {{ genre.name }}
-                                                </label>
+                                    <!-- Active Status (Edit mode only) -->
+                                    <div class="mb-4" *ngIf="isEditMode">
+                                        <div class="form-check form-switch artist-status-switch">
+                                            <input class="form-check-input" 
+                                                   type="checkbox" 
+                                                   id="active"
+                                                   formControlName="active">
+                                            <label class="form-check-label fw-semibold" for="active">
+                                                <i class="bi bi-toggle-on me-1 text-success"></i>
+                                                Artista activo
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Los artistas inactivos no aparecerán en la búsqueda por defecto
+                                        </small>
+                                    </div>
+
+                                    <!-- Genres -->
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-music-note-list me-1 text-info"></i>Géneros Musicales
+                                        </label>
+
+                                        <!-- Loading state -->
+                                        <div *ngIf="loading.genres" class="text-center py-3">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Cargando...</span>
+                                            </div>
+                                            <small class="text-muted ms-2">Cargando géneros...</small>
+                                        </div>
+
+                                        <!-- Error message -->
+                                        <div *ngIf="error.genres" class="alert alert-danger">
+                                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                            {{ error.genres }}
+                                        </div>
+
+                                        <!-- Genre selection -->
+                                        <div *ngIf="!loading.genres && genres.length > 0" class="genre-selection-container">
+                                            <div class="row g-2">
+                                                <div class="col-md-6" *ngFor="let genre of genres">
+                                                    <div class="form-check genre-checkbox">
+                                                        <input class="form-check-input" 
+                                                               type="checkbox"
+                                                               [id]="'genre-' + genre.id" 
+                                                               [value]="genre.id"
+                                                               [checked]="artistForm.get('genreIds')?.value?.includes(genre.id)"
+                                                               (change)="updateGenres($event, genre.id)">
+                                                        <label class="form-check-label" [for]="'genre-' + genre.id">
+                                                            <i class="bi bi-music-note me-1"></i>
+                                                            {{ genre.name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+                                        
+                                        <!-- No genres available message -->
+                                        <div *ngIf="!loading.genres && genres.length === 0 && !error.genres" class="text-center py-4">
+                                            <i class="bi bi-music-note text-muted" style="font-size: 2rem;"></i>
+                                            <p class="text-muted mt-2 mb-0">No hay géneros musicales disponibles</p>
+                                            <small class="text-muted">Contacta al administrador para agregar géneros</small>
+                                        </div>
+                                        
+                                        <small class="form-text text-muted">
+                                            Selecciona los géneros musicales que mejor representen al artista
+                                        </small>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Right Column: Image and Social Media -->
-                            <div class="col-md-6">
+                            <div class="col-lg-6">
                                 <!-- Profile Image -->
-                                <h4 class="mb-3">Imagen de Perfil</h4>
-                                <div class="mb-4">
-                                    <div class="d-flex mb-3">
-                                        <div class="image-preview border rounded me-3">
-                                            <img [src]="imagePreview || defaultImage" alt="Vista previa de la imagen"
-                                                class="img-fluid">
-                                        </div>
-                                        <div class="d-flex flex-column justify-content-between">
-                                            <div>
-                                                <input type="file" class="form-control mb-2" id="profileImageFile"
-                                                    accept="image/*" (change)="onImagePreview($event)">
-                                                <small class="text-muted d-block">
-                                                    Formatos aceptados: JPG, PNG. Tamaño máximo: 2MB.
-                                                </small>
+                                <div class="form-section mb-4">
+                                    <h6 class="form-section-title">
+                                        <i class="bi bi-image me-2"></i>Imagen de Perfil
+                                    </h6>
+                                    
+                                    <div class="image-upload-section">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <div class="image-preview-container">
+                                                    <img [src]="imagePreview || defaultImage" 
+                                                         alt="Vista previa de la imagen"
+                                                         class="img-fluid rounded shadow">
+                                                </div>
                                             </div>
-                                            <button type="button" class="btn btn-outline-danger btn-sm"
-                                                *ngIf="imagePreview" (click)="onImageRemove()">
-                                                <i class="bi bi-trash me-1"></i>Eliminar imagen
-                                            </button>
+                                            <div class="col-8">
+                                                <div class="image-controls">
+                                                    <input type="file" 
+                                                           class="form-control mb-2" 
+                                                           id="profileImageFile"
+                                                           accept="image/*" 
+                                                           (change)="onImagePreview($event)">
+                                                    <small class="text-muted d-block mb-2">
+                                                        <i class="bi bi-info-circle me-1"></i>
+                                                        Formatos: JPG, PNG. Máximo: 2MB
+                                                    </small>
+                                                    <button type="button" 
+                                                            class="btn btn-outline-danger btn-sm"
+                                                            *ngIf="imagePreview" 
+                                                            (click)="onImageRemove()">
+                                                        <i class="bi bi-trash me-1"></i>Eliminar imagen
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Social Media Links -->
-                                <h4 class="mb-3">Plataformas Musicales</h4>
-                                <div class="mb-3">
-                                    <label for="spotifyUrl" class="form-label">Spotify URL</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-success text-white">
-                                            <i class="bi bi-spotify"></i>
-                                        </span>
-                                        <input type="url" class="form-control" id="spotifyUrl"
-                                            formControlName="spotifyUrl"
-                                            placeholder="https://open.spotify.com/artist/...">
-                                    </div>
-                                </div>
+                                <div class="form-section">
+                                    <h6 class="form-section-title">
+                                        <i class="bi bi-share me-2"></i>Plataformas Musicales
+                                    </h6>
+                                    
+                                    <div class="social-platforms">
+                                        <!-- Spotify -->
+                                        <div class="mb-3">
+                                            <label for="spotifyUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-spotify platform-icon spotify"></i>Spotify
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-spotify text-white">
+                                                    <i class="bi bi-spotify"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       class="form-control" 
+                                                       id="spotifyUrl"
+                                                       formControlName="spotifyUrl"
+                                                       placeholder="https://open.spotify.com/artist/..."
+                                                       [ngClass]="{'is-invalid': artistForm.get('spotifyUrl')?.invalid && artistForm.get('spotifyUrl')?.touched}">
+                                            </div>
+                                            <div *ngIf="artistForm.get('spotifyUrl')?.invalid && artistForm.get('spotifyUrl')?.touched" class="invalid-feedback">
+                                                <span *ngIf="artistForm.get('spotifyUrl')?.errors?.['invalidUrl']">
+                                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                                    URL inválida. Debe ser una URL válida de Spotify.
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                <div class="mb-3">
-                                    <label for="youtubeUrl" class="form-label">YouTube URL</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-danger text-white">
-                                            <i class="bi bi-youtube"></i>
-                                        </span>
-                                        <input type="url" class="form-control" id="youtubeUrl"
-                                            formControlName="youtubeUrl" placeholder="https://www.youtube.com/@...">
-                                    </div>
-                                </div>
+                                        <!-- YouTube -->
+                                        <div class="mb-3">
+                                            <label for="youtubeUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-youtube platform-icon youtube"></i>YouTube
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-youtube text-white">
+                                                    <i class="bi bi-youtube"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       class="form-control" 
+                                                       id="youtubeUrl"
+                                                       formControlName="youtubeUrl" 
+                                                       placeholder="https://www.youtube.com/@..."
+                                                       [ngClass]="{'is-invalid': artistForm.get('youtubeUrl')?.invalid && artistForm.get('youtubeUrl')?.touched}">
+                                            </div>
+                                            <div *ngIf="artistForm.get('youtubeUrl')?.invalid && artistForm.get('youtubeUrl')?.touched" class="invalid-feedback">
+                                                <span *ngIf="artistForm.get('youtubeUrl')?.errors?.['invalidUrl']">
+                                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                                    URL inválida. Debe ser una URL válida de YouTube.
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                <div class="mb-3">
-                                    <label for="soundcloudUrl" class="form-label">SoundCloud URL</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-warning text-white">
-                                            <i class="bi bi-cloud"></i>
-                                        </span>
-                                        <input type="url" class="form-control" id="soundcloudUrl"
-                                            formControlName="soundcloudUrl" placeholder="https://soundcloud.com/...">
-                                    </div>
-                                </div>
+                                        <!-- SoundCloud -->
+                                        <div class="mb-3">
+                                            <label for="soundcloudUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-cloud platform-icon soundcloud"></i>SoundCloud
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-soundcloud text-white">
+                                                    <i class="bi bi-cloud"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       class="form-control" 
+                                                       id="soundcloudUrl"
+                                                       formControlName="soundcloudUrl" 
+                                                       placeholder="https://soundcloud.com/...">
+                                            </div>
+                                        </div>
 
-                                <div class="mb-3">
-                                    <label for="instagramUrl" class="form-label">Instagram URL</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-purple text-white">
-                                            <i class="bi bi-instagram"></i>
-                                        </span>
-                                        <input type="url" class="form-control" id="instagramUrl"
-                                            formControlName="instagramUrl" placeholder="https://www.instagram.com/...">
-                                    </div>
-                                </div>
+                                        <!-- Instagram -->
+                                        <div class="mb-3">
+                                            <label for="instagramUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-instagram platform-icon instagram"></i>Instagram
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-instagram text-white">
+                                                    <i class="bi bi-instagram"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       class="form-control" 
+                                                       id="instagramUrl"
+                                                       formControlName="instagramUrl" 
+                                                       placeholder="https://www.instagram.com/...">
+                                            </div>
+                                        </div>
 
-                                <div class="mb-3">
-                                    <label for="bandcampUrl" class="form-label">Bandcamp URL</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-info text-white">
-                                            <i class="bi bi-music-note-beamed"></i>
-                                        </span>
-                                        <input type="url" class="form-control" id="bandcampUrl"
-                                            formControlName="bandcampUrl" placeholder="https://bandcamp.com/...">
+                                        <!-- Bandcamp -->
+                                        <div class="mb-3">
+                                            <label for="bandcampUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-music-note-beamed platform-icon bandcamp"></i>Bandcamp
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-bandcamp text-white">
+                                                    <i class="bi bi-music-note-beamed"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       class="form-control" 
+                                                       id="bandcampUrl"
+                                                       formControlName="bandcampUrl" 
+                                                       placeholder="https://bandcamp.com/...">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -191,19 +337,34 @@
 
                         <!-- Submit error message -->
                         <div *ngIf="error.submit" class="alert alert-danger mt-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
                             {{ error.submit }}
                         </div>
 
                         <!-- Form actions -->
-                        <div class="d-flex justify-content-end gap-2 mt-4">
-                            <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
-                                Cancelar
-                            </button>
-                            <button type="submit" class="btn btn-primary" [disabled]="loading.submit">
-                                <span *ngIf="loading.submit" class="spinner-border spinner-border-sm me-2"
-                                    role="status"></span>
-                                {{ isEditMode ? 'Actualizar' : 'Guardar' }} Artista
-                            </button>
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="action-buttons-section">
+                                    <hr class="mb-4">
+                                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-end align-items-center">
+                                        <button type="button" 
+                                                class="btn btn-outline-secondary px-4" 
+                                                (click)="onCancel()"
+                                                [disabled]="loading.submit">
+                                            <i class="bi bi-x-lg me-1"></i>
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" 
+                                                class="btn px-4" 
+                                                [ngClass]="isEditMode ? 'btn-warning' : 'btn-success'"
+                                                [disabled]="loading.submit || artistForm.invalid">
+                                            <span *ngIf="loading.submit" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                            <i *ngIf="!loading.submit" class="bi me-1" [ngClass]="isEditMode ? 'bi-check-lg' : 'bi-plus-lg'"></i>
+                                            {{ isEditMode ? 'Actualizar' : 'Crear' }} Artista
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

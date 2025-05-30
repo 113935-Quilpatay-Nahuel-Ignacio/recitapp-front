@@ -520,25 +520,83 @@ body {
 
 // Dropdown styles
 .dropdown-menu {
-  background-color: var(--dark-card);
-  border: 1px solid var(--dark-border);
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 0.875rem;
+  background-color: var(--dark-card, #1a1a1a);
+  border: 1px solid var(--dark-border, #333);
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+  
+  &.show {
+    display: block !important;
+  }
   
   .dropdown-item {
-    color: var(--dark-text);
+    display: block;
+    width: 100%;
+    padding: 0.25rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: var(--dark-text, #fff);
+    text-align: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
     
-    &:hover, &:focus {
-      background-color: var(--dark-card-hover);
-      color: var(--dark-text);
+    &:hover,
+    &:focus {
+      color: var(--primary-green, #22c55e);
+      background-color: var(--dark-card-hover, #2a2a2a);
     }
     
     &:active {
-      background-color: var(--primary-green);
-      color: white;
+      color: var(--primary-green, #22c55e);
+      background-color: var(--dark-card-hover, #2a2a2a);
     }
   }
   
   .dropdown-divider {
-    border-color: var(--dark-border);
+    height: 0;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    border-top: 1px solid var(--dark-border, #333);
+  }
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+/* Ensure dropdown positioning works correctly */
+.dropdown {
+  position: relative;
+}
+
+/* Animation for dropdown show/hide */
+.dropdown-menu {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -771,6 +829,758 @@ footer {
           background: rgba(255, 152, 0, 0.8) !important;
         }
       }
+    }
+  }
+}
+
+/* ========================================================================== */
+/* GENRE MANAGEMENT STYLES */
+/* ========================================================================== */
+
+// Genre Management Page Styles
+.page-header-custom {
+  margin-bottom: 2rem;
+  
+  h1 {
+    color: var(--dark-text);
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 0;
+  }
+}
+
+// Genre List Card
+.genre-list-card {
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+  }
+  
+  .bg-search {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+  
+  .bg-footer {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+  
+  .search-input-group {
+    .input-group-text {
+      background-color: transparent;
+      border: 1px solid var(--dark-border);
+      color: var(--dark-text-muted);
+    }
+    
+    .form-control {
+      background-color: transparent;
+      border: 1px solid var(--dark-border);
+      color: var(--dark-text);
+      
+      &:focus {
+        background-color: transparent;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+        color: var(--dark-text);
+      }
+      
+      &::placeholder {
+        color: var(--dark-text-muted);
+      }
+    }
+  }
+}
+
+// Genre List Items
+.genre-list-content {
+  max-height: 400px;
+  overflow-y: auto;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+    
+    &:hover {
+      background: var(--primary-green-hover);
+    }
+  }
+}
+
+.genre-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--dark-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  
+  &:hover {
+    background-color: rgba(34, 197, 94, 0.08);
+    transform: translateX(2px);
+  }
+  
+  &.active {
+    background-color: rgba(34, 197, 94, 0.15);
+    border-left: 4px solid var(--primary-green);
+    
+    .genre-name {
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+  }
+  
+  .genre-name {
+    font-weight: 500;
+    color: var(--dark-text);
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .genre-description {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  .delete-btn {
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    opacity: 0;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+  }
+  
+  &:hover .delete-btn {
+    opacity: 1;
+  }
+}
+
+// Genre Form Card
+.genre-form-card {
+  .bg-gradient-success {
+    background: linear-gradient(135deg, var(--success-green) 0%, #16a34a 100%);
+  }
+  
+  .bg-gradient-warning {
+    background: linear-gradient(135deg, var(--warning-yellow) 0%, #f59e0b 100%);
+  }
+  
+  .form-label {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    
+    i {
+      color: var(--primary-green);
+    }
+  }
+  
+  .form-control-lg {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+  }
+  
+  .form-control {
+    background-color: var(--dark-card);
+    border: 2px solid var(--dark-border);
+    color: var(--dark-text);
+    border-radius: 0.5rem;
+    
+    &:focus {
+      background-color: var(--dark-card);
+      border-color: var(--primary-green);
+      color: var(--dark-text);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    }
+    
+    &::placeholder {
+      color: var(--dark-text-muted);
+      opacity: 0.8;
+    }
+    
+    &.is-invalid {
+      border-color: var(--danger-red);
+      
+      &:focus {
+        border-color: var(--danger-red);
+        box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+      }
+    }
+  }
+  
+  .invalid-feedback {
+    color: var(--danger-red);
+    font-weight: 500;
+  }
+}
+
+// New Genre Button
+.new-genre-btn {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+  border: none;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+}
+
+// Button Styles for Genre Management
+.btn-success {
+  background: linear-gradient(135deg, var(--success-green) 0%, #16a34a 100%);
+  border: none;
+  font-weight: 600;
+  
+  &:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, var(--warning-yellow) 0%, #f59e0b 100%);
+  border: none;
+  color: #000;
+  font-weight: 600;
+  
+  &:hover {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+}
+
+/* ========================================================================== */
+/* ADMIN DROPDOWN STYLES */
+/* ========================================================================== */
+
+// Admin Dropdown Button
+.btn-admin-dropdown {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+  border: 2px solid transparent;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
+  
+  &:hover {
+    background: linear-gradient(135deg, var(--primary-green-hover) 0%, var(--primary-green) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+    color: white;
+  }
+  
+  &:focus, &:active {
+    background: linear-gradient(135deg, var(--primary-green-dark) 0%, var(--primary-green-hover) 100%);
+    border-color: transparent;
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    color: white;
+  }
+  
+  i {
+    font-size: 1.1rem;
+  }
+}
+
+// Admin Dropdown Menu
+.admin-dropdown-menu {
+  background-color: var(--dark-card, #2d2d2d);
+  border: 1px solid var(--dark-border, #404040);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 0.5rem 0;
+  min-width: 280px;
+  margin-top: 0.5rem;
+  
+  .dropdown-header {
+    color: var(--primary-green);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.75rem 1rem 0.5rem 1rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+    
+    i {
+      color: var(--primary-green);
+      font-size: 0.875rem;
+    }
+  }
+  
+  .dropdown-item {
+    color: var(--dark-text, #fff);
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    
+    &:hover,
+    &:focus {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: var(--primary-green);
+      transform: translateX(2px);
+      text-decoration: none;
+    }
+    
+    &:active {
+      background-color: rgba(34, 197, 94, 0.15);
+      color: var(--primary-green);
+    }
+    
+    i {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+      margin-right: 0.5rem;
+    }
+    
+    span {
+      flex: 1;
+    }
+    
+    // Warning actions (deactivate, etc.)
+    &.action-warning {
+      color: var(--warning-yellow);
+      
+      &:hover {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--warning-yellow);
+        
+        i {
+          color: var(--warning-yellow);
+        }
+      }
+      
+      i {
+        color: var(--warning-yellow);
+      }
+    }
+    
+    // Success actions (activate, etc.)
+    &.action-success {
+      color: var(--success-green);
+      
+      &:hover {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--success-green);
+        
+        i {
+          color: var(--success-green);
+        }
+      }
+      
+      i {
+        color: var(--success-green);
+      }
+    }
+    
+    // Danger actions (delete, etc.)
+    &.action-danger {
+      color: var(--danger-red);
+      
+      &:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--danger-red);
+        
+        i {
+          color: var(--danger-red);
+        }
+      }
+      
+      i {
+        color: var(--danger-red);
+      }
+    }
+  }
+  
+  .dropdown-divider {
+    border-top: 1px solid var(--dark-border, #404040);
+    margin: 0.5rem 0;
+    opacity: 0.6;
+  }
+}
+
+// Animation for dropdown show/hide
+.admin-dropdown-menu {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================================================== */
+/* ARTIST FORM STYLES */
+/* ========================================================================== */
+
+// Form Page Headers
+.page-header-edit, .page-header-form {
+  margin-bottom: 2rem;
+  
+  h1 {
+    color: var(--dark-text);
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 0;
+  }
+  
+  .header-actions {
+    .btn {
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+// Artist Form Card
+.artist-edit-card, .artist-form-card {
+  background-color: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  
+  .bg-gradient-edit {
+    background: linear-gradient(135deg, var(--warning-yellow) 0%, #f59e0b 100%);
+  }
+  
+  .bg-gradient-create {
+    background: linear-gradient(135deg, var(--success-green) 0%, #16a34a 100%);
+  }
+}
+
+// Form Sections
+.form-section {
+  .form-section-title {
+    color: var(--primary-green);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(34, 197, 94, 0.2);
+    
+    i {
+      color: var(--primary-green);
+    }
+  }
+}
+
+// Form Controls
+.form-label {
+  color: var(--dark-text);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.form-control {
+  background-color: var(--dark-card);
+  border: 2px solid var(--dark-border);
+  color: var(--dark-text);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  
+  &:focus {
+    background-color: var(--dark-card);
+    border-color: var(--primary-green);
+    color: var(--dark-text);
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+  }
+  
+  &::placeholder {
+    color: var(--dark-text-muted);
+    opacity: 0.7;
+  }
+  
+  &.form-control-lg {
+    padding: 1rem 1.25rem;
+    font-size: 1.1rem;
+    border-radius: 0.75rem;
+  }
+  
+  &.is-invalid {
+    border-color: var(--danger-red);
+    
+    &:focus {
+      border-color: var(--danger-red);
+      box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+    }
+  }
+}
+
+.invalid-feedback {
+  color: var(--danger-red);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+// Artist Status Switch
+.artist-status-switch {
+  .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    background-color: var(--dark-border);
+    border: 2px solid var(--dark-border);
+    
+    &:checked {
+      background-color: var(--success-green);
+      border-color: var(--success-green);
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    }
+  }
+  
+  .form-check-label {
+    color: var(--dark-text);
+    margin-left: 0.5rem;
+  }
+}
+
+// Genre Selection
+.genre-selection-container {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--dark-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  max-height: 250px;
+  overflow-y: auto;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+  }
+}
+
+.genre-checkbox {
+  .form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--dark-border);
+    background-color: transparent;
+    
+    &:checked {
+      background-color: var(--primary-green);
+      border-color: var(--primary-green);
+    }
+    
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    }
+  }
+  
+  .form-check-label {
+    color: var(--dark-text);
+    font-weight: 500;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    
+    &:hover {
+      color: var(--primary-green);
+    }
+    
+    i {
+      color: var(--primary-green);
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Image Upload Section
+.image-upload-section {
+  .image-preview-container {
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border: 2px solid var(--dark-border);
+    }
+  }
+  
+  .image-controls {
+    .form-control {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Platform Icons and Styling
+.platform-icon {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  
+  &.spotify {
+    color: #1DB954;
+  }
+  
+  &.youtube {
+    color: #FF0000;
+  }
+  
+  &.soundcloud {
+    color: #FF5500;
+  }
+  
+  &.instagram {
+    color: #E4405F;
+  }
+  
+  &.bandcamp {
+    color: #629AA0;
+  }
+}
+
+// Platform Input Groups
+.social-platforms {
+  .input-group-text {
+    border: 2px solid var(--dark-border);
+    
+    &.bg-spotify {
+      background-color: #1DB954;
+      border-color: #1DB954;
+    }
+    
+    &.bg-youtube {
+      background-color: #FF0000;
+      border-color: #FF0000;
+    }
+    
+    &.bg-soundcloud {
+      background-color: #FF5500;
+      border-color: #FF5500;
+    }
+    
+    &.bg-instagram {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      border-color: #e6683c;
+    }
+    
+    &.bg-bandcamp {
+      background-color: #629AA0;
+      border-color: #629AA0;
+    }
+  }
+  
+  .form-control {
+    border-left: none;
+    
+    &:focus {
+      border-left: none;
+    }
+  }
+}
+
+// Action Buttons Section
+.action-buttons-section {
+  .btn {
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+  
+  .btn-success {
+    background: linear-gradient(135deg, var(--success-green) 0%, #16a34a 100%);
+    border: none;
+    
+    &:hover {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    }
+  }
+  
+  .btn-warning {
+    background: linear-gradient(135deg, var(--warning-yellow) 0%, #f59e0b 100%);
+    border: none;
+    color: #000;
+    
+    &:hover {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+  }
+  
+  .btn-outline-info {
+    border: 2px solid var(--info-blue);
+    color: var(--info-blue);
+    
+    &:hover {
+      background-color: rgba(59, 130, 246, 0.1);
+      border-color: var(--info-blue);
+      color: var(--info-blue);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .page-header-edit, .page-header-form {
+    h1 {
+      font-size: 2rem;
+    }
+    
+    .header-actions {
+      .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .image-upload-section {
+    .image-preview-container img {
+      width: 80px;
+      height: 80px;
+    }
+  }
+  
+  .social-platforms {
+    .input-group {
+      margin-bottom: 0.75rem;
     }
   }
 }

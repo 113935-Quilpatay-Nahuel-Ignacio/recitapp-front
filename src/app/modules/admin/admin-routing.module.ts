@@ -5,11 +5,16 @@ import { EventSalesReportComponent } from './components/event-sales-report/event
 import { TicketValidationComponent } from './components/ticket-validation/ticket-validation.component';
 import { PromotionalTicketFormComponent } from './components/promotional-ticket-form/promotional-ticket-form.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
+import { MusicGenreAdminComponent } from '../artist/pages/music-genre-admin/music-genre-admin.component';
 
 const routes: Routes = [
   {
     path: 'users',
     component: UserManagementComponent
+  },
+  {
+    path: 'genres',
+    component: MusicGenreAdminComponent
   },
   {
     path: 'manage-reservations',

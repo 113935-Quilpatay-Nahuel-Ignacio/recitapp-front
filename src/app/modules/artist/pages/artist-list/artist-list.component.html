@@ -7,7 +7,7 @@
                 <!-- Admin dropdown -->
                 <div class="dropdown" *ngIf="isAdmin">
                     <button class="btn btn-outline-primary dropdown-toggle" type="button" 
-                            id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            id="adminDropdown" appDropdown aria-expanded="false">
                         <i class="bi bi-gear me-1"></i>
                         <span class="d-none d-md-inline">Admin</span>
                     </button>
@@ -18,15 +18,10 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" routerLink="/artists">
-                                <i class="bi bi-list me-2"></i>Gestionar Artistas
-                            </a>
-                        </li>
-                        <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item" routerLink="/genres">
+                            <a class="dropdown-item" routerLink="/admin/genres">
                                 <i class="bi bi-music-note-list me-2"></i>Gestionar Géneros
                             </a>
                         </li>

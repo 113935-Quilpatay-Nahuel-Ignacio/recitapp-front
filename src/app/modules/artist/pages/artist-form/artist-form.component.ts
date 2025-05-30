@@ -54,12 +54,22 @@ export class ArtistFormComponent implements OnInit {
     this.initForm();
     this.loadGenres();
 
+    // Check if we're in edit mode or create mode
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
-      if (id) {
+      if (id && id !== 'new') {
         this.artistId = +id;
         this.isEditMode = true;
         this.loadArtist(this.artistId);
+      } else {
+        // We're in create mode
+        this.isEditMode = false;
+        this.artistId = null;
+        // Initialize form with default values for creation
+        this.artistForm.patchValue({
+          active: true,
+          genreIds: []
+        });
       }
     });
   }
@@ -67,13 +77,13 @@ export class ArtistFormComponent implements OnInit {
   initForm(): void {
     this.artistForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
-      biography: [''],
+      biography: ['', [Validators.maxLength(2000)]],
       profileImage: [''],
-      spotifyUrl: [''],
-      youtubeUrl: [''],
-      soundcloudUrl: [''],
-      instagramUrl: [''],
-      bandcampUrl: [''],
+      spotifyUrl: ['', [this.validateUrl]],
+      youtubeUrl: ['', [this.validateUrl]],
+      soundcloudUrl: ['', [this.validateUrl]],
+      instagramUrl: ['', [this.validateUrl]],
+      bandcampUrl: ['', [this.validateUrl]],
       active: [true],
       genreIds: [[]],
     });
@@ -83,15 +93,28 @@ export class ArtistFormComponent implements OnInit {
     this.loading.genres = true;
     this.error.genres = '';
 
+    // Try to use the MusicGenreService first, fall back to ArtistService if needed
     this.artistService.getAllGenres().subscribe({
       next: (genres) => {
         this.genres = genres;
         this.loading.genres = false;
       },
       error: (err) => {
-        this.error.genres = 'Error al cargar géneros musicales';
         console.error('Error loading genres:', err);
+        
+        // Provide a user-friendly error message
+        if (err.status === 404) {
+          this.error.genres = 'No se encontraron géneros musicales. Contacta al administrador.';
+        } else if (err.status === 500) {
+          this.error.genres = 'Error del servidor al cargar géneros musicales.';
+        } else {
+          this.error.genres = 'Error al cargar géneros musicales. Inténtalo de nuevo.';
+        }
+        
         this.loading.genres = false;
+        
+        // Set empty genres array as fallback
+        this.genres = [];
       },
     });
   }
@@ -164,8 +187,21 @@ export class ArtistFormComponent implements OnInit {
   }
 
   handleError(err: any): void {
-    this.error.submit = err.error?.message || 'Error al guardar el artista';
     console.error('Error saving artist:', err);
+    
+    // Provide specific error messages based on the error type
+    if (err.status === 400) {
+      this.error.submit = err.error?.message || 'Datos inválidos. Verifica la información ingresada.';
+    } else if (err.status === 409) {
+      this.error.submit = 'Ya existe un artista con este nombre.';
+    } else if (err.status === 500) {
+      this.error.submit = 'Error del servidor. Inténtalo de nuevo más tarde.';
+    } else if (err.status === 0) {
+      this.error.submit = 'Error de conexión. Verifica tu conexión a internet.';
+    } else {
+      this.error.submit = err.error?.message || 'Error al guardar el artista. Inténtalo de nuevo.';
+    }
+    
     this.loading.submit = false;
   }
 
@@ -205,12 +241,50 @@ export class ArtistFormComponent implements OnInit {
   validateUrl(control: any): { [key: string]: any } | null {
     const value = control.value;
     if (!value) {
-      return null;
+      return null; // Empty values are allowed
     }
 
-    const urlPattern =
-      /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-    return urlPattern.test(value) ? null : { invalidUrl: true };
+    // Basic URL pattern validation
+    const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+    
+    if (!urlPattern.test(value)) {
+      return { invalidUrl: true };
+    }
+
+    return null;
+  }
+
+  // Additional method for platform-specific URL validation (could be used in the future)
+  validatePlatformUrl(platform: string) {
+    return (control: any): { [key: string]: any } | null => {
+      const value = control.value;
+      if (!value) {
+        return null;
+      }
+
+      let platformPattern: RegExp;
+      switch (platform) {
+        case 'spotify':
+          platformPattern = /^https?:\/\/(open\.)?spotify\.com\/.+$/;
+          break;
+        case 'youtube':
+          platformPattern = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+          break;
+        case 'soundcloud':
+          platformPattern = /^https?:\/\/(www\.)?soundcloud\.com\/.+$/;
+          break;
+        case 'instagram':
+          platformPattern = /^https?:\/\/(www\.)?instagram\.com\/.+$/;
+          break;
+        case 'bandcamp':
+          platformPattern = /^https?:\/\/.*\.?bandcamp\.com\/.+$/;
+          break;
+        default:
+          return this.validateUrl(control);
+      }
+
+      return platformPattern.test(value) ? null : { invalidPlatformUrl: true };
+    };
   }
 
   updateGenres(event: any, genreId: number): void {

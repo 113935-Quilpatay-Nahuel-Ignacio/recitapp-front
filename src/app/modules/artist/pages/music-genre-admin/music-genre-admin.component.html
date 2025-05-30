@@ -1,71 +1,109 @@
 <div class="container py-4">
-    <h1 class="text-center mb-4">Gestión de Géneros Musicales</h1>
-
-    <!-- Success message -->
-    <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ success }}
-        <button type="button" class="btn-close" (click)="success = ''"></button>
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center page-header-custom">
+                <div>
+                    <h1 class="mb-1 text-white">Gestión de Géneros Musicales</h1>
+                    <p class="text-muted mb-0">Administra los géneros musicales disponibles en la plataforma</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-music-note-list text-primary me-2" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
+    <!-- Success Alert -->
+    <div *ngIf="success" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        {{ success }}
+        <button type="button" class="btn-close" (click)="success = ''" aria-label="Close"></button>
+    </div>
+
+    <div class="row g-4">
         <!-- Left Column: Genre List -->
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light">
-                    <h2 class="h5 mb-0">Lista de Géneros</h2>
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0 genre-list-card">
+                <div class="card-header bg-gradient-primary text-white border-0 py-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-list-ul me-2"></i>
+                        <h5 class="mb-0">Lista de Géneros</h5>
+                        <span class="badge bg-light text-dark ms-auto">{{ genres.length }}</span>
+                    </div>
                 </div>
 
-                <div class="card-body">
-                    <!-- Search bar -->
-                    <div class="mb-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Buscar por nombre..."
-                                [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
+                <div class="card-body p-0">
+                    <!-- Search Section -->
+                    <div class="p-3 border-bottom bg-search">
+                        <div class="input-group search-input-group">
+                            <span class="input-group-text bg-transparent border-end-0">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0 ps-0" 
+                                   placeholder="Buscar géneros..." 
+                                   [(ngModel)]="searchTerm" 
+                                   (keyup.enter)="onSearch()">
                             <button class="btn btn-outline-primary" type="button" (click)="onSearch()">
                                 <i class="bi bi-search"></i>
                             </button>
                             <button *ngIf="searchTerm" class="btn btn-outline-secondary" type="button"
-                                (click)="clearSearch()">
+                                    (click)="clearSearch()" title="Limpiar búsqueda">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Loading state -->
-                    <div *ngIf="loading.list" class="text-center py-3">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
+                    <!-- Content Area -->
+                    <div class="genre-list-content">
+                        <!-- Loading state -->
+                        <div *ngIf="loading.list" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="text-muted mt-2 mb-0">Cargando géneros...</p>
+                        </div>
+
+                        <!-- Error message -->
+                        <div *ngIf="error.list" class="alert alert-danger m-3">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            {{ error.list }}
+                        </div>
+
+                        <!-- No results message -->
+                        <div *ngIf="!loading.list && genres.length === 0" class="text-center py-5">
+                            <i class="bi bi-music-note text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3 mb-2">No se encontraron géneros musicales</p>
+                            <small class="text-muted">Prueba con otra búsqueda o crea uno nuevo</small>
+                        </div>
+
+                        <!-- Genre list -->
+                        <div class="genre-list" *ngIf="!loading.list && genres.length > 0">
+                            <div *ngFor="let genre of genres" 
+                                 class="genre-item d-flex justify-content-between align-items-center"
+                                 [class.active]="selectedGenre && selectedGenre.id === genre.id"
+                                 (click)="selectGenre(genre)">
+                                <div class="genre-info flex-grow-1">
+                                    <div class="genre-name">{{ genre.name }}</div>
+                                    <small class="genre-description text-muted" *ngIf="genre.description">
+                                        {{ genre.description.length > 50 ? genre.description.substring(0, 50) + '...' : genre.description }}
+                                    </small>
+                                </div>
+                                <div class="genre-actions">
+                                    <button class="btn btn-sm btn-outline-danger delete-btn"
+                                            (click)="$event.stopPropagation(); deleteGenre(genre)"
+                                            title="Eliminar género">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Error message -->
-                    <div *ngIf="error.list" class="alert alert-danger">
-                        {{ error.list }}
-                    </div>
-
-                    <!-- No results message -->
-                    <div *ngIf="!loading.list && genres.length === 0" class="text-center py-3">
-                        <p class="text-muted mb-0">No se encontraron géneros musicales.</p>
-                    </div>
-
-                    <!-- Genre list -->
-                    <div class="list-group mt-2" *ngIf="!loading.list && genres.length > 0">
-                        <button *ngFor="let genre of genres"
-                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                            [class.active]="selectedGenre && selectedGenre.id === genre.id"
-                            (click)="selectGenre(genre)">
-                            {{ genre.name }}
-                            <button class="btn btn-sm btn-danger"
-                                (click)="$event.stopPropagation(); deleteGenre(genre)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </button>
-                    </div>
-
                     <!-- Add new genre button -->
-                    <div class="d-grid mt-3">
-                        <button class="btn btn-primary" (click)="newGenre()">
-                            <i class="bi bi-plus-lg me-2"></i>Nuevo Género
+                    <div class="p-3 border-top bg-footer">
+                        <button class="btn btn-primary w-100 new-genre-btn" (click)="newGenre()">
+                            <i class="bi bi-plus-lg me-2"></i>Nuevo Género Musical
                         </button>
                     </div>
                 </div>
@@ -73,73 +111,106 @@
         </div>
 
         <!-- Right Column: Genre Form -->
-        <div class="col-md-7">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h2 class="h5 mb-0">
-                        {{ isEditMode ? 'Editar' : 'Agregar' }} Género Musical
-                    </h2>
-                    <span *ngIf="isEditMode" class="badge bg-info">
-                        ID: {{ selectedGenre?.id }}
-                    </span>
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 genre-form-card">
+                <div class="card-header border-0 py-3" 
+                     [ngClass]="isEditMode ? 'bg-gradient-warning' : 'bg-gradient-success'">
+                    <div class="d-flex justify-content-between align-items-center text-white">
+                        <div class="d-flex align-items-center">
+                            <i class="bi me-2" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
+                            <h5 class="mb-0">{{ isEditMode ? 'Editar' : 'Agregar' }} Género Musical</h5>
+                        </div>
+                        <span *ngIf="isEditMode" class="badge bg-light text-dark">
+                            ID: {{ selectedGenre?.id }}
+                        </span>
+                    </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body p-4">
                     <!-- Form error message -->
                     <div *ngIf="error.form" class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
                         {{ error.form }}
                     </div>
 
                     <!-- Genre Form -->
                     <form [formGroup]="genreForm" (ngSubmit)="saveGenre()">
                         <!-- Name field -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" id="name" formControlName="name"
-                                [ngClass]="{'is-invalid': genreForm.get('name')?.invalid && genreForm.get('name')?.touched}">
+                        <div class="mb-4">
+                            <label for="name" class="form-label fw-semibold">
+                                <i class="bi bi-music-note me-1"></i>Nombre del Género *
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="name" 
+                                   formControlName="name"
+                                   placeholder="Ej: Rock, Pop, Jazz..."
+                                   [ngClass]="{'is-invalid': genreForm.get('name')?.invalid && genreForm.get('name')?.touched}">
                             <div *ngIf="genreForm.get('name')?.invalid && genreForm.get('name')?.touched"
-                                class="invalid-feedback">
-                                <span *ngIf="genreForm.get('name')?.errors?.['required']">El nombre es
-                                    obligatorio.</span>
-                                <span *ngIf="genreForm.get('name')?.errors?.['maxlength']">El nombre no puede exceder
-                                    los 50 caracteres.</span>
+                                 class="invalid-feedback">
+                                <span *ngIf="genreForm.get('name')?.errors?.['required']">
+                                    El nombre del género es obligatorio
+                                </span>
+                                <span *ngIf="genreForm.get('name')?.errors?.['maxlength']">
+                                    El nombre no puede exceder los 50 caracteres
+                                </span>
                             </div>
                         </div>
 
                         <!-- Description field -->
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="description" formControlName="description"
-                                rows="3"></textarea>
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-semibold">
+                                <i class="bi bi-file-text me-1"></i>Descripción
+                            </label>
+                            <textarea class="form-control" 
+                                      id="description" 
+                                      formControlName="description"
+                                      rows="4"
+                                      placeholder="Describe las características de este género musical..."></textarea>
+                            <small class="text-muted">Opcional: Ayuda a los usuarios a entender mejor el género</small>
                         </div>
 
                         <!-- Form actions -->
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-outline-secondary" [disabled]="loading.form"
-                                (click)="cancelEdit()">
+                            <button type="button" 
+                                    class="btn btn-outline-secondary px-4" 
+                                    [disabled]="loading.form"
+                                    (click)="cancelEdit()">
+                                <i class="bi bi-x-lg me-1"></i>
                                 Cancelar
                             </button>
-                            <button type="submit" class="btn btn-primary" [disabled]="loading.form">
-                                <span *ngIf="loading.form" class="spinner-border spinner-border-sm me-2"
-                                    role="status"></span>
-                                {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+                            <button type="submit" 
+                                    class="btn px-4" 
+                                    [ngClass]="isEditMode ? 'btn-warning' : 'btn-success'"
+                                    [disabled]="loading.form || genreForm.invalid">
+                                <span *ngIf="loading.form" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <i *ngIf="!loading.form" class="bi me-1" [ngClass]="isEditMode ? 'bi-check-lg' : 'bi-plus-lg'"></i>
+                                {{ isEditMode ? 'Actualizar' : 'Crear' }} Género
                             </button>
                         </div>
                     </form>
 
                     <!-- Genre Usage Information (when editing) -->
-                    <div *ngIf="isEditMode && selectedGenre" class="mt-4">
-                        <h3 class="h6 mb-2">Información de Uso:</h3>
-                        <ul class="list-group">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>Artistas que utilizan este género</span>
-                                <!-- Arreglado el routerLink y queryParams -->
-                                <a [routerLink]="['/artists']" [queryParams]="{genreId: selectedGenre.id}"
-                                    class="btn btn-sm btn-outline-primary">
-                                    Ver artistas
-                                </a>
-                            </li>
-                        </ul>
+                    <div *ngIf="isEditMode && selectedGenre" class="mt-5">
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3">
+                            <i class="bi bi-info-circle me-1"></i>Información de Uso
+                        </h6>
+                        <div class="card bg-light border-0">
+                            <div class="card-body py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-person-lines-fill text-primary me-2"></i>
+                                        <span class="fw-medium">Artistas que utilizan este género</span>
+                                    </div>
+                                    <a [routerLink]="['/artists']" 
+                                       [queryParams]="{genreId: selectedGenre.id}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Ver artistas
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

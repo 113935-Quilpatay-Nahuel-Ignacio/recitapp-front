@@ -16,9 +16,9 @@ import { ArtistListComponent } from './modules/artist/pages/artist-list/artist-l
 import { ArtistEditComponent } from './modules/artist/pages/artist-edit/artist-edit.component';
 import { ArtistEventsComponent } from './modules/artist/pages/artist-events/artist-events.component';
 import { ArtistStatisticsComponent } from './modules/artist/pages/artist-statistics/artist-statistics.component';
-import { ArtistPlatformsComponent } from './modules/artist/pages/artist-platforms/artist-platforms.component';
 import { ArtistManagementComponent } from './modules/artist/pages/artist-management/artist-management.component';
 import { MusicGenreAdminComponent } from './modules/artist/pages/music-genre-admin/music-genre-admin.component';
+import { ArtistFormComponent } from './modules/artist/pages/artist-form/artist-form.component';
 
 // Event module
 import { EventListComponent } from './modules/event/pages/event-list/event-list.component';
@@ -86,7 +86,7 @@ export const routes: Routes = [
   { path: 'artists', component: ArtistListComponent },
   { 
     path: 'artists/new', 
-    component: ArtistEditComponent,
+    component: ArtistFormComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
   },
@@ -107,12 +107,6 @@ export const routes: Routes = [
   { 
     path: 'artists/:id/statistics', 
     component: ArtistStatisticsComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
-  },
-  { 
-    path: 'artists/:id/platforms', 
-    component: ArtistPlatformsComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
   },

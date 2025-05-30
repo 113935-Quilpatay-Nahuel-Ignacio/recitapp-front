@@ -200,6 +200,9 @@ export class MusicGenreAdminComponent implements OnInit {
   }
 
   cancelEdit(): void {
-    this.newGenre();
+    this.selectedGenre = null;
+    this.isEditMode = false;
+    this.genreForm.reset();
+    this.error.form = '';
   }
 }

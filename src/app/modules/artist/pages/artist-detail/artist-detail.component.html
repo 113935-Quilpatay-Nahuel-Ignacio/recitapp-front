@@ -13,25 +13,46 @@
 
                         <!-- Admin actions dropdown - Only show for admins -->
                         <div class="dropdown" *ngIf="isAdmin">
-                            <button class="btn btn-outline-light dropdown-toggle" type="button"
-                                id="adminActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-gear me-1"></i>
-                                <span class="d-none d-md-inline">Admin</span>
+                            <button class="btn btn-admin-dropdown dropdown-toggle" type="button"
+                                id="adminActionsDropdown" appDropdown aria-expanded="false">
+                                <i class="bi bi-gear-fill me-2"></i>
+                                <span class="d-none d-md-inline fw-semibold">Administrar</span>
+                                <span class="d-md-none">Admin</span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminActionsDropdown">
-                                <li><a class="dropdown-item" [routerLink]="['/artists', artistId, 'edit']">
-                                        <i class="bi bi-pencil me-2"></i> Editar
-                                    </a></li>
-                                <li><a class="dropdown-item" [routerLink]="['/artists', artistId, 'platforms']">
-                                        <i class="bi bi-music-note-list me-2"></i> Gestionar plataformas
-                                    </a></li>
+                            <ul class="dropdown-menu dropdown-menu-end admin-dropdown-menu" aria-labelledby="adminActionsDropdown">
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        <i class="bi bi-person-gear me-2"></i>Gestión del Artista
+                                    </h6>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" [routerLink]="['/artists', artistId, 'edit']">
+                                        <i class="bi bi-pencil-square me-2"></i>
+                                        <span>Editar información y plataformas</span>
+                                    </a>
+                                </li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item text-warning" href="javascript:void(0)"
-                                        (click)="confirmDeactivate()" *ngIf="artist?.active">
-                                        <i class="bi bi-slash-circle me-2"></i> Desactivar
-                                    </a></li>
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        <i class="bi bi-shield-exclamation me-2"></i>Acciones Avanzadas
+                                    </h6>
+                                </li>
+                                <li *ngIf="artist?.active">
+                                    <a class="dropdown-item action-warning" href="javascript:void(0)"
+                                       (click)="confirmDeactivate()">
+                                        <i class="bi bi-slash-circle me-2"></i>
+                                        <span>Desactivar artista</span>
+                                    </a>
+                                </li>
+                                <li *ngIf="!artist?.active">
+                                    <a class="dropdown-item action-success" href="javascript:void(0)"
+                                       (click)="activateArtist()">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        <span>Activar artista</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

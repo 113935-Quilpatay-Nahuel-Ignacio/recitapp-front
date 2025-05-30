@@ -8,6 +8,7 @@ import { MusicGenre } from '../../models/music-genre';
 import { ArtistCardComponent } from '../../components/artist-card/artist-card.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SessionService } from '../../../../core/services/session.service';
+import { DropdownDirective } from '../../../../shared/directives/dropdown.directive';
 
 @Component({
   selector: 'app-artist-list',
@@ -18,6 +19,7 @@ import { SessionService } from '../../../../core/services/session.service';
     FormsModule,
     ArtistCardComponent,
     HttpClientModule,
+    DropdownDirective,
   ],
   templateUrl: './artist-list.component.html',
   styleUrls: ['./artist-list.component.scss'],

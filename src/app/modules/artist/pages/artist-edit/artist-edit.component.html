@@ -1,93 +1,291 @@
 <div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-light py-3">
-                    <h2 class="mb-0 text-center">Editar Artista</h2>
+        <div class="col-lg-10">
+            <!-- Header Section -->
+            <div class="page-header-edit mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="text-white mb-1">
+                            <i class="bi bi-pencil-square text-warning me-3"></i>
+                            Editar Artista
+                        </h1>
+                        <p class="text-muted mb-0">Actualiza la información del artista y sus plataformas musicales</p>
+                    </div>
+                    <div class="header-actions d-flex gap-2">
+                        <button type="button" class="btn btn-outline-info"
+                                [routerLink]="['/artists', artistId]">
+                            <i class="bi bi-eye me-1"></i>
+                            <span class="d-none d-md-inline">Ver perfil</span>
+                            <span class="d-md-none">Ver</span>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                [routerLink]="['/artists']">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            <span class="d-none d-md-inline">Lista de artistas</span>
+                            <span class="d-md-none">Lista</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="card-body">
+            </div>
+
+            <div class="card shadow-lg border-0 artist-edit-card">
+                <div class="card-header bg-gradient-edit text-white border-0 py-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-person-lines-fill me-2"></i>
+                        <h5 class="mb-0 fw-semibold">Información del Artista</h5>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Loading spinner -->
                     <div *ngIf="loading && !artistForm.dirty" class="text-center py-5">
-                        <div class="spinner-border" role="status">
+                        <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Cargando...</span>
                         </div>
+                        <p class="text-muted mt-3 mb-0">Cargando datos del artista...</p>
                     </div>
 
+                    <!-- Error Alert -->
                     <div *ngIf="error" class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
                         {{ error }}
                     </div>
 
+                    <!-- Success Alert -->
                     <div *ngIf="success" class="alert alert-success">
-                        ¡Artista actualizado correctamente!
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        ¡Artista actualizado correctamente! Redirigiendo...
                     </div>
 
-                    <form [formGroup]="artistForm" (ngSubmit)="onSubmit()">
-                        <!-- Información básica -->
-                        <h4 class="mb-3">Información Básica</h4>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nombre del Artista *</label>
-                            <input type="text" formControlName="name" class="form-control"
-                                [ngClass]="{ 'is-invalid': submitted && f['name'].errors }" />
-                            <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
-                                <div *ngIf="f['name'].errors['required']">El nombre del artista es obligatorio</div>
-                                <div *ngIf="f['name'].errors['maxlength']">El nombre no puede exceder los 100 caracteres
+                    <form [formGroup]="artistForm" (ngSubmit)="onSubmit()" *ngIf="!loading || artistForm.dirty">
+                        <div class="row g-4">
+                            <!-- Left Column: Basic Information -->
+                            <div class="col-lg-6">
+                                <div class="form-section">
+                                    <h6 class="form-section-title">
+                                        <i class="bi bi-info-circle me-2"></i>Información Básica
+                                    </h6>
+                                    
+                                    <!-- Name Field -->
+                                    <div class="mb-4">
+                                        <label for="name" class="form-label fw-semibold">
+                                            <i class="bi bi-person me-1 text-primary"></i>Nombre del Artista *
+                                        </label>
+                                        <input type="text" 
+                                               formControlName="name" 
+                                               class="form-control form-control-lg"
+                                               id="name"
+                                               placeholder="Ingresa el nombre del artista"
+                                               [ngClass]="{ 'is-invalid': submitted && f['name'].errors }" />
+                                        <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                                            <div *ngIf="f['name'].errors['required']">
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                El nombre del artista es obligatorio
+                                            </div>
+                                            <div *ngIf="f['name'].errors['maxlength']">
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                El nombre no puede exceder los 100 caracteres
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Profile Image -->
+                                    <div class="mb-4">
+                                        <label for="profileImage" class="form-label fw-semibold">
+                                            <i class="bi bi-image me-1 text-info"></i>URL de Imagen de Perfil
+                                        </label>
+                                        <input type="url" 
+                                               formControlName="profileImage" 
+                                               class="form-control"
+                                               id="profileImage"
+                                               placeholder="https://ejemplo.com/imagen.jpg" />
+                                        <small class="form-text text-muted">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            URL de una imagen que represente al artista
+                                        </small>
+                                    </div>
+
+                                    <!-- Biography -->
+                                    <div class="mb-4">
+                                        <label for="biography" class="form-label fw-semibold">
+                                            <i class="bi bi-file-text me-1 text-success"></i>Biografía
+                                        </label>
+                                        <textarea formControlName="biography" 
+                                                  class="form-control" 
+                                                  id="biography"
+                                                  rows="6"
+                                                  placeholder="Escribe la biografía del artista..."
+                                                  [ngClass]="{ 'is-invalid': submitted && f['biography'].errors }"></textarea>
+                                        <small class="form-text text-muted">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Información sobre la trayectoria y estilo del artista (máximo 2000 caracteres)
+                                            <span class="float-end">{{ artistForm.get('biography')?.value?.length || 0 }}/2000</span>
+                                        </small>
+                                        <div *ngIf="submitted && f['biography'].errors" class="invalid-feedback">
+                                            <div *ngIf="f['biography'].errors['maxlength']">
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                La biografía no puede exceder los 2000 caracteres
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Social Media Platforms -->
+                            <div class="col-lg-6">
+                                <div class="form-section">
+                                    <h6 class="form-section-title">
+                                        <i class="bi bi-share me-2"></i>Plataformas Musicales
+                                    </h6>
+                                    
+                                    <div class="row g-3">
+                                        <!-- Spotify -->
+                                        <div class="col-12">
+                                            <label for="spotifyUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-spotify platform-icon spotify"></i>Spotify
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-spotify text-white">
+                                                    <i class="bi bi-spotify"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       formControlName="spotifyUrl" 
+                                                       class="form-control"
+                                                       id="spotifyUrl"
+                                                       placeholder="https://open.spotify.com/artist/..."
+                                                       [ngClass]="{ 'is-invalid': submitted && f['spotifyUrl'].errors }" />
+                                            </div>
+                                            <div *ngIf="submitted && f['spotifyUrl'].errors" class="invalid-feedback">
+                                                <div *ngIf="f['spotifyUrl'].errors['invalidUrl']">
+                                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                                    URL inválida. Debe ser una URL válida de Spotify.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- YouTube -->
+                                        <div class="col-12">
+                                            <label for="youtubeUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-youtube platform-icon youtube"></i>YouTube
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-youtube text-white">
+                                                    <i class="bi bi-youtube"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       formControlName="youtubeUrl" 
+                                                       class="form-control"
+                                                       id="youtubeUrl"
+                                                       placeholder="https://www.youtube.com/@..."
+                                                       [ngClass]="{ 'is-invalid': submitted && f['youtubeUrl'].errors }" />
+                                            </div>
+                                            <div *ngIf="submitted && f['youtubeUrl'].errors" class="invalid-feedback">
+                                                <div *ngIf="f['youtubeUrl'].errors['invalidUrl']">
+                                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                                    URL inválida. Debe ser una URL válida de YouTube.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- SoundCloud -->
+                                        <div class="col-12">
+                                            <label for="soundcloudUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-cloud platform-icon soundcloud"></i>SoundCloud
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-soundcloud text-white">
+                                                    <i class="bi bi-cloud"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       formControlName="soundcloudUrl" 
+                                                       class="form-control"
+                                                       id="soundcloudUrl"
+                                                       placeholder="https://soundcloud.com/..."
+                                                       [ngClass]="{ 'is-invalid': submitted && f['soundcloudUrl'].errors }" />
+                                            </div>
+                                            <div *ngIf="submitted && f['soundcloudUrl'].errors" class="invalid-feedback">
+                                                <div *ngIf="f['soundcloudUrl'].errors['invalidUrl']">
+                                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                                    URL inválida. Debe ser una URL válida de SoundCloud.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Instagram -->
+                                        <div class="col-12">
+                                            <label for="instagramUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-instagram platform-icon instagram"></i>Instagram
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-instagram text-white">
+                                                    <i class="bi bi-instagram"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       formControlName="instagramUrl" 
+                                                       class="form-control"
+                                                       id="instagramUrl"
+                                                       placeholder="https://www.instagram.com/..."
+                                                       [ngClass]="{ 'is-invalid': submitted && f['instagramUrl'].errors }" />
+                                            </div>
+                                            <div *ngIf="submitted && f['instagramUrl'].errors" class="invalid-feedback">
+                                                <div *ngIf="f['instagramUrl'].errors['invalidUrl']">
+                                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                                    URL inválida. Debe ser una URL válida de Instagram.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Bandcamp -->
+                                        <div class="col-12">
+                                            <label for="bandcampUrl" class="form-label fw-semibold">
+                                                <i class="bi bi-music-note-beamed platform-icon bandcamp"></i>Bandcamp
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-bandcamp text-white">
+                                                    <i class="bi bi-music-note-beamed"></i>
+                                                </span>
+                                                <input type="url" 
+                                                       formControlName="bandcampUrl" 
+                                                       class="form-control"
+                                                       id="bandcampUrl"
+                                                       placeholder="https://bandcamp.com/..."
+                                                       [ngClass]="{ 'is-invalid': submitted && f['bandcampUrl'].errors }" />
+                                            </div>
+                                            <div *ngIf="submitted && f['bandcampUrl'].errors" class="invalid-feedback">
+                                                <div *ngIf="f['bandcampUrl'].errors['invalidUrl']">
+                                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                                    URL inválida. Debe ser una URL válida de Bandcamp.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="profileImage" class="form-label">URL de Imagen de Perfil</label>
-                            <input type="text" formControlName="profileImage" class="form-control" />
-                            <small class="form-text text-muted">URL de una imagen que represente al artista</small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="biography" class="form-label">Biografía</label>
-                            <textarea formControlName="biography" class="form-control" rows="5"></textarea>
-                        </div>
-
-                        <!-- Plataformas -->
-                        <h4 class="mt-4 mb-3">Plataformas</h4>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="spotifyUrl" class="form-label">Spotify URL</label>
-                                <input type="text" formControlName="spotifyUrl" class="form-control" />
+                        <!-- Action Buttons -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="action-buttons-section">
+                                    <hr class="mb-4">
+                                    <div class="d-flex justify-content-end gap-3">
+                                        <button type="button" 
+                                                class="btn btn-outline-secondary px-4"
+                                                [routerLink]="['/artists', artistId]"
+                                                [disabled]="loading">
+                                            <i class="bi bi-x-lg me-1"></i>
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" 
+                                                class="btn btn-warning px-4" 
+                                                [disabled]="loading || artistForm.invalid">
+                                            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                            <i *ngIf="!loading" class="bi bi-check-lg me-2"></i>
+                                            Guardar cambios
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="youtubeUrl" class="form-label">YouTube URL</label>
-                                <input type="text" formControlName="youtubeUrl" class="form-control" />
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="soundcloudUrl" class="form-label">SoundCloud URL</label>
-                                <input type="text" formControlName="soundcloudUrl" class="form-control" />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="instagramUrl" class="form-label">Instagram URL</label>
-                                <input type="text" formControlName="instagramUrl" class="form-control" />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="bandcampUrl" class="form-label">Bandcamp URL</label>
-                            <input type="text" formControlName="bandcampUrl" class="form-control" />
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <button (click)="updatePlatforms()" type="button" class="btn btn-outline-primary"
-                                [disabled]="loading">
-                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
-                                Actualizar solo plataformas
-                            </button>
-                            <button type="submit" class="btn btn-primary" [disabled]="loading">
-                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
-                                Guardar cambios
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary"
-                                [routerLink]="['/artists', artistId]">Cancelar</button>
                         </div>
                     </form>
                 </div>
