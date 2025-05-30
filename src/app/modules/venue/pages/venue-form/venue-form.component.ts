@@ -28,6 +28,7 @@ export class VenueFormComponent implements OnInit {
   submitted = false;
   success = false;
   error = '';
+  imageLoadError = false;
 
   constructor(
     private fb: FormBuilder,
@@ -136,6 +137,8 @@ export class VenueFormComponent implements OnInit {
         }
 
         this.sectionsLoading = false;
+        // Ensure main loading is also false after sections are loaded
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error loading venue sections:', err);
@@ -145,6 +148,8 @@ export class VenueFormComponent implements OnInit {
         }
         this.addSection();
         this.sectionsLoading = false;
+        // Ensure main loading is also false even if sections fail to load
+        this.loading = false;
         
         // Don't show error to user for sections, just log it
         // They can still use the form to add sections manually
@@ -188,6 +193,18 @@ export class VenueFormComponent implements OnInit {
     if (this.isEditMode && this.venueId) {
       this.loadVenueSections(this.venueId);
     }
+  }
+
+  onImageLoad(): void {
+    this.imageLoadError = false;
+  }
+
+  onImageError(): void {
+    this.imageLoadError = true;
+  }
+
+  onImageUrlChange(): void {
+    this.imageLoadError = false;
   }
 
   // Helper method to get a specific control from a section form group

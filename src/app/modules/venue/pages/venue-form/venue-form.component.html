@@ -142,14 +142,29 @@
                                     <!-- URL Imagen -->
                                     <div class="col-12">
                                         <label for="image" class="form-label">URL de Imagen</label>
-                                        <input type="text" class="form-control" id="image" formControlName="image">
+                                        <input type="text" class="form-control" id="image" formControlName="image"
+                                               (input)="onImageUrlChange()">
                                         <small class="form-text text-muted">URL de una imagen que represente al
                                             recinto</small>
 
                                         <!-- Image preview -->
                                         <div *ngIf="f['image'].value" class="mt-2">
-                                            <img [src]="f['image'].value" class="img-thumbnail"
-                                                style="max-height: 200px;" alt="Vista previa">
+                                            <!-- Show image if loaded successfully -->
+                                            <img *ngIf="!imageLoadError" 
+                                                 [src]="f['image'].value" 
+                                                 class="img-thumbnail"
+                                                 style="max-height: 200px;" 
+                                                 alt="Vista previa"
+                                                 (load)="onImageLoad()"
+                                                 (error)="onImageError()">
+                                            
+                                            <!-- Show placeholder if image failed to load -->
+                                            <div *ngIf="imageLoadError" class="image-placeholder img-thumbnail d-flex flex-column align-items-center justify-content-center"
+                                                 style="max-height: 200px; min-height: 150px; background-color: #f8f9fa; border: 2px dashed #dee2e6;">
+                                                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                                <p class="text-muted mb-0 mt-2">Imagen no disponible</p>
+                                                <small class="text-muted">Verifica que la URL sea correcta</small>
+                                            </div>
                                         </div>
                                     </div>
 
