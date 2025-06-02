@@ -38,7 +38,7 @@
                 <!-- Creator Links - Only for Event Registrars and Admins -->
                 <li class="nav-item dropdown" *ngIf="isEventRegistrar">
                     <a class="nav-link dropdown-toggle" href="#" id="creatorDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                        simpleDropdown aria-expanded="false">
                         <i class="fas fa-plus-circle me-1"></i>
                         <span>Crear</span>
                     </a>
@@ -62,7 +62,7 @@
                 <!-- Payment Management - Only for authenticated users -->
                 <li class="nav-item dropdown" *ngIf="isAuthenticated">
                     <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                        simpleDropdown aria-expanded="false">
                         <i class="fas fa-credit-card me-1"></i>
                         <span class="d-none d-lg-inline">Pagos</span>
                     </a>
@@ -91,7 +91,7 @@
                 <!-- Admin Menu - Only for administrators -->
                 <li class="nav-item dropdown" *ngIf="isAdmin">
                     <a class="nav-link dropdown-toggle admin-link" href="#" id="adminDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                        simpleDropdown aria-expanded="false">
                         <i class="fas fa-shield-alt me-1"></i>
                         <span class="d-none d-lg-inline">Admin</span>
                     </a>
@@ -128,7 +128,7 @@
                 <!-- User Account Menu - Only for authenticated users -->
                 <li class="nav-item dropdown" *ngIf="isAuthenticated">
                     <a class="nav-link dropdown-toggle user-menu" href="#" id="userDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                        simpleDropdown aria-expanded="false">
                         <i class="fas fa-user-circle me-1"></i>
                         <span class="d-none d-md-inline">{{ userDisplayName || 'Mi cuenta' }}</span>
                     </a>

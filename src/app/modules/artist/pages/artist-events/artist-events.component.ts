@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ArtistService } from '../../services/artist.service';
 import { ArtistDetailDTO } from '../../models/artist-detail';
 import { EventDTO } from '../../../event/models/event';
+import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
 
 @Component({
   selector: 'app-artist-events',
@@ -88,20 +89,15 @@ export class ArtistEventsComponent implements OnInit {
     });
   }
 
+  formatStatusName(status: string | undefined): string {
+    return StatusFormatter.formatStatusName(status);
+  }
+
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'PROXIMO':
-        return 'bg-info';
-      case 'EN_VENTA':
-        return 'bg-success';
-      case 'AGOTADO':
-        return 'bg-warning';
-      case 'CANCELADO':
-        return 'bg-danger';
-      case 'FINALIZADO':
-        return 'bg-secondary';
-      default:
-        return 'bg-light';
-    }
+    return StatusFormatter.getStatusClass(status);
+  }
+
+  getStatusIcon(status: string): string {
+    return StatusFormatter.getStatusIcon(status);
   }
 }

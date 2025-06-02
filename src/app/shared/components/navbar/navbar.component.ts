@@ -5,11 +5,12 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
+import { SimpleDropdownDirective } from '../../directives/simple-dropdown.directive';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SimpleDropdownDirective],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })

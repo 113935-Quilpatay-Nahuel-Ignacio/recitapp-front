@@ -166,6 +166,8 @@
   background-color: var(--dark-card);
   margin-top: 0.5rem;
   min-width: 250px;
+  z-index: 1050;
+  position: absolute;
   
   .dropdown-header {
     color: var(--primary-green);
@@ -333,10 +335,13 @@
   transition: all 0.3s ease;
 }
 
-// Hover effects for better UX
-.nav-item:hover .dropdown-menu {
-  display: block;
-  animation: slideIn 0.3s ease;
+// Dropdown behavior: remove problematic hover rules that conflict
+// Keep only the manual control through our custom directive
+
+// Improved dropdown positioning and z-index
+.dropdown-menu {
+  z-index: 1050;
+  position: absolute;
 }
 
 @keyframes slideIn {

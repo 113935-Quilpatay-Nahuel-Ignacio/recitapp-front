@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SessionService } from '../../../../core/services/session.service';
 import { ModalService } from '../../../../shared/services/modal.service';
+import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -217,5 +218,17 @@ export class TicketDetailComponent implements OnInit {
         return of(null);
       })
     ).subscribe();
+  }
+
+  formatStatusName(status: string | undefined): string {
+    return StatusFormatter.formatStatusName(status);
+  }
+
+  getStatusClass(status: string | undefined): string {
+    return StatusFormatter.getStatusClass(status);
+  }
+
+  getStatusIcon(status: string | undefined): string {
+    return StatusFormatter.getStatusIcon(status);
   }
 } 

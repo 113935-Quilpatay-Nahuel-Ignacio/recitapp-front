@@ -142,13 +142,9 @@
           </div>
         </div>
         <div class="card-footer text-center event-status">
-          <span class="badge" [ngClass]="{
-              'bg-success': event.statusName === 'EN_VENTA',
-              'bg-info': event.statusName === 'PROXIMO',
-              'bg-warning text-dark': event.statusName === 'AGOTADO',
-              'bg-danger': event.statusName === 'CANCELADO',
-              'bg-secondary': event.statusName === 'FINALIZADO'
-            }">{{ formatStatusName(event.statusName) }}</span>
+          <span class="badge" [ngClass]="getStatusClass(event.statusName)">
+            <i class="bi bi-{{ getStatusIcon(event.statusName) }} me-1"></i>{{ formatStatusName(event.statusName) }}
+          </span>
         </div>
       </div>
     </div>

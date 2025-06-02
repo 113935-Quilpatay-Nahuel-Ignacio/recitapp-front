@@ -1,10 +1,12 @@
-import { Component, OnInit, AfterViewInit, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { EventDTO, EventStatusUpdateDTO, EventVerificationRequest } from '../../models/event';
 import { EventStatisticsDTO } from '../../models/event-statistics.dto';
 import { ModalService } from '../../../../shared/services/modal.service';
+import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
+import { SimpleDropdownDirective } from '../../../../shared/directives/simple-dropdown.directive';
 // Podríamos necesitar importar Venue y Artist si queremos enlazar a sus detalles o mostrar más info
 // import { VenueService } from '../../../venue/services/venue.service';
 // import { ArtistService } from '../../../artist/services/artist.service';
@@ -12,7 +14,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DecimalPipe],
+  imports: [CommonModule, RouterModule, DecimalPipe, SimpleDropdownDirective],
   templateUrl: './event-detail.component.html',
   styleUrls: ['./event-detail.component.scss'],
   providers: [DatePipe, DecimalPipe]
@@ -27,14 +29,9 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   isAdmin = true; // Placeholder: Implementar lógica de roles/permisos real
   isVerifying = false; // Added for verification loading state
   verificationMessage = ''; // Added for verification feedback
-  dropdownOpen = false; // Control dropdown visibility manually
-  eventStatuses: { value: string; viewValue: string }[] = [
-    { value: 'PROXIMO', viewValue: 'Próximo' },
-    { value: 'EN_VENTA', viewValue: 'En Venta' },
-    { value: 'AGOTADO', viewValue: 'Agotado' },
-    { value: 'CANCELADO', viewValue: 'Cancelado' },
-    { value: 'FINALIZADO', viewValue: 'Finalizado' },
-  ];
+
+  // Use the StatusFormatter for better status handling
+  eventStatuses = StatusFormatter.getEventStatuses();
 
   constructor(
     private route: ActivatedRoute,
@@ -67,25 +64,6 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     // Add any necessary after view init logic here
-  }
-
-  // Dropdown control methods
-  toggleDropdown(): void {
-    this.dropdownOpen = !this.dropdownOpen;
-  }
-
-  closeDropdown(): void {
-    this.dropdownOpen = false;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    const dropdown = this.elementRef.nativeElement.querySelector('.dropdown');
-    
-    if (dropdown && !dropdown.contains(target)) {
-      this.closeDropdown();
-    }
   }
 
   loadEventDetails(): void {
@@ -148,8 +126,19 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   }
 
   formatStatusName(status: string | undefined): string {
-    if (!status) return 'N/A';
-    return status.replace(/_/g, ' ');
+    return StatusFormatter.formatStatusName(status);
+  }
+
+  getStatusClass(status: string | undefined): string {
+    return StatusFormatter.getStatusClass(status);
+  }
+
+  getStatusIcon(status: string | undefined): string {
+    return StatusFormatter.getStatusIcon(status);
+  }
+
+  getStatusInfo(status: string | undefined) {
+    return StatusFormatter.getStatusInfo(status);
   }
 
   navigateToVenue(venueId: number | undefined): void {

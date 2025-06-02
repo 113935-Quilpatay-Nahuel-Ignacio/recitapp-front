@@ -1,94 +1,172 @@
-<div class="purchase-container">
-  <div *ngIf="isLoading" class="loading-spinner">
-    <p>Loading details...</p>
-  </div>
-
-  <div *ngIf="error" class="error-message">
-    <p>{{ error }}</p>
-    <button (click)="ngOnInit()">Retry</button>
-  </div>
-
-  <ng-container *ngIf="!isLoading && !error">
-    <div *ngIf="event$ | async as event" class="event-details">
-      <h2>{{ event.name }}</h2>
-      <p *ngIf="event.description">{{ event.description }}</p>
-      <p *ngIf="event.startDateTime">Date: {{ event.startDateTime | date: 'medium' }}</p>
-      <p *ngIf="event.location">Location: {{ event.location }}</p>
+<div class="ticket-purchase">
+  <div class="container py-4">
+    <div class="page-header">
+      <h1><i class="bi bi-ticket-perforated me-2"></i>Comprar Entradas</h1>
     </div>
 
-    <hr>
-
-    <h3>Available Sections</h3>
-    <div *ngIf="sectionOffers.length === 0 && !isLoading" class="no-offers">
-      <p>No sections available for purchase for this event currently, or still loading.</p>
-    </div>
-
-    <div class="section-offers-list" *ngIf="sectionOffers.length > 0">
-      <div *ngFor="let offer of sectionOffers" class="section-offer-item card mb-3">
-        <div class="card-body">
-          <h4 class="card-title">{{ offer.sectionName }}</h4>
-          <p class="card-text">Price: {{ offer.price | currency:offer.currency:'symbol':'1.2-2' }}</p>
-          <p class="card-text">Available: {{ offer.availableTickets }} tickets</p>
-          <div class="add-section-controls form-inline" *ngIf="offer.availableTickets > 0">
-            <label for="quantity-{{offer.sectionId}}" class="mr-2">Quantity:</label>
-            <input class="form-control mr-2" style="width: 70px;" type="number" id="quantity-{{offer.sectionId}}" #quantityInput value="1" min="1" [max]="offer.availableTickets">
-            <button class="btn btn-primary btn-sm" (click)="addTicketForSection(offer, quantityInput.valueAsNumber || 1)">
-              Add to Cart
-            </button>
-          </div>
-          <p *ngIf="offer.availableTickets === 0" class="text-danger">Sold out</p>
+    <div class="purchase-container">
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Cargando detalles...</span>
         </div>
-      </div>
-    </div>
-
-    <hr *ngIf="attendeeTickets.controls.length > 0">
-
-    <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
-      <div formArrayName="attendeeTickets">
-        <h3 *ngIf="attendeeTickets.controls.length > 0">Your Cart ({{ attendeeTickets.controls.length }} Tickets)</h3>
-        
-        <div *ngFor="let ticketCtrl of attendeeTickets.controls; let i = index" [formGroupName]="i" class="attendee-ticket-item card mb-3">
-          <div class="card-header">
-            Ticket {{ i + 1 }} for <strong>{{ ticketCtrl.get('sectionName')?.value }}</strong> - {{ ticketCtrl.get('price')?.value | currency:(sectionOffers[0].currency || 'ARS'):'symbol':'1.2-2' }}
-            <button type="button" (click)="removeTicket(i)" class="btn btn-danger btn-sm float-right">Remove</button>
-          </div>
-          <div class="card-body">
-            <div class="form-group">
-              <label for="firstName-{{i}}">First Name:</label>
-              <input id="firstName-{{i}}" formControlName="attendeeFirstName" placeholder="Attendee First Name" class="form-control">
-              <!-- Basic Validation Example -->
-              <small *ngIf="ticketCtrl.get('attendeeFirstName')?.invalid && ticketCtrl.get('attendeeFirstName')?.touched" class="text-danger">
-                First name is required.
-              </small>
-            </div>
-            <div class="form-group">
-              <label for="lastName-{{i}}">Last Name:</label>
-              <input id="lastName-{{i}}" formControlName="attendeeLastName" placeholder="Attendee Last Name" class="form-control">
-              <small *ngIf="ticketCtrl.get('attendeeLastName')?.invalid && ticketCtrl.get('attendeeLastName')?.touched" class="text-danger">
-                Last name is required.
-              </small>
-            </div>
-            <div class="form-group">
-              <label for="dni-{{i}}">DNI:</label>
-              <input id="dni-{{i}}" formControlName="attendeeDni" placeholder="Attendee DNI" class="form-control">
-              <small *ngIf="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched" class="text-danger">
-                DNI is required.
-              </small>
-            </div>
-          </div>
-        </div>
+        <p class="mt-2">Cargando detalles del evento...</p>
       </div>
 
-      <div class="summary mt-3" *ngIf="attendeeTickets.controls.length > 0">
-        <h4>Total: {{ calculateTotal() | currency:(sectionOffers[0].currency || 'ARS'):'symbol':'1.2-2' }}</h4>
-        <!-- Add Payment Method Selection Here -->
-        <p><small>User ID: {{ MOCK_USER_ID }} (placeholder)</small></p>
-        <p><small>Payment Method ID: {{ MOCK_PAYMENT_METHOD_ID }} (placeholder)</small></p>
-
-        <button type="submit" class="btn btn-success btn-lg" [disabled]="purchaseForm.invalid || isLoading || attendeeTickets.controls.length === 0">
-          {{ isLoading ? 'Processing Purchase...' : 'Complete Purchase' }}
+      <div *ngIf="error" class="error-message">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error }}
+        <button type="button" class="btn" (click)="ngOnInit()">
+          <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
         </button>
       </div>
-    </form>
-  </ng-container>
+
+      <ng-container *ngIf="!isLoading && !error">
+        <div *ngIf="event$ | async as event" class="event-details">
+          <h2><i class="bi bi-calendar-event me-2"></i>{{ event.name }}</h2>
+          <p *ngIf="event.description"><i class="bi bi-file-text me-2"></i>{{ event.description }}</p>
+          <p *ngIf="event.startDateTime"><i class="bi bi-clock me-2"></i>{{ event.startDateTime | date: 'fullDate':'':'es-AR' }} a las {{ event.startDateTime | date: 'HH:mm':'':'es-AR' }} hs.</p>
+          <p *ngIf="event.location"><i class="bi bi-geo-alt me-2"></i>{{ event.location }}</p>
+        </div>
+
+        <div class="filter-card">
+          <div class="card-body">
+            <h3 class="card-title">
+              <i class="bi bi-grid-3x2 me-2"></i>Secciones Disponibles
+            </h3>
+            
+            <div *ngIf="sectionOffers.length === 0 && !isLoading" class="empty-state">
+              <div class="alert alert-warning text-center">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                No hay secciones disponibles para compra en este evento actualmente.
+              </div>
+            </div>
+
+            <div class="row" *ngIf="sectionOffers.length > 0">
+              <div class="col-md-6 col-lg-4 mb-4" *ngFor="let offer of sectionOffers">
+                <div class="ticket-type-item">
+                  <h4>{{ offer.sectionName }}</h4>
+                  <p class="price">{{ offer.price | currency:offer.currency:'symbol':'1.2-2' }}</p>
+                  <p class="availability">
+                    <i class="bi bi-people me-1"></i>{{ offer.availableTickets }} entradas disponibles
+                  </p>
+                  
+                  <div class="quantity-selector" *ngIf="offer.availableTickets > 0">
+                    <label for="quantity-{{offer.sectionId}}">Cantidad:</label>
+                    <input 
+                      class="form-control" 
+                      style="width: 80px; text-align: center;" 
+                      type="number" 
+                      id="quantity-{{offer.sectionId}}" 
+                      #quantityInput 
+                      value="1" 
+                      min="1" 
+                      [max]="offer.availableTickets">
+                    <button 
+                      type="button"
+                      class="btn btn-primary" 
+                      (click)="addTicketForSection(offer, quantityInput.valueAsNumber || 1)">
+                      <i class="bi bi-cart-plus me-1"></i>Agregar al Carrito
+                    </button>
+                  </div>
+                  
+                  <div *ngIf="offer.availableTickets === 0" class="alert alert-danger text-center mt-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Agotado
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
+          <div formArrayName="attendeeTickets" class="attendee-tickets" *ngIf="attendeeTickets.controls.length > 0">
+            <h3>
+              <i class="bi bi-cart me-2"></i>Tu Carrito ({{ attendeeTickets.controls.length }} 
+              {{ attendeeTickets.controls.length === 1 ? 'Entrada' : 'Entradas' }})
+            </h3>
+            
+            <div *ngFor="let ticketCtrl of attendeeTickets.controls; let i = index" [formGroupName]="i" class="attendee-ticket-item">
+              <div class="ticket-header">
+                <h5>
+                  <i class="bi bi-ticket-detailed me-2"></i>
+                  Entrada {{ i + 1 }} - {{ ticketCtrl.get('sectionName')?.value }}
+                  <span class="badge bg-success ms-2">
+                    {{ ticketCtrl.get('price')?.value | currency:'ARS':'symbol':'1.2-2' }}
+                  </span>
+                </h5>
+                <button 
+                  type="button" 
+                  (click)="removeTicket(i)" 
+                  class="btn btn-outline-danger btn-sm">
+                  <i class="bi bi-trash3 me-1"></i>Eliminar
+                </button>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName-{{i}}">Nombre:</label>
+                  <input 
+                    id="firstName-{{i}}" 
+                    formControlName="attendeeFirstName" 
+                    placeholder="Nombre del asistente" 
+                    class="form-control"
+                    [class.is-invalid]="ticketCtrl.get('attendeeFirstName')?.invalid && ticketCtrl.get('attendeeFirstName')?.touched">
+                  <div *ngIf="ticketCtrl.get('attendeeFirstName')?.invalid && ticketCtrl.get('attendeeFirstName')?.touched" class="invalid-feedback">
+                    El nombre es requerido.
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="lastName-{{i}}">Apellido:</label>
+                  <input 
+                    id="lastName-{{i}}" 
+                    formControlName="attendeeLastName" 
+                    placeholder="Apellido del asistente" 
+                    class="form-control"
+                    [class.is-invalid]="ticketCtrl.get('attendeeLastName')?.invalid && ticketCtrl.get('attendeeLastName')?.touched">
+                  <div *ngIf="ticketCtrl.get('attendeeLastName')?.invalid && ticketCtrl.get('attendeeLastName')?.touched" class="invalid-feedback">
+                    El apellido es requerido.
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="dni-{{i}}">DNI:</label>
+                  <input 
+                    id="dni-{{i}}" 
+                    formControlName="attendeeDni" 
+                    placeholder="DNI del asistente" 
+                    class="form-control"
+                    [class.is-invalid]="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched">
+                  <div *ngIf="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched" class="invalid-feedback">
+                    El DNI es requerido.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary" *ngIf="attendeeTickets.controls.length > 0">
+            <h4><i class="bi bi-receipt me-2"></i>Resumen de Compra</h4>
+            
+            <div class="summary-details">
+              <p><i class="bi bi-person me-2"></i><strong>Usuario:</strong> ID {{ MOCK_USER_ID }} (temporal)</p>
+              <p><i class="bi bi-credit-card me-2"></i><strong>Método de Pago:</strong> ID {{ MOCK_PAYMENT_METHOD_ID }} (temporal)</p>
+            </div>
+            
+            <div class="total-amount">
+              {{ calculateTotal() | currency:'ARS':'symbol':'1.2-2' }}
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-lg" 
+              [disabled]="purchaseForm.invalid || isLoading || attendeeTickets.controls.length === 0">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <i *ngIf="!isLoading" class="bi bi-credit-card me-2"></i>
+              {{ isLoading ? 'Procesando Compra...' : 'Completar Compra' }}
+            </button>
+          </div>
+        </form>
+      </ng-container>
+    </div>
+  </div>
 </div>

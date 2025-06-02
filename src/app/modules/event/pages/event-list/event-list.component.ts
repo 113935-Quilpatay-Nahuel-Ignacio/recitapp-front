@@ -14,6 +14,7 @@ import { VenueService } from '../../../venue/services/venue.service';
 import { Artist } from '../../../artist/models/artist';
 import { ArtistService } from '../../../artist/services/artist.service';
 import { ModalService } from '../../../../shared/services/modal.service';
+import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
 
 @Component({
   selector: 'app-event-list',
@@ -25,13 +26,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 })
 export class EventListComponent implements OnInit {
   filterForm!: FormGroup;
-  eventStatuses: { value: string; viewValue: string }[] = [
-    { value: 'PROXIMO', viewValue: 'Próximo' },
-    { value: 'EN_VENTA', viewValue: 'En Venta' },
-    { value: 'AGOTADO', viewValue: 'Agotado' },
-    { value: 'CANCELADO', viewValue: 'Cancelado' },
-    { value: 'FINALIZADO', viewValue: 'Finalizado' },
-  ];
+  eventStatuses = StatusFormatter.getEventStatuses();
   events: EventDTO[] = [];
   allEvents: EventDTO[] = []; // Para paginación del lado del cliente
   venues: Venue[] = [];
@@ -217,8 +212,15 @@ export class EventListComponent implements OnInit {
   }
 
   formatStatusName(status: string | undefined): string {
-    if (!status) return 'N/A';
-    return status.replace(/_/g, ' ');
+    return StatusFormatter.formatStatusName(status);
+  }
+
+  getStatusClass(status: string | undefined): string {
+    return StatusFormatter.getStatusClass(status);
+  }
+
+  getStatusIcon(status: string | undefined): string {
+    return StatusFormatter.getStatusIcon(status);
   }
 
   confirmCleanupCanceledEvents(): void {

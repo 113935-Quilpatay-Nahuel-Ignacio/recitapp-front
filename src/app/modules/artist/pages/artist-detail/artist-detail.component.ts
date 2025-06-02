@@ -6,13 +6,13 @@ import { UserService } from '../../../user/services/user.service';
 import { ArtistDetailDTO } from '../../models/artist-detail';
 import { FollowArtistButtonComponent } from '../../../user/components/follow-artist-button/follow-artist-button.component';
 import { SessionService } from '../../../../core/services/session.service';
-import { DropdownDirective } from '../../../../shared/directives/dropdown.directive';
+import { SimpleDropdownDirective } from '../../../../shared/directives/simple-dropdown.directive';
 import { ModalService } from '../../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-artist-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FollowArtistButtonComponent, DropdownDirective],
+  imports: [CommonModule, RouterModule, FollowArtistButtonComponent, SimpleDropdownDirective],
   templateUrl: './artist-detail.component.html',
   styleUrls: ['./artist-detail.component.scss'],
 })
