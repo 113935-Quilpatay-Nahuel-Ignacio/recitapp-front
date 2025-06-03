@@ -76,13 +76,31 @@
                                         <label for="totalCapacity" class="form-label">Capacidad Total</label>
                                         <input type="number" class="form-control" id="totalCapacity"
                                             formControlName="totalCapacity"
-                                            [ngClass]="{'is-invalid': submitted && hasError(f['totalCapacity'], 'min')}">
+                                            [ngClass]="{'is-invalid': submitted && hasError(f['totalCapacity'], 'min'), 'is-warning': !isCapacityConsistent()}">
                                         <div *ngIf="submitted && hasError(f['totalCapacity'], 'min')"
                                             class="invalid-feedback">
                                             <div>La capacidad debe ser mayor a cero</div>
                                         </div>
-                                        <small class="form-text text-muted">Se actualizará automáticamente según las
-                                            secciones</small>
+                                        
+                                        <!-- Capacity validation message -->
+                                        <div class="mt-1">
+                                            <small class="form-text" 
+                                                   [ngClass]="{
+                                                     'text-success': isCapacityConsistent() && calculateSectionsCapacity() > 0,
+                                                     'text-warning': !isCapacityConsistent(),
+                                                     'text-muted': calculateSectionsCapacity() === 0
+                                                   }">
+                                                {{ getCapacityValidationMessage() }}
+                                            </small>
+                                        </div>
+                                        
+                                        <!-- Current sections capacity display -->
+                                        <div *ngIf="calculateSectionsCapacity() > 0" class="mt-1">
+                                            <small class="text-info">
+                                                <i class="bi bi-calculator me-1"></i>
+                                                Suma actual de secciones: {{ calculateSectionsCapacity() }} lugares
+                                            </small>
+                                        </div>
                                     </div>
 
                                     <!-- Dirección -->
@@ -199,9 +217,12 @@
                                 <!-- Section explanation -->
                                 <div class="alert alert-info mb-3">
                                     <i class="bi bi-info-circle-fill me-2"></i>
-                                    Las secciones permiten organizar las diferentes áreas del recinto (ejm. campo,
-                                    platea, palcos) y definir
-                                    su capacidad y precio base.
+                                    <strong>Gestión de Capacidades:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li><strong>Sin capacidad total especificada:</strong> Se calculará automáticamente sumando las capacidades de todas las secciones.</li>
+                                        <li><strong>Con capacidad total especificada:</strong> La suma de las capacidades de las secciones debe ser exactamente igual a la capacidad total.</li>
+                                        <li>Las secciones permiten organizar las diferentes áreas del recinto (ej. campo, platea, palcos) y definir su capacidad y precio base.</li>
+                                    </ul>
                                 </div>
 
                                 <!-- Reload sections button (only in edit mode) -->

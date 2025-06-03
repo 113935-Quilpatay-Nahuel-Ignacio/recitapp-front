@@ -132,3 +132,39 @@
     text-align: center;
   }
 }
+
+// Warning state for form controls
+.form-control.is-warning {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.form-control.is-warning:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+// Capacity validation styles
+.capacity-info {
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.capacity-warning {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.capacity-success {
+  background-color: #d1edff;
+  border-left: 4px solid #28a745;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 0.25rem;
+}

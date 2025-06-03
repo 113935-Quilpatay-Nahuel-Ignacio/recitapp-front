@@ -221,6 +221,47 @@ export class VenueFormComponent implements OnInit {
     return control.errors !== null && control.errors[errorName] !== undefined;
   }
 
+  // Calculate total capacity from sections
+  calculateSectionsCapacity(): number {
+    return this.sections.controls.reduce((total, section) => {
+      const capacity = (section as FormGroup).get('capacity')?.value;
+      return total + (capacity ? parseInt(capacity, 10) : 0);
+    }, 0);
+  }
+
+  // Check if total capacity matches sections capacity
+  isCapacityConsistent(): boolean {
+    const totalCapacity = this.venueForm.get('totalCapacity')?.value;
+    const sectionsCapacity = this.calculateSectionsCapacity();
+    
+    if (!totalCapacity) return true; // If no total capacity specified, it's always consistent
+    return totalCapacity === sectionsCapacity;
+  }
+
+  // Get capacity validation message
+  getCapacityValidationMessage(): string {
+    const totalCapacity = this.venueForm.get('totalCapacity')?.value;
+    const sectionsCapacity = this.calculateSectionsCapacity();
+    
+    if (!totalCapacity && sectionsCapacity > 0) {
+      return `La capacidad total se calculará automáticamente como ${sectionsCapacity} lugares.`;
+    }
+    
+    if (totalCapacity && sectionsCapacity === 0) {
+      return `Debe agregar secciones que sumen ${totalCapacity} lugares en total.`;
+    }
+    
+    if (totalCapacity && sectionsCapacity > 0) {
+      if (totalCapacity === sectionsCapacity) {
+        return `✓ La capacidad total (${totalCapacity}) coincide con la suma de secciones.`;
+      } else {
+        return `⚠ La capacidad total (${totalCapacity}) no coincide con la suma de secciones (${sectionsCapacity}).`;
+      }
+    }
+    
+    return '';
+  }
+
   validateCoordinates(): void {
     const lat = this.venueForm.get('latitude')?.value;
     const lng = this.venueForm.get('longitude')?.value;
@@ -263,6 +304,17 @@ export class VenueFormComponent implements OnInit {
     if (this.venueForm.invalid) {
       // Identify which tab has errors to help the user
       this.findErrorTab();
+      return;
+    }
+
+    // Validate capacity consistency
+    const totalCapacity = this.venueForm.get('totalCapacity')?.value;
+    const sectionsCapacity = this.calculateSectionsCapacity();
+    
+    if (totalCapacity && sectionsCapacity > 0 && totalCapacity !== sectionsCapacity) {
+      this.error = `La capacidad total especificada (${totalCapacity}) no coincide con la suma de las capacidades de las secciones (${sectionsCapacity}). Las capacidades deben ser iguales.`;
+      // Switch to sections tab to show the error
+      document.getElementById('sections-tab')?.click();
       return;
     }
 
