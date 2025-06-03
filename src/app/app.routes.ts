@@ -36,6 +36,11 @@ import { TicketPurchaseComponent } from './modules/ticket/pages/ticket-purchase/
 import { TicketListComponent } from './modules/ticket/pages/ticket-list/ticket-list.component';
 import { TicketDetailComponent } from './modules/ticket/pages/ticket-detail/ticket-detail.component';
 
+// Payment module
+import { PaymentSuccessComponent } from './modules/payment/pages/payment-success/payment-success.component';
+import { PaymentFailureComponent } from './modules/payment/pages/payment-failure/payment-failure.component';
+import { PaymentPendingComponent } from './modules/payment/pages/payment-pending/payment-pending.component';
+
 // Transaction module imports removed as it will be lazy loaded
 // import { TransactionHistoryComponent } from './modules/transaction/pages/transaction-history/transaction-history.component';
 // import { PaymentFormComponent } from './modules/transaction/pages/payment-form/payment-form.component';
@@ -158,6 +163,23 @@ export const routes: Routes = [
   { 
     path: 'ticket/:id', 
     component: TicketDetailComponent,
+    canActivate: [AuthGuard]
+  },
+
+  // Payment routes
+  { 
+    path: 'payment/success', 
+    component: PaymentSuccessComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'payment/failure', 
+    component: PaymentFailureComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'payment/pending', 
+    component: PaymentPendingComponent,
     canActivate: [AuthGuard]
   },
 

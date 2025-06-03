@@ -10,15 +10,40 @@ let refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
-  // No agregar token a las rutas de autenticación
-  if (isAuthUrl(req.url)) {
+  // Lista de URLs que no necesitan autenticación
+  const publicUrls = [
+    '/auth/login',
+    '/auth/register', 
+    '/auth/refresh',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+    '/auth/validate-reset-token',
+    '/api/payments/',
+    '/payments/'
+  ];
+
+  // Verificar si la URL es pública
+  const isPublicUrl = publicUrls.some(publicUrl => req.url.includes(publicUrl));
+
+  // Log para debugging
+  console.log('=== AUTH INTERCEPTOR ===');
+  console.log('URL:', req.url);
+  console.log('Method:', req.method);
+  console.log('Is Public URL:', isPublicUrl);
+
+  // No agregar token a las rutas públicas
+  if (isPublicUrl) {
+    console.log('Skipping authentication for public URL');
     return next(req);
   }
 
   // Agregar token si está disponible
   const token = authService.getToken();
   if (token) {
+    console.log('Adding Authorization header');
     req = addTokenHeader(req, token);
+  } else {
+    console.log('No token available');
   }
 
   return next(req).pipe(
@@ -35,15 +60,6 @@ function addTokenHeader(request: HttpRequest<unknown>, token: string): HttpReque
   return request.clone({
     headers: request.headers.set('Authorization', `Bearer ${token}`)
   });
-}
-
-function isAuthUrl(url: string): boolean {
-  return url.includes('/auth/login') || 
-         url.includes('/auth/register') || 
-         url.includes('/auth/refresh') ||
-         url.includes('/auth/forgot-password') ||
-         url.includes('/auth/reset-password') ||
-         url.includes('/auth/validate-reset-token');
 }
 
 function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, authService: AuthService): Observable<any> {
