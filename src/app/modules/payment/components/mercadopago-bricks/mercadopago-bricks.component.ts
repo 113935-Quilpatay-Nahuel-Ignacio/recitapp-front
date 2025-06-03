@@ -67,6 +67,7 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
   isLoading = false;
   private mp: any;
   private bricks: any;
+  private cardPaymentBrickController: any;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -77,8 +78,28 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.bricks) {
-      this.bricks.destroy();
+    this.destroyBricks();
+  }
+
+  private destroyBricks(): void {
+    try {
+      // Destruir el controlador del brick específico si existe
+      if (this.cardPaymentBrickController && typeof this.cardPaymentBrickController.unmount === 'function') {
+        this.cardPaymentBrickController.unmount();
+      }
+      
+      // Limpiar el contenedor
+      const container = document.getElementById('cardPaymentBrick_container');
+      if (container) {
+        container.innerHTML = '';
+      }
+      
+      // Resetear las referencias
+      this.cardPaymentBrickController = null;
+      this.bricks = null;
+      this.mp = null;
+    } catch (error) {
+      console.warn('Error destroying MercadoPago Bricks:', error);
     }
   }
 
@@ -104,13 +125,27 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
 
   private initializeMercadoPago(): void {
     try {
+      // Verificar si ya está inicializado
+      if (this.mp && this.bricks) {
+        this.createCardPaymentBrick();
+        return;
+      }
+
+      // Limpiar cualquier brick existente antes de crear uno nuevo
+      this.destroyBricks();
+
       // Inicializar MercadoPago con la public key
       this.mp = new MercadoPago(this.paymentData.publicKey, {
         locale: this.paymentData.bricksConfig.locale
       });
 
       this.bricks = this.mp.bricks();
-      this.createCardPaymentBrick();
+      
+      // Pequeño delay para asegurar que el DOM esté listo
+      setTimeout(() => {
+        this.createCardPaymentBrick();
+      }, 100);
+      
     } catch (error) {
       console.error('Error initializing MercadoPago:', error);
       this.paymentError.emit({ error: 'Error al inicializar MercadoPago' });
@@ -119,44 +154,47 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
 
   private createCardPaymentBrick(): void {
     const renderCardPaymentBrick = async () => {
-      const settings = {
-        initialization: {
-          amount: this.paymentData.totalAmount,
-          preferenceId: this.paymentData.preferenceId,
-        },
-        customization: {
-          visual: {
-            style: {
-              theme: this.paymentData.bricksConfig.theme
+      try {
+        const settings = {
+          initialization: {
+            amount: this.paymentData.totalAmount,
+            preferenceId: this.paymentData.preferenceId,
+          },
+          customization: {
+            visual: {
+              style: {
+                theme: this.paymentData.bricksConfig.theme
+              }
+            },
+            paymentMethods: {
+              creditCard: this.paymentData.bricksConfig.paymentMethods.creditCard ? 'all' : 'none',
+              debitCard: this.paymentData.bricksConfig.paymentMethods.debitCard ? 'all' : 'none',
+              mercadoPago: this.paymentData.bricksConfig.paymentMethods.mercadoPagoWallet ? 'all' : 'none'
             }
           },
-          paymentMethods: {
-            creditCard: this.paymentData.bricksConfig.paymentMethods.creditCard ? 'all' : 'none',
-            debitCard: this.paymentData.bricksConfig.paymentMethods.debitCard ? 'all' : 'none',
-            mercadoPago: this.paymentData.bricksConfig.paymentMethods.mercadoPagoWallet ? 'all' : 'none'
+          callbacks: {
+            onReady: () => {
+              console.log('MercadoPago Card Payment Brick ready');
+            },
+            onSubmit: (cardFormData: any) => {
+              this.handlePaymentSubmission(cardFormData);
+            },
+            onError: (error: any) => {
+              console.error('MercadoPago Brick error:', error);
+              this.paymentError.emit(error);
+            }
           }
-        },
-        callbacks: {
-          onReady: () => {
-            console.log('MercadoPago Card Payment Brick ready');
-          },
-          onSubmit: (cardFormData: any) => {
-            this.handlePaymentSubmission(cardFormData);
-          },
-          onError: (error: any) => {
-            console.error('MercadoPago Brick error:', error);
-            this.paymentError.emit(error);
-          }
-        }
-      };
+        };
 
-      await this.bricks.create('cardPayment', 'cardPaymentBrick_container', settings);
+        // Almacenar la referencia del controlador del brick
+        this.cardPaymentBrickController = await this.bricks.create('cardPayment', 'cardPaymentBrick_container', settings);
+      } catch (error) {
+        console.error('Error creating card payment brick:', error);
+        this.paymentError.emit({ error: 'Error al crear el formulario de pago' });
+      }
     };
 
-    renderCardPaymentBrick().catch(error => {
-      console.error('Error creating card payment brick:', error);
-      this.paymentError.emit({ error: 'Error al crear el formulario de pago' });
-    });
+    renderCardPaymentBrick();
   }
 
   private handlePaymentSubmission(cardFormData: any): void {
