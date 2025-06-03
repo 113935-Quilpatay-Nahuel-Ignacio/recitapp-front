@@ -21,7 +21,6 @@ export interface VenueSection {
   name: string;
   capacity: number;
   description?: string;
-  basePrice?: number;
   active?: boolean;
   venueId?: number;
 }

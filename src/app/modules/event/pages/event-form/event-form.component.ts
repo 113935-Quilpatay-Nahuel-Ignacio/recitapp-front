@@ -5,12 +5,14 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  FormArray,
 } from '@angular/forms';
 import { FormsModule } from '@angular/forms'; // Para ngModel
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { EventCreateDTO, EventDTO } from '../../models/event';
-import { Venue } from '../../../venue/models/venue'; // Asegúrate que la ruta sea correcta
+import { TicketPriceDTO } from '../../models/ticket-price';
+import { Venue, VenueSection } from '../../../venue/models/venue'; // Asegúrate que la ruta sea correcta
 import { VenueService } from '../../../venue/services/venue.service'; // Asegúrate que la ruta sea correcta
 import { Artist } from '../../../artist/models/artist'; // Asegúrate que la ruta sea correcta
 import { ArtistService } from '../../../artist/services/artist.service'; // Asegúrate que la ruta sea correcta
@@ -26,6 +28,7 @@ export class EventFormComponent implements OnInit {
   eventForm!: FormGroup;
   venues: Venue[] = [];
   artists: Artist[] = [];
+  selectedVenueSections: VenueSection[] = [];
   isLoading = false;
   errorMessage = '';
   successMessage = '';
@@ -73,6 +76,17 @@ export class EventFormComponent implements OnInit {
       endDateTime: [''],
       venueId: [null, Validators.required],
       mainArtistId: [null],
+      ticketPrices: this.fb.array([])
+    });
+
+    // Escuchar cambios en el venue seleccionado para cargar sus secciones
+    this.eventForm.get('venueId')?.valueChanges.subscribe(venueId => {
+      if (venueId) {
+        this.loadVenueSections(venueId);
+      } else {
+        this.selectedVenueSections = [];
+        this.clearTicketPrices();
+      }
     });
   }
 
@@ -99,6 +113,20 @@ export class EventFormComponent implements OnInit {
       error: (err: any) => {
         console.error('Error loading artists:', err);
         this.errorMessage = 'No se pudieron cargar los artistas.';
+      }
+    });
+  }
+
+  loadVenueSections(venueId: number): void {
+    this.venueService.getVenueSections(venueId).subscribe({
+      next: (sections: VenueSection[]) => {
+        this.selectedVenueSections = sections.filter(section => section.active);
+        this.clearTicketPrices();
+      },
+      error: (err: any) => {
+        console.error('Error loading venue sections:', err);
+        this.errorMessage = 'No se pudieron cargar las secciones del recinto.';
+        this.selectedVenueSections = [];
       }
     });
   }
@@ -135,6 +163,25 @@ export class EventFormComponent implements OnInit {
           mainArtistId: event.mainArtistId,
         });
         
+        // Cargar precios de tickets si existen
+        if (event.ticketPrices && event.ticketPrices.length > 0) {
+          // Primero cargar las secciones del venue
+          this.loadVenueSections(event.venueId);
+          
+          // Luego cargar los precios de tickets
+          setTimeout(() => {
+            event.ticketPrices?.forEach(ticketPrice => {
+              const ticketPriceGroup = this.fb.group({
+                sectionId: [ticketPrice.sectionId, Validators.required],
+                ticketType: [ticketPrice.ticketType, Validators.required],
+                price: [ticketPrice.price, [Validators.required, Validators.min(0)]],
+                availableQuantity: [ticketPrice.availableQuantity, [Validators.required, Validators.min(1)]]
+              });
+              this.ticketPrices.push(ticketPriceGroup);
+            });
+          }, 500); // Pequeño delay para asegurar que las secciones se carguen primero
+        }
+        
         // Establecer vista previa de imagen si existe
         if (event.flyerImage) {
           // No action needed for URL preview
@@ -167,6 +214,12 @@ export class EventFormComponent implements OnInit {
       endDateTime: this.eventForm.value.endDateTime
         ? new Date(this.eventForm.value.endDateTime).toISOString()
         : undefined,
+      ticketPrices: this.ticketPrices.value.map((tp: any) => ({
+        sectionId: tp.sectionId,
+        ticketType: tp.ticketType,
+        price: tp.price,
+        availableQuantity: tp.availableQuantity
+      }))
     };
 
     // Remover mainArtistId si es null o undefined para no enviarlo
@@ -228,5 +281,55 @@ export class EventFormComponent implements OnInit {
   onImageLoad(event: any): void {
     // Si la imagen URL se carga correctamente, mostrarla
     event.target.style.display = 'block';
+  }
+
+  get ticketPrices(): FormArray {
+    return this.eventForm.get('ticketPrices') as FormArray;
+  }
+
+  addTicketPrice(): void {
+    const ticketPriceGroup = this.fb.group({
+      sectionId: [null, Validators.required],
+      ticketType: ['General', Validators.required],
+      price: [0, [Validators.required, Validators.min(0)]],
+      availableQuantity: [0, [Validators.required, Validators.min(1)]]
+    });
+
+    this.ticketPrices.push(ticketPriceGroup);
+  }
+
+  removeTicketPrice(index: number): void {
+    this.ticketPrices.removeAt(index);
+  }
+
+  clearTicketPrices(): void {
+    while (this.ticketPrices.length !== 0) {
+      this.ticketPrices.removeAt(0);
+    }
+  }
+
+  getSectionName(sectionId: number): string {
+    const section = this.selectedVenueSections.find(s => s.id === sectionId);
+    return section ? section.name : 'Sección no encontrada';
+  }
+
+  getSectionCapacity(sectionId: number): number {
+    const section = this.selectedVenueSections.find(s => s.id === sectionId);
+    return section ? section.capacity : 0;
+  }
+
+  validateTicketQuantity(index: number): void {
+    const ticketPriceGroup = this.ticketPrices.at(index);
+    const sectionId = ticketPriceGroup.get('sectionId')?.value;
+    const availableQuantity = ticketPriceGroup.get('availableQuantity')?.value;
+    
+    if (sectionId && availableQuantity) {
+      const sectionCapacity = this.getSectionCapacity(sectionId);
+      if (availableQuantity > sectionCapacity) {
+        ticketPriceGroup.get('availableQuantity')?.setErrors({ 
+          exceedsCapacity: { max: sectionCapacity, actual: availableQuantity } 
+        });
+      }
+    }
   }
 }

@@ -176,7 +176,6 @@ export class VenueFormComponent implements OnInit {
         [Validators.required, Validators.min(1)],
       ],
       description: [section?.description || ''],
-      basePrice: [section?.basePrice || null, [Validators.min(0)]],
       active: [section?.active !== undefined ? section.active : true],
       // Only add venueId if we're in edit mode and the section already has a venueId
       ...(section?.venueId ? { venueId: [section.venueId] } : {}),

@@ -421,3 +421,112 @@
     }
   }
 }
+
+// Ticket prices section styles
+.ticket-price-item {
+  .card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #007bff;
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+    }
+
+    .card-header {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 0.75rem 1rem;
+
+      h6 {
+        color: #495057;
+        font-weight: 600;
+      }
+
+      .btn-outline-danger {
+        border-color: #dc3545;
+        color: #dc3545;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+
+        &:hover {
+          background-color: #dc3545;
+          color: white;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+  }
+}
+
+// Alert info styles for ticket prices
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+
+  ul {
+    padding-left: 1.2rem;
+    
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+}
+
+// Button styles for adding ticket prices
+.btn-outline-primary {
+  border-color: #007bff;
+  color: #007bff;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #007bff;
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+// Form validation styles for ticket prices
+.ticket-price-item {
+  .form-control.is-invalid,
+  .form-select.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+
+  .invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #dc3545;
+  }
+
+  .form-text.text-muted {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+  }
+}

@@ -4,6 +4,15 @@ export interface SectionAvailability {
   totalCapacity: number;
   availableTickets: number;
   soldTickets: number;
-  basePrice: number; // BigDecimal from Java is typically represented as number in TypeScript.
   availabilityPercentage: number;
+  
+  // Información de precios para este evento específico
+  ticketPrices?: TicketPriceInfo[];
+}
+
+export interface TicketPriceInfo {
+  ticketPriceId: number;
+  ticketType: string;
+  price: number;
+  availableQuantity: number;
 } 

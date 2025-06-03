@@ -221,7 +221,7 @@
                                     <ul class="mb-0 mt-2">
                                         <li><strong>Sin capacidad total especificada:</strong> Se calculará automáticamente sumando las capacidades de todas las secciones.</li>
                                         <li><strong>Con capacidad total especificada:</strong> La suma de las capacidades de las secciones debe ser exactamente igual a la capacidad total.</li>
-                                        <li>Las secciones permiten organizar las diferentes áreas del recinto (ej. campo, platea, palcos) y definir su capacidad y precio base.</li>
+                                        <li>Las secciones permiten organizar las diferentes áreas del recinto (ej. campo, platea, palcos) y definir su capacidad. Los precios se asignan al crear eventos específicos.</li>
                                     </ul>
                                 </div>
 
@@ -292,26 +292,6 @@
                                                         <div
                                                             *ngIf="hasError(getSectionControl(section, 'capacity'), 'min')">
                                                             La capacidad debe ser mayor a cero
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Precio base -->
-                                                <div class="col-md-6">
-                                                    <label [for]="'sectionBasePrice-' + i" class="form-label">Precio
-                                                        Base</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">$</span>
-                                                        <input type="number" class="form-control"
-                                                            [id]="'sectionBasePrice-' + i" formControlName="basePrice"
-                                                            [ngClass]="{'is-invalid': submitted && getSectionControl(section, 'basePrice')?.errors}"
-                                                            [disabled]="sectionsLoading">
-                                                    </div>
-                                                    <div *ngIf="submitted && getSectionControl(section, 'basePrice')?.errors"
-                                                        class="invalid-feedback">
-                                                        <div
-                                                            *ngIf="hasError(getSectionControl(section, 'basePrice'), 'min')">
-                                                            El precio base no puede ser negativo
                                                         </div>
                                                     </div>
                                                 </div>

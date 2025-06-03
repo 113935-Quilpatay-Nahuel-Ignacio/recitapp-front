@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { EventSectionOffer } from '../models/event-section-offer.model';
+import { EventSectionOffer, TicketPriceInfo } from '../models/event-section-offer.model';
 import { environment } from '../../../../environments/environment';
 
 // Interface for the raw SectionAvailabilityDTO from backend
@@ -12,8 +12,8 @@ interface SectionAvailabilityDTO {
   totalCapacity: number;
   availableTickets: number;
   soldTickets: number;
-  basePrice: number; // This is the price
   availabilityPercentage: number;
+  ticketPrices: TicketPriceInfo[];
 }
 
 @Injectable({
@@ -34,10 +34,10 @@ export class EventSectionOfferService {
             const eventSectionOffer: EventSectionOffer = {
               sectionId: offer.sectionId,
               sectionName: offer.sectionName,
-              price: offer.basePrice,
               availableTickets: offer.availableTickets,
               totalCapacity: offer.totalCapacity,
               currency: 'ARS', // Placeholder: fetch or set appropriately
+              ticketPrices: offer.ticketPrices || []
             };
             return eventSectionOffer;
           }),

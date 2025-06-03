@@ -127,11 +127,21 @@ export class TicketPurchaseComponent implements OnInit {
   // THIS METHOD NEEDS COMPLETE REWORK - Placeholder logic
   // This method will be called when user adds a ticket for a specific section offer
   addTicketForSection(section: EventSectionOffer, quantity: number = 1): void {
+    // This method is deprecated - use addTicketForSectionAndType instead
+    if (!section.ticketPrices || section.ticketPrices.length === 0) {
+      this.error = 'No hay precios definidos para esta sección';
+      return;
+    }
+    
+    // Use the first available ticket price as fallback
+    const firstTicketPrice = section.ticketPrices[0];
     for (let i = 0; i < quantity; i++) {
       this.attendeeTickets.push(this.fb.group({
         sectionId: [section.sectionId, Validators.required],
         sectionName: [section.sectionName], // For display in form if needed
-        price: [section.price, Validators.required], // Price per ticket for this section
+        ticketPriceId: [firstTicketPrice.ticketPriceId, Validators.required],
+        ticketType: [firstTicketPrice.ticketType],
+        price: [firstTicketPrice.price, Validators.required], // Price per ticket for this section
         attendeeFirstName: ['', Validators.required],
         attendeeLastName: ['', Validators.required],
         attendeeDni: ['', Validators.required],
@@ -140,6 +150,63 @@ export class TicketPurchaseComponent implements OnInit {
     }
     // Trigger form update for total calculation, etc.
     this.purchaseForm.updateValueAndValidity(); 
+  }
+
+  // New method to handle specific ticket type selection
+  addTicketForSectionAndType(section: EventSectionOffer, ticketTypeSelect: HTMLSelectElement, quantity: number = 1): void {
+    const selectedTicketPriceId = ticketTypeSelect.value;
+    if (!selectedTicketPriceId) {
+      this.error = 'Por favor seleccione un tipo de entrada';
+      return;
+    }
+
+    const selectedTicketPrice = section.ticketPrices?.find(tp => tp.ticketPriceId.toString() === selectedTicketPriceId);
+    if (!selectedTicketPrice) {
+      this.error = 'Tipo de entrada no válido';
+      return;
+    }
+
+    if (quantity > selectedTicketPrice.availableQuantity) {
+      this.error = `Solo hay ${selectedTicketPrice.availableQuantity} entradas disponibles de tipo ${selectedTicketPrice.ticketType}`;
+      return;
+    }
+
+    for (let i = 0; i < quantity; i++) {
+      this.attendeeTickets.push(this.fb.group({
+        sectionId: [section.sectionId, Validators.required],
+        sectionName: [section.sectionName], // For display in form if needed
+        ticketPriceId: [selectedTicketPrice.ticketPriceId, Validators.required],
+        ticketType: [selectedTicketPrice.ticketType],
+        price: [selectedTicketPrice.price, Validators.required], // Price per ticket for this section
+        attendeeFirstName: ['', Validators.required],
+        attendeeLastName: ['', Validators.required],
+        attendeeDni: ['', Validators.required],
+        // promotionId: [null] // If promotions are handled
+      }));
+    }
+    
+    // Clear the form after adding
+    ticketTypeSelect.value = '';
+    const quantityInput = document.getElementById(`quantity-${section.sectionId}`) as HTMLInputElement;
+    if (quantityInput) {
+      quantityInput.value = '1';
+    }
+    
+    // Clear any previous errors
+    this.error = null;
+    
+    // Trigger form update for total calculation, etc.
+    this.purchaseForm.updateValueAndValidity(); 
+  }
+
+  // Get maximum quantity for selected ticket type
+  getMaxQuantityForSelectedTicketType(section: EventSectionOffer, selectedTicketPriceId: string): number {
+    if (!selectedTicketPriceId || !section.ticketPrices) {
+      return 0;
+    }
+    
+    const selectedTicketPrice = section.ticketPrices.find(tp => tp.ticketPriceId.toString() === selectedTicketPriceId);
+    return selectedTicketPrice ? selectedTicketPrice.availableQuantity : 0;
   }
 
   removeTicket(index: number): void {

@@ -1,3 +1,5 @@
+import { TicketPriceDTO } from './ticket-price';
+
 export interface EventDTO {
   id: number;
   name: string;
@@ -18,6 +20,7 @@ export interface EventDTO {
   artistIds?: number[];
   registrationDate?: string | Date;
   updatedAt?: string | Date;
+  ticketPrices?: TicketPriceDTO[];
 }
 
 export interface EventCreateDTO {
@@ -31,6 +34,7 @@ export interface EventCreateDTO {
   salesStartDate?: string; // Expects YYYY-MM-DDTHH:mm:ss
   salesEndDate?: string;   // Expects YYYY-MM-DDTHH:mm:ss
   artistIds?: number[];
+  ticketPrices?: TicketPriceDTO[];
 }
 
 export interface EventSearchFilters {

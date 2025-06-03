@@ -44,26 +44,65 @@
               <div class="col-md-6 col-lg-4 mb-4" *ngFor="let offer of sectionOffers">
                 <div class="ticket-type-item">
                   <h4>{{ offer.sectionName }}</h4>
-                  <p class="price">{{ offer.price | currency:offer.currency:'symbol':'1.2-2' }}</p>
+                  
+                  <!-- Mostrar precios disponibles para esta sección -->
+                  <div *ngIf="offer.ticketPrices && offer.ticketPrices.length > 0" class="ticket-prices">
+                    <div *ngFor="let ticketPrice of offer.ticketPrices" class="price-option mb-2">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="ticket-type">{{ ticketPrice.ticketType }}</span>
+                        <span class="price">{{ ticketPrice.price | currency:offer.currency:'symbol':'1.2-2' }}</span>
+                      </div>
+                      <small class="text-muted">{{ ticketPrice.availableQuantity }} disponibles</small>
+                    </div>
+                  </div>
+                  
+                  <!-- Si no hay precios definidos -->
+                  <div *ngIf="!offer.ticketPrices || offer.ticketPrices.length === 0" class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    No hay precios definidos para esta sección
+                  </div>
+                  
                   <p class="availability">
                     <i class="bi bi-people me-1"></i>{{ offer.availableTickets }} entradas disponibles
                   </p>
                   
-                  <div class="quantity-selector" *ngIf="offer.availableTickets > 0">
-                    <label for="quantity-{{offer.sectionId}}">Cantidad:</label>
-                    <input 
-                      class="form-control" 
-                      style="width: 80px; text-align: center;" 
-                      type="number" 
-                      id="quantity-{{offer.sectionId}}" 
-                      #quantityInput 
-                      value="1" 
-                      min="1" 
-                      [max]="offer.availableTickets">
+                  <div class="quantity-selector" *ngIf="offer.availableTickets > 0 && offer.ticketPrices && offer.ticketPrices.length > 0">
+                    <!-- Selector de tipo de ticket -->
+                    <div class="mb-2">
+                      <label for="ticketType-{{offer.sectionId}}">Tipo de entrada:</label>
+                      <select 
+                        class="form-select" 
+                        id="ticketType-{{offer.sectionId}}" 
+                        #ticketTypeSelect>
+                        <option value="">Seleccione tipo</option>
+                        <option *ngFor="let ticketPrice of offer.ticketPrices" 
+                                [value]="ticketPrice.ticketPriceId"
+                                [attr.data-price]="ticketPrice.price"
+                                [attr.data-type]="ticketPrice.ticketType"
+                                [attr.data-available]="ticketPrice.availableQuantity">
+                          {{ ticketPrice.ticketType }} - {{ ticketPrice.price | currency:offer.currency:'symbol':'1.2-2' }}
+                        </option>
+                      </select>
+                    </div>
+                    
+                    <div class="mb-2">
+                      <label for="quantity-{{offer.sectionId}}">Cantidad:</label>
+                      <input 
+                        class="form-control" 
+                        style="width: 80px; text-align: center;" 
+                        type="number" 
+                        id="quantity-{{offer.sectionId}}" 
+                        #quantityInput 
+                        value="1" 
+                        min="1" 
+                        [max]="getMaxQuantityForSelectedTicketType(offer, ticketTypeSelect.value)">
+                    </div>
+                    
                     <button 
                       type="button"
                       class="btn btn-primary" 
-                      (click)="addTicketForSection(offer, quantityInput.valueAsNumber || 1)">
+                      [disabled]="!ticketTypeSelect.value"
+                      (click)="addTicketForSectionAndType(offer, ticketTypeSelect, quantityInput.valueAsNumber || 1)">
                       <i class="bi bi-cart-plus me-1"></i>Agregar al Carrito
                     </button>
                   </div>
@@ -89,6 +128,9 @@
                 <h5>
                   <i class="bi bi-ticket-detailed me-2"></i>
                   Entrada {{ i + 1 }} - {{ ticketCtrl.get('sectionName')?.value }}
+                  <span *ngIf="ticketCtrl.get('ticketType')?.value" class="badge bg-info ms-2">
+                    {{ ticketCtrl.get('ticketType')?.value }}
+                  </span>
                   <span class="badge bg-success ms-2">
                     {{ ticketCtrl.get('price')?.value | currency:'ARS':'symbol':'1.2-2' }}
                   </span>
