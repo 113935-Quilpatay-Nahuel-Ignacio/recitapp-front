@@ -2,8 +2,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../../../../environments/environment';
 
 import { Ticket } from '../../models/ticket.model';
 import { TicketService } from '../../services/ticket.service';
@@ -31,6 +33,7 @@ export class TicketListComponent implements OnInit {
   private ticketService = inject(TicketService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   tickets: Ticket[] = [];
   filteredTickets: Ticket[] = [];
@@ -168,28 +171,97 @@ export class TicketListComponent implements OnInit {
 
   viewTicketDetails(ticket: Ticket): void {
     // Navigate to ticket detail page
-    this.router.navigate(['/tickets', ticket.id]);
+    this.router.navigate(['/ticket', ticket.id]);
   }
 
   downloadTicket(ticket: Ticket): void {
-    // Implement ticket download functionality
     console.log('Downloading ticket:', ticket.id);
+    
+    const downloadUrl = `${environment.apiUrl}/tickets/${ticket.id}/download-pdf`;
+    
+    // Create a link element and trigger download
+    this.http.get(downloadUrl, { 
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      catchError(error => {
+        console.error('Error downloading ticket:', error);
+        alert('Error al descargar la entrada. Por favor intenta nuevamente.');
+        return of(null);
+      })
+    ).subscribe(response => {
+      if (response && response.body) {
+        // Create blob link to download
+        const blob = new Blob([response.body], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `entrada_${ticket.eventName.replace(/\s+/g, '_')}_${ticket.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        window.URL.revokeObjectURL(url);
+      }
+    });
   }
 
   shareTicket(ticket: Ticket): void {
-    // Implement ticket sharing functionality
+    const shareText = `🎫 Tengo una entrada para ${ticket.eventName}
+📍 Lugar: ${ticket.venueName}
+📅 Fecha: ${this.formatDate(ticket.eventDate)}
+🎭 Sección: ${ticket.sectionName}
+💰 Precio: ${this.formatPrice(ticket.price)}
+
+¡Te esperamos! 🎵`;
+
+    const shareUrl = `${window.location.origin}/ticket/${ticket.id}`;
+    
     if (navigator.share) {
       navigator.share({
         title: `Entrada para ${ticket.eventName}`,
-        text: `Tengo una entrada para ${ticket.eventName} en ${ticket.venueName}`,
-        url: window.location.href
+        text: shareText,
+        url: shareUrl
+      }).catch(err => {
+        console.log('Error sharing:', err);
+        this.fallbackShare(shareText, shareUrl);
       });
     } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(
-        `Entrada para ${ticket.eventName} en ${ticket.venueName} - ${window.location.href}`
-      );
+      this.fallbackShare(shareText, shareUrl);
     }
+  }
+
+  private fallbackShare(text: string, url: string): void {
+    const fullText = `${text}\n\nVer detalles: ${url}`;
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(fullText).then(() => {
+        alert('📋 Información de la entrada copiada al portapapeles');
+      }).catch(() => {
+        this.showShareModal(fullText);
+      });
+    } else {
+      this.showShareModal(fullText);
+    }
+  }
+
+  private showShareModal(text: string): void {
+    // Simple modal fallback
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; max-width: 400px; width: 90%;">
+          <h3>Compartir Entrada</h3>
+          <textarea readonly style="width: 100%; height: 150px; margin: 10px 0;">${text}</textarea>
+          <div style="text-align: right;">
+            <button onclick="this.closest('div').parentElement.remove()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   }
 
   formatDate(dateString: string): string {
@@ -251,5 +323,15 @@ export class TicketListComponent implements OnInit {
 
   goToEvents(): void {
     this.router.navigate(['/events']);
+  }
+
+  isValidImageData(qrCode: string): boolean {
+    // Check if it's a valid data URL for an image
+    return qrCode.startsWith('data:image/') && qrCode.includes('base64,') && qrCode.length > 50;
+  }
+
+  onQrImageError(event: any): void {
+    console.warn('QR image failed to load:', event);
+    // The *ngIf will handle showing the placeholder
   }
 }

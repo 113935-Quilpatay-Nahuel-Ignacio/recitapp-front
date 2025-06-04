@@ -144,9 +144,13 @@
       <div class="ticket-card" *ngFor="let ticket of filteredTickets">
         <!-- QR Code Section -->
         <div class="ticket-qr">
-          <img *ngIf="ticket.qrCode" [src]="ticket.qrCode" alt="QR Code" />
-          <div *ngIf="!ticket.qrCode" class="qr-placeholder">
+          <img *ngIf="ticket.qrCode && isValidImageData(ticket.qrCode)" 
+               [src]="ticket.qrCode" 
+               alt="QR Code" 
+               (error)="onQrImageError($event)" />
+          <div *ngIf="!ticket.qrCode || !isValidImageData(ticket.qrCode)" class="qr-placeholder">
             <i class="bi bi-qr-code"></i>
+            <small>QR Code</small>
           </div>
         </div>
 
