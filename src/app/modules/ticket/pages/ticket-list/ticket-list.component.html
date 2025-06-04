@@ -141,74 +141,87 @@
 
     <!-- Tickets Grid -->
     <div class="tickets-grid" *ngIf="filteredTickets.length > 0">
-      <div class="ticket-card" *ngFor="let ticket of filteredTickets">
-        <!-- QR Code Section -->
-        <div class="ticket-qr">
-          <img *ngIf="ticket.qrCode && isValidImageData(ticket.qrCode)" 
-               [src]="ticket.qrCode" 
-               alt="QR Code" 
-               (error)="onQrImageError($event)" />
-          <div *ngIf="!ticket.qrCode || !isValidImageData(ticket.qrCode)" class="qr-placeholder">
-            <i class="bi bi-qr-code"></i>
-            <small>QR Code</small>
-          </div>
-        </div>
+      <div class="card ticket-card mb-3" *ngFor="let ticket of filteredTickets">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <!-- QR Code Section -->
+            <div class="col-auto">
+              <div class="ticket-qr">
+                <img *ngIf="ticket.qrCode && isValidImageData(ticket.qrCode)" 
+                     [src]="ticket.qrCode" 
+                     alt="QR Code" 
+                     (error)="onQrImageError($event)" />
+                <div *ngIf="!ticket.qrCode || !isValidImageData(ticket.qrCode)" class="qr-placeholder">
+                  <i class="bi bi-qr-code"></i>
+                  <small>QR Code</small>
+                </div>
+              </div>
+            </div>
 
-        <!-- Ticket Information -->
-        <div class="ticket-info">
-          <div class="ticket-id">
-            <i class="bi bi-hash"></i>{{ ticket.id }}
-          </div>
-          
-          <h4 class="event-name">{{ ticket.eventName }}</h4>
-          
-          <div class="event-details">
-            <i class="bi bi-geo-alt-fill"></i>{{ ticket.venueName }}
-          </div>
-          
-          <div class="event-details">
-            <i class="bi bi-diagram-3-fill"></i>{{ ticket.sectionName }}
-            <span *ngIf="ticket.seatNumber"> - Asiento {{ ticket.seatNumber }}</span>
-          </div>
-          
-          <div class="event-details">
-            <i class="bi bi-calendar-event"></i>{{ formatDate(ticket.eventDate) }}
-          </div>
-          
-          <div class="event-details">
-            <i class="bi bi-person-fill"></i>{{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}
-          </div>
-          
-          <div class="event-details">
-            <i class="bi bi-credit-card-fill"></i>{{ formatPrice(ticket.price) }}
-          </div>
-          
-          <div class="ticket-status">
-            <span class="badge bg-{{ getStatusClass(ticket.status) }}">
-              <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
-              {{ ticket.status }}
-            </span>
-          </div>
-        </div>
+            <!-- Ticket Information -->
+            <div class="col">
+              <div class="ticket-info">
+                <div class="ticket-id mb-2">
+                  <i class="bi bi-hash"></i>{{ ticket.id }}
+                </div>
+                
+                <h5 class="event-name mb-2">{{ ticket.eventName }}</h5>
+                
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
+                    <div class="event-details">
+                      <i class="bi bi-geo-alt-fill"></i>{{ ticket.venueName }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="event-details">
+                      <i class="bi bi-calendar-event"></i>{{ formatDate(ticket.eventDate) }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="event-details">
+                      <i class="bi bi-diagram-3-fill"></i>{{ ticket.sectionName }}
+                      <span *ngIf="ticket.seatNumber"> - Asiento {{ ticket.seatNumber }}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="event-details">
+                      <i class="bi bi-person-fill"></i>{{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="event-details">
+                    <i class="bi bi-credit-card-fill"></i>{{ formatPrice(ticket.price) }}
+                  </div>
+                  <div class="ticket-status">
+                    <span class="badge bg-{{ getStatusClass(ticket.status) }}">
+                      <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
+                      {{ ticket.status }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <!-- Actions -->
-        <div class="ticket-actions">
-          <div class="btn-group-vertical" role="group">
-            <button class="btn btn-primary btn-sm" 
-                    (click)="viewTicketDetails(ticket)">
-              <i class="bi bi-eye me-1"></i>
-              Ver Detalles
-            </button>
-            <button class="btn btn-outline-secondary btn-sm" 
-                    (click)="downloadTicket(ticket)">
-              <i class="bi bi-download me-1"></i>
-              Descargar
-            </button>
-            <button class="btn btn-outline-info btn-sm" 
-                    (click)="shareTicket(ticket)">
-              <i class="bi bi-share me-1"></i>
-              Compartir
-            </button>
+            <!-- Actions -->
+            <div class="col-auto">
+              <div class="ticket-actions">
+                <div class="d-grid gap-2" style="min-width: 120px;">
+                  <button class="btn btn-primary btn-sm" 
+                          (click)="viewTicketDetails(ticket)">
+                    <i class="bi bi-eye me-1"></i>
+                    Ver Detalles
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" 
+                          (click)="downloadTicket(ticket)">
+                    <i class="bi bi-download me-1"></i>
+                    Descargar
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

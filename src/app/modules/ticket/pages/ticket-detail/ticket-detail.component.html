@@ -1,56 +1,284 @@
-<div class="ticket-detail-container" *ngIf="ticket$ | async as ticket; else loadingOrError">
-  <div class="ticket-card">
-    <div class="ticket-header">
-      <h2>{{ ticket.eventName }}</h2>
-      <p class="event-date">{{ ticket.eventDate | date: 'fullDate' }} - {{ ticket.eventDate | date: 'shortTime' }}</p>
+<div class="ticket-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="!(ticket$ | async) && !error" class="loading-state text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando detalles...</span>
     </div>
+    <h4>Cargando detalles de la entrada...</h4>
+    <p class="text-muted">Por favor espera mientras obtenemos la información</p>
+  </div>
 
-    <div class="ticket-body">
-      <div class="ticket-section">
-        <h3>Detalles del Evento</h3>
-        <p><strong>Lugar:</strong> {{ ticket.venueName }}</p>
-        <p><strong>Sección:</strong> {{ ticket.sectionName }}</p>
-        <p *ngIf="ticket.seatNumber"><strong>Asiento:</strong> {{ ticket.seatNumber }}</p>
-      </div>
-
-      <div class="ticket-section">
-        <h3>Información del Asistente</h3>
-        <p><strong>Nombre:</strong> {{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}</p>
-        <p><strong>DNI:</strong> {{ ticket.attendeeDni }}</p>
-      </div>
-
-      <div class="ticket-section">
-        <h3>Detalles de Compra</h3>
-        <p><strong>Fecha de Compra:</strong> {{ ticket.purchaseDate | date: 'medium' }}</p>
-        <p><strong>Precio:</strong> {{ ticket.price | currency:ticket.currency:'symbol':'1.2-2' }}</p>
-        <p><strong>Estado:</strong> <span class="status status-{{ ticket.status | lowercase }}">{{ ticket.status }}</span></p>
-      </div>
-
-      <div class="ticket-section qr-code-section">
-        <h3>Tu Entrada</h3>
-        <!-- Assuming qrCode is a URL to an image or a base64 encoded image -->
-        <img [src]="ticket.qrCode" alt="QR Code" class="qr-code-img">
-        <p>Presenta este QR en el ingreso.</p>
-      </div>
-    </div>
-
-    <div class="ticket-actions">
-      <button [routerLink]="['/event', ticket.eventId]" class="btn btn-secondary">Volver al Evento</button>
-      <button 
-        *ngIf="canEditTicket(ticket)" 
-        (click)="openEditModal(ticket)" 
-        class="btn btn-primary ms-2">
-        Modificar Asignación
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger text-center" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <div class="mt-3">
+      <button routerLink="/tickets" class="btn btn-outline-danger">
+        <i class="bi bi-arrow-left me-1"></i>
+        Volver a Mis Entradas
       </button>
-      <button 
-        *ngIf="canTransferTicket(ticket)" 
-        (click)="openTransferModal()" 
-        class="btn btn-info ms-2">
-        Transferir Entrada
-      </button>
-      <!-- Add other actions like download or share if needed -->
     </div>
   </div>
+
+  <!-- Ticket Content -->
+  <div *ngIf="ticket$ | async as ticket" class="ticket-content">
+    <!-- Header -->
+    <div class="page-header mb-4">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-ticket-perforated-fill text-primary me-2 fs-3"></i>
+            <h1 class="page-title mb-0">Entrada #{{ ticket.id }}</h1>
+          </div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a routerLink="/tickets" class="text-decoration-none">
+                  <i class="bi bi-ticket-perforated me-1"></i>
+                  Mis Entradas
+                </a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">{{ ticket.eventName }}</li>
+            </ol>
+          </nav>
+        </div>
+        <span class="badge bg-{{ getStatusClass(ticket.status) }} fs-6 px-3 py-2">
+          <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
+          {{ ticket.status }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Main Ticket Card -->
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <!-- Event Information Card -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-calendar-event me-2"></i>
+              {{ ticket.eventName }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="info-item">
+                  <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                  <strong>Lugar:</strong>
+                  <span class="ms-1">{{ ticket.venueName }}</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-item">
+                  <i class="bi bi-calendar3 text-success me-2"></i>
+                  <strong>Fecha:</strong>
+                  <span class="ms-1">{{ formatDate(ticket.eventDate) }}</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-item">
+                  <i class="bi bi-diagram-3-fill text-info me-2"></i>
+                  <strong>Sección:</strong>
+                  <span class="ms-1">{{ ticket.sectionName }}</span>
+                </div>
+              </div>
+              <div class="col-md-6" *ngIf="ticket.seatNumber">
+                <div class="info-item">
+                  <i class="bi bi-person-workspace text-warning me-2"></i>
+                  <strong>Asiento:</strong>
+                  <span class="ms-1">{{ ticket.seatNumber }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendee Information Card -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-person-fill me-2"></i>
+              Información del Asistente
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <div class="info-item">
+                  <i class="bi bi-person-badge text-primary me-2"></i>
+                  <strong>Nombre Completo:</strong>
+                  <span class="ms-1">{{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-item">
+                  <i class="bi bi-card-text text-secondary me-2"></i>
+                  <strong>DNI:</strong>
+                  <span class="ms-1">{{ ticket.attendeeDni }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Purchase Information Card -->
+        <div class="card shadow-sm">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-receipt me-2"></i>
+              Detalles de Compra
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="info-item">
+                  <i class="bi bi-calendar-check text-success me-2"></i>
+                  <strong>Fecha de Compra:</strong>
+                  <span class="ms-1">{{ formatDate(ticket.purchaseDate) }}</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-item">
+                  <i class="bi bi-currency-dollar text-warning me-2"></i>
+                  <strong>Precio:</strong>
+                  <span class="ms-1 fs-5 fw-bold text-success">{{ formatPrice(ticket.price) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Code and Actions Sidebar -->
+      <div class="col-lg-4">
+        <!-- QR Code Card -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header text-center">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-qr-code me-2"></i>
+              Tu Entrada Digital
+            </h5>
+          </div>
+          <div class="card-body text-center">
+            <div class="qr-container mb-3">
+              <div *ngIf="ticket.qrCode && ticket.qrCode.trim()" class="qr-code-display">
+                <!-- If it's a valid base64 image, show it -->
+                <img *ngIf="isValidQrCode(ticket.qrCode)" 
+                     [src]="ticket.qrCode" 
+                     alt="QR Code" 
+                     class="qr-image" />
+                
+                <!-- If it's text data, generate a real QR code or show the data -->
+                <div *ngIf="!isValidQrCode(ticket.qrCode)" class="qr-text-display">
+                  <div class="qr-data-container">
+                    <i class="bi bi-qr-code display-1 text-primary mb-2"></i>
+                    <div class="qr-text">{{ ticket.qrCode }}</div>
+                    <small class="text-muted">Código de validación</small>
+                  </div>
+                </div>
+              </div>
+              
+              <div *ngIf="!ticket.qrCode || !ticket.qrCode.trim()" class="qr-placeholder">
+                <div class="qr-fallback">
+                  <i class="bi bi-qr-code display-1 text-secondary mb-2"></i>
+                  <div class="fallback-text">
+                    <strong>ID: {{ ticket.id }}</strong>
+                    <div class="text-muted small">{{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>
+              <small>Presenta este código en el acceso al evento</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Card -->
+        <div class="card shadow-sm">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-gear me-2"></i>
+              Acciones
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              <button (click)="downloadTicket(ticket)" class="btn btn-success">
+                <i class="bi bi-download me-2"></i>
+                Descargar PDF
+              </button>
+              
+              <button (click)="shareTicket(ticket)" class="btn btn-primary">
+                <i class="bi bi-share me-2"></i>
+                Compartir Entrada
+              </button>
+              
+              <button *ngIf="canEditTicket(ticket)" 
+                      (click)="openEditModal(ticket)" 
+                      class="btn btn-outline-secondary">
+                <i class="bi bi-pencil me-2"></i>
+                Modificar Asignación
+              </button>
+              
+              <button *ngIf="canTransferTicket(ticket)" 
+                      (click)="openTransferModal()" 
+                      class="btn btn-outline-info">
+                <i class="bi bi-arrow-right-circle me-2"></i>
+                Transferir Entrada
+              </button>
+              
+              <button [routerLink]="['/event', ticket.eventId]" class="btn btn-outline-primary">
+                <i class="bi bi-eye me-2"></i>
+                Ver Evento
+              </button>
+              
+              <button routerLink="/tickets" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Volver a Mis Entradas
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Important Instructions -->
+        <div class="card shadow-sm mt-4 border-warning">
+          <div class="card-header bg-warning text-dark">
+            <h6 class="card-title mb-0">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              Instrucciones Importantes
+            </h6>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled mb-0 small">
+              <li class="mb-2">
+                <i class="bi bi-check-circle text-success me-2"></i>
+                Presenta tu entrada digital o impresa
+              </li>
+              <li class="mb-2">
+                <i class="bi bi-person-check text-success me-2"></i>
+                Lleva tu documento de identidad
+              </li>
+              <li class="mb-2">
+                <i class="bi bi-clock text-success me-2"></i>
+                Llega con tiempo suficiente
+              </li>
+              <li class="mb-0">
+                <i class="bi bi-shield-check text-success me-2"></i>
+                Esta entrada es intransferible
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal (keeping existing modal code) -->
+  <!-- ... existing modal code ... -->
 </div>
 
 <!-- Edit Attendee Modal -->
@@ -172,15 +400,4 @@
       </form>
     </div>
   </div>
-</div>
-
-<ng-template #loadingOrError>
-  <div *ngIf="error; else loading" class="error-message">
-    <p>{{ error }}</p>
-    <button routerLink="/user/purchase-history" class="btn">Volver al Historial</button>
-  </div>
-  <ng-template #loading>
-    <p class="loading-message">Cargando detalles de la entrada...</p>
-    <!-- You can add a spinner here -->
-  </ng-template>
-</ng-template> 
+</div> 

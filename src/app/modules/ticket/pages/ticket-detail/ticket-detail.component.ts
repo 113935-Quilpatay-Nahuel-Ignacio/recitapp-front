@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { TicketService, AttendeeUpdateRequest, TicketTransferBySearchRequest } from '../../services/ticket.service';
 import { Ticket } from '../../models/ticket.model';
 import { Observable, of, BehaviorSubject } from 'rxjs';
@@ -10,6 +11,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { SessionService } from '../../../../core/services/session.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -32,6 +34,7 @@ export class TicketDetailComponent implements OnInit {
   private fb = inject(FormBuilder);
   private sessionService = inject(SessionService);
   private modalService = inject(ModalService);
+  private http = inject(HttpClient);
 
   private ticketSubject = new BehaviorSubject<Ticket | null>(null);
   ticket$: Observable<Ticket | null> = this.ticketSubject.asObservable();
@@ -224,11 +227,152 @@ export class TicketDetailComponent implements OnInit {
     return StatusFormatter.formatStatusName(status);
   }
 
-  getStatusClass(status: string | undefined): string {
-    return StatusFormatter.getStatusClass(status);
+  getStatusClass(status: string): string {
+    const statusLower = status.toLowerCase();
+    switch (statusLower) {
+      case 'activa':
+      case 'active':
+        return 'success';
+      case 'usada':
+      case 'used':
+        return 'info';
+      case 'expirada':
+      case 'expired':
+        return 'danger';
+      default:
+        return 'secondary';
+    }
   }
 
-  getStatusIcon(status: string | undefined): string {
-    return StatusFormatter.getStatusIcon(status);
+  getStatusIcon(status: string): string {
+    const statusLower = status.toLowerCase();
+    switch (statusLower) {
+      case 'activa':
+      case 'active':
+        return 'bi-check-circle';
+      case 'usada':
+      case 'used':
+        return 'bi-check2-all';
+      case 'expirada':
+      case 'expired':
+        return 'bi-x-circle';
+      default:
+        return 'bi-question-circle';
+    }
+  }
+
+  // New methods for the improved UI
+  formatDate(dateString: string | Date): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-AR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS'
+    }).format(price);
+  }
+
+  isValidQrCode(qrCode: string): boolean {
+    // Check if it's a valid data URL for an image
+    return qrCode.startsWith('data:image/') && qrCode.includes('base64,') && qrCode.length > 50;
+  }
+
+  downloadTicket(ticket: Ticket): void {
+    console.log('Downloading ticket:', ticket.id);
+    
+    const downloadUrl = `${environment.apiUrl}/tickets/${ticket.id}/download-pdf`;
+    
+    // Create a link element and trigger download
+    this.http.get(downloadUrl, { 
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      catchError(error => {
+        console.error('Error downloading ticket:', error);
+        alert('Error al descargar la entrada. Por favor intenta nuevamente.');
+        return of(null);
+      })
+    ).subscribe(response => {
+      if (response && response.body) {
+        // Create blob link to download
+        const blob = new Blob([response.body], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `entrada_${ticket.eventName.replace(/\s+/g, '_')}_${ticket.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        window.URL.revokeObjectURL(url);
+      }
+    });
+  }
+
+  shareTicket(ticket: Ticket): void {
+    const shareText = `🎫 Tengo una entrada para ${ticket.eventName}
+📍 Lugar: ${ticket.venueName}
+📅 Fecha: ${this.formatDate(ticket.eventDate)}
+🎭 Sección: ${ticket.sectionName}
+💰 Precio: ${this.formatPrice(ticket.price)}
+
+¡Te esperamos! 🎵`;
+
+    const shareUrl = `${window.location.origin}/ticket/${ticket.id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: `Entrada para ${ticket.eventName}`,
+        text: shareText,
+        url: shareUrl
+      }).catch(err => {
+        console.log('Error sharing:', err);
+        this.fallbackShare(shareText, shareUrl);
+      });
+    } else {
+      this.fallbackShare(shareText, shareUrl);
+    }
+  }
+
+  private fallbackShare(text: string, url: string): void {
+    const fullText = `${text}\n\nVer detalles: ${url}`;
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(fullText).then(() => {
+        alert('📋 Información de la entrada copiada al portapapeles');
+      }).catch(() => {
+        this.showShareModal(fullText);
+      });
+    } else {
+      this.showShareModal(fullText);
+    }
+  }
+
+  private showShareModal(text: string): void {
+    // Simple modal fallback
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; max-width: 400px; width: 90%;">
+          <h3>Compartir Entrada</h3>
+          <textarea readonly style="width: 100%; height: 150px; margin: 10px 0;">${text}</textarea>
+          <div style="text-align: right;">
+            <button onclick="this.closest('div').parentElement.remove()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   }
 } 
