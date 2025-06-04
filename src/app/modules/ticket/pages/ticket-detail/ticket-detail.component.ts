@@ -9,6 +9,7 @@ import { catchError, switchMap, tap } from 'rxjs/operators';
 import { HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SessionService } from '../../../../core/services/session.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
 import { environment } from '../../../../../environments/environment';
@@ -33,6 +34,7 @@ export class TicketDetailComponent implements OnInit {
   private ticketService = inject(TicketService);
   private fb = inject(FormBuilder);
   private sessionService = inject(SessionService);
+  private authService = inject(AuthService);
   private modalService = inject(ModalService);
   private http = inject(HttpClient);
 
@@ -212,6 +214,11 @@ export class TicketDetailComponent implements OnInit {
         this.transferError = null;
         this.closeTransferModal();
         this.modalService.success('¡Entrada transferida con éxito! El nuevo dueño y asistente es el usuario encontrado.', 'Transferencia Exitosa');
+        
+        // Redirigir a la lista de tickets después de un breve delay para que el usuario vea el mensaje
+        setTimeout(() => {
+          this.router.navigate(['/tickets']);
+        }, 2000);
       }),
       catchError(err => {
         this.transferError = (err.error as any)?.message || 'Error al transferir la entrada por búsqueda.';
@@ -289,16 +296,34 @@ export class TicketDetailComponent implements OnInit {
   downloadTicket(ticket: Ticket): void {
     console.log('Downloading ticket:', ticket.id);
     
+    if (!this.currentUserId) {
+      alert('Error: Usuario no autenticado. Por favor inicia sesión nuevamente.');
+      return;
+    }
+    
     const downloadUrl = `${environment.apiUrl}/tickets/${ticket.id}/download-pdf`;
+    
+    // Get auth token from authService
+    const token = this.authService.getToken();
+    const headers: any = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
     
     // Create a link element and trigger download
     this.http.get(downloadUrl, { 
       responseType: 'blob',
-      observe: 'response'
+      observe: 'response',
+      headers: headers
     }).pipe(
       catchError(error => {
         console.error('Error downloading ticket:', error);
-        alert('Error al descargar la entrada. Por favor intenta nuevamente.');
+        if (error.status === 401) {
+          alert('Error de autenticación. Por favor inicia sesión nuevamente.');
+        } else {
+          alert('Error al descargar la entrada. Por favor intenta nuevamente.');
+        }
         return of(null);
       })
     ).subscribe(response => {
@@ -374,5 +399,13 @@ export class TicketDetailComponent implements OnInit {
       </div>
     `;
     document.body.appendChild(modal);
+  }
+
+  goToEvent(eventId: number): void {
+    if (!eventId) {
+      alert('Error: No se pudo encontrar la información del evento.');
+      return;
+    }
+    this.router.navigate(['/events', eventId]);
   }
 } 

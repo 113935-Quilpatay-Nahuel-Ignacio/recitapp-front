@@ -115,7 +115,7 @@
     <!-- Search and Filters -->
     <div class="ticket-search-section mb-4">
       <div class="row g-3">
-        <div class="col-md-6">
+        <div class="col-md-8">
           <div class="search-box">
             <i class="bi bi-search"></i>
             <input type="text" 
@@ -125,7 +125,7 @@
                    (input)="onSearchChange()">
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <select class="form-select" 
                   [(ngModel)]="selectedDateFilter"
                   (change)="onDateFilterChange()">
@@ -161,8 +161,16 @@
             <!-- Ticket Information -->
             <div class="col">
               <div class="ticket-info">
-                <div class="ticket-id mb-2">
-                  <i class="bi bi-hash"></i>{{ ticket.id }}
+                <div class="ticket-header">
+                  <div class="ticket-id">
+                    <i class="bi bi-hash"></i>{{ ticket.id }}
+                  </div>
+                  <div class="ticket-status">
+                    <span class="badge bg-{{ getStatusClass(ticket.status) }}">
+                      <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
+                      {{ ticket.status }}
+                    </span>
+                  </div>
                 </div>
                 
                 <h5 class="event-name mb-2">{{ ticket.eventName }}</h5>
@@ -191,16 +199,8 @@
                   </div>
                 </div>
                 
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="event-details">
-                    <i class="bi bi-credit-card-fill"></i>{{ formatPrice(ticket.price) }}
-                  </div>
-                  <div class="ticket-status">
-                    <span class="badge bg-{{ getStatusClass(ticket.status) }}">
-                      <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
-                      {{ ticket.status }}
-                    </span>
-                  </div>
+                <div class="event-details">
+                  <i class="bi bi-credit-card-fill"></i>{{ formatPrice(ticket.price) }}
                 </div>
               </div>
             </div>

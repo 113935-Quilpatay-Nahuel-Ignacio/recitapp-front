@@ -35,6 +35,12 @@ $custom-theme: mat.define-dark-theme((
   --danger-red: #ef4444;
   --warning-yellow: #f59e0b;
   --info-blue: #3b82f6;
+  
+  // Additional colors for better modal styling
+  --dark-overlay: rgba(0, 0, 0, 0.8);
+  --shadow-soft: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.3);
+  --shadow-strong: rgba(0, 0, 0, 0.6);
 }
 
 html, body { 

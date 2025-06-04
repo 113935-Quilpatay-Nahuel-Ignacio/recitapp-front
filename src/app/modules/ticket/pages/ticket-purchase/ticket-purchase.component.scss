@@ -48,6 +48,282 @@
     }
   }
 
+  // Enhanced sections grid styles
+  .sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-card {
+    @include app-card-base;
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+    
+    &:hover {
+      border-color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .section-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--dark-border);
+      background: linear-gradient(135deg, var(--dark-card), var(--dark-card-hover));
+      
+      .section-info {
+        margin-bottom: 1rem;
+        
+        .section-name {
+          color: var(--dark-text);
+          font-weight: 700;
+          font-size: 1.25rem;
+          margin-bottom: 0.75rem;
+          
+          i {
+            color: var(--primary-green);
+          }
+        }
+        
+        .availability-badge {
+          display: inline-flex;
+          align-items: center;
+          background: rgba(34, 197, 94, 0.1);
+          color: var(--primary-green);
+          padding: 0.5rem 1rem;
+          border-radius: 25px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          border: 1px solid rgba(34, 197, 94, 0.3);
+          
+          i {
+            margin-right: 0.25rem;
+          }
+          
+          .available-count {
+            font-weight: 700;
+            margin-right: 0.25rem;
+          }
+        }
+      }
+      
+      .section-status {
+        .status-available {
+          display: inline-flex;
+          align-items: center;
+          color: var(--success-green);
+          font-weight: 600;
+          font-size: 0.875rem;
+          
+          i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+          }
+        }
+        
+        .status-sold-out {
+          display: inline-flex;
+          align-items: center;
+          color: var(--danger-red);
+          font-weight: 600;
+          font-size: 0.875rem;
+          
+          i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+    
+    .ticket-prices {
+      padding: 1.5rem;
+      
+      .prices-header {
+        margin-bottom: 1rem;
+        
+        h5 {
+          color: var(--dark-text);
+          font-weight: 600;
+          font-size: 1rem;
+          margin: 0;
+          
+          i {
+            color: var(--primary-green);
+          }
+        }
+      }
+      
+      .price-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        
+        .price-card {
+          background: var(--dark-card-hover);
+          border: 1px solid var(--dark-border);
+          border-radius: 0.75rem;
+          padding: 1rem;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.05);
+          }
+          
+          .price-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            
+            .ticket-type-name {
+              color: var(--dark-text);
+              font-weight: 600;
+              font-size: 0.95rem;
+            }
+            
+            .ticket-price {
+              color: var(--primary-green);
+              font-weight: 700;
+              font-size: 1.125rem;
+            }
+          }
+          
+          .price-availability {
+            .availability-count {
+              color: var(--dark-text-muted);
+              font-size: 0.8rem;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+    }
+    
+    .selection-controls {
+      padding: 1.5rem;
+      border-top: 1px solid var(--dark-border);
+      background: var(--dark-bg);
+      
+      .control-group {
+        margin-bottom: 1rem;
+        
+        .control-label {
+          display: block;
+          color: var(--dark-text);
+          font-weight: 600;
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+          
+          i {
+            color: var(--primary-green);
+          }
+        }
+        
+        .modern-select {
+          @include app-form-controls;
+          font-size: 0.9rem;
+          
+          &:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+          }
+        }
+        
+        .quantity-input-container {
+          .quantity-input {
+            @include app-form-controls;
+            width: 80px;
+            text-align: center;
+            font-weight: 600;
+            
+            &:focus {
+              border-color: var(--primary-green);
+              box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+            }
+          }
+        }
+      }
+      
+      .btn-add-to-cart {
+        width: 100%;
+        background: linear-gradient(135deg, var(--primary-green), #20c997);
+        border: none;
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.875rem 1.5rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+          background: linear-gradient(135deg, #20c997, var(--primary-green));
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          background: var(--dark-text-muted);
+          box-shadow: none;
+        }
+        
+        i {
+          font-size: 1.1rem;
+        }
+      }
+    }
+    
+    .no-prices-warning {
+      padding: 1.5rem;
+      
+      .alert {
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        color: #fbbf24;
+        border-radius: 0.75rem;
+        margin: 0;
+      }
+    }
+    
+    .sold-out-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1rem;
+      
+      .sold-out-content {
+        text-align: center;
+        color: var(--danger-red);
+        font-weight: 700;
+        font-size: 1.25rem;
+        
+        i {
+          display: block;
+          font-size: 3rem;
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+  }
+
   .ticket-type-list {
     margin-bottom: 2rem;
   }
@@ -287,6 +563,11 @@
       padding: 0;
     }
     
+    .sections-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
     .form-row {
       grid-template-columns: 1fr !important;
     }
@@ -301,6 +582,37 @@
       flex-direction: column;
       align-items: stretch !important;
       gap: 1rem;
+    }
+    
+    .section-card {
+      .section-header {
+        padding: 1rem;
+        
+        .section-info {
+          .section-name {
+            font-size: 1.1rem;
+          }
+        }
+      }
+      
+      .ticket-prices,
+      .selection-controls {
+        padding: 1rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sections-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .section-card {
+      .price-options .price-card .price-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
     }
   }
 }

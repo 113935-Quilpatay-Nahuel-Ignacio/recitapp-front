@@ -104,14 +104,14 @@
           </div>
           <div class="card-body">
             <div class="row g-3">
-              <div class="col-md-8">
+              <div class="col-md-6">
                 <div class="info-item">
                   <i class="bi bi-person-badge text-primary me-2"></i>
                   <strong>Nombre Completo:</strong>
                   <span class="ms-1">{{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}</span>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="info-item">
                   <i class="bi bi-card-text text-secondary me-2"></i>
                   <strong>DNI:</strong>
@@ -151,52 +151,8 @@
         </div>
       </div>
 
-      <!-- QR Code and Actions Sidebar -->
+      <!-- Actions Sidebar -->
       <div class="col-lg-4">
-        <!-- QR Code Card -->
-        <div class="card shadow-sm mb-4">
-          <div class="card-header text-center">
-            <h5 class="card-title mb-0">
-              <i class="bi bi-qr-code me-2"></i>
-              Tu Entrada Digital
-            </h5>
-          </div>
-          <div class="card-body text-center">
-            <div class="qr-container mb-3">
-              <div *ngIf="ticket.qrCode && ticket.qrCode.trim()" class="qr-code-display">
-                <!-- If it's a valid base64 image, show it -->
-                <img *ngIf="isValidQrCode(ticket.qrCode)" 
-                     [src]="ticket.qrCode" 
-                     alt="QR Code" 
-                     class="qr-image" />
-                
-                <!-- If it's text data, generate a real QR code or show the data -->
-                <div *ngIf="!isValidQrCode(ticket.qrCode)" class="qr-text-display">
-                  <div class="qr-data-container">
-                    <i class="bi bi-qr-code display-1 text-primary mb-2"></i>
-                    <div class="qr-text">{{ ticket.qrCode }}</div>
-                    <small class="text-muted">Código de validación</small>
-                  </div>
-                </div>
-              </div>
-              
-              <div *ngIf="!ticket.qrCode || !ticket.qrCode.trim()" class="qr-placeholder">
-                <div class="qr-fallback">
-                  <i class="bi bi-qr-code display-1 text-secondary mb-2"></i>
-                  <div class="fallback-text">
-                    <strong>ID: {{ ticket.id }}</strong>
-                    <div class="text-muted small">{{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="alert alert-info">
-              <i class="bi bi-info-circle me-2"></i>
-              <small>Presenta este código en el acceso al evento</small>
-            </div>
-          </div>
-        </div>
-
         <!-- Action Buttons Card -->
         <div class="card shadow-sm">
           <div class="card-header">
@@ -210,11 +166,6 @@
               <button (click)="downloadTicket(ticket)" class="btn btn-success">
                 <i class="bi bi-download me-2"></i>
                 Descargar PDF
-              </button>
-              
-              <button (click)="shareTicket(ticket)" class="btn btn-primary">
-                <i class="bi bi-share me-2"></i>
-                Compartir Entrada
               </button>
               
               <button *ngIf="canEditTicket(ticket)" 
@@ -231,7 +182,7 @@
                 Transferir Entrada
               </button>
               
-              <button [routerLink]="['/event', ticket.eventId]" class="btn btn-outline-primary">
+              <button (click)="goToEvent(ticket.eventId)" class="btn btn-outline-primary">
                 <i class="bi bi-eye me-2"></i>
                 Ver Evento
               </button>
@@ -268,7 +219,7 @@
               </li>
               <li class="mb-0">
                 <i class="bi bi-shield-check text-success me-2"></i>
-                Esta entrada es intransferible
+                Puedes transferir esta entrada a otros usuarios
               </li>
             </ul>
           </div>
@@ -350,52 +301,111 @@
     <div class="modal-content">
       <form [formGroup]="transferTicketForm" (ngSubmit)="onConfirmTransfer()">
         <div class="modal-header">
-          <h5 class="modal-title">Transferir Entrada</h5>
+          <h5 class="modal-title">
+            <i class="bi bi-arrow-right-circle me-2"></i>
+            Transferir Entrada
+          </h5>
           <button type="button" class="btn-close" (click)="closeTransferModal()" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Estás a punto de transferir la titularidad de esta entrada. Ingresa los datos del usuario destinatario (nombre, apellido y DNI):</p>
+          <div class="transfer-intro mb-4">
+            <h6 class="text-primary mb-2">
+              <i class="bi bi-info-circle me-2"></i>
+              Transferir propiedad de la entrada
+            </h6>
+            <p class="mb-0">Busca al nuevo propietario ingresando sus datos personales exactos. Los datos del asistente se mantendrán sin cambios.</p>
+          </div>
           
-          <div *ngIf="transferError" class="alert alert-danger">
+          <div *ngIf="transferError" class="alert alert-danger mb-3">
+            <i class="bi bi-exclamation-triangle me-2"></i>
             {{ transferError }}
           </div>
 
-          <div class="mb-3">
-            <label for="recipientFirstName" class="form-label">Nombre del Usuario Destinatario</label>
-            <input type="text" id="recipientFirstName" formControlName="recipientFirstName" class="form-control"
-                   [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientFirstName')?.invalid && transferTicketForm.get('recipientFirstName')?.touched }">
-            <div *ngIf="transferTicketForm.get('recipientFirstName')?.invalid && transferTicketForm.get('recipientFirstName')?.touched"
-                 class="invalid-feedback">
-              <div *ngIf="transferTicketForm.get('recipientFirstName')?.errors?.['required']">Nombre del destinatario es requerido.</div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="recipientFirstName" class="form-label">
+                <i class="bi bi-person me-1"></i>
+                Nombre *
+              </label>
+              <input type="text" 
+                     id="recipientFirstName" 
+                     formControlName="recipientFirstName" 
+                     class="form-control"
+                     placeholder="Ej: Juan"
+                     [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientFirstName')?.invalid && transferTicketForm.get('recipientFirstName')?.touched }">
+              <div *ngIf="transferTicketForm.get('recipientFirstName')?.invalid && transferTicketForm.get('recipientFirstName')?.touched"
+                   class="invalid-feedback">
+                <div *ngIf="transferTicketForm.get('recipientFirstName')?.errors?.['required']">El nombre es requerido</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="recipientLastName" class="form-label">
+                <i class="bi bi-person me-1"></i>
+                Apellido *
+              </label>
+              <input type="text" 
+                     id="recipientLastName" 
+                     formControlName="recipientLastName" 
+                     class="form-control"
+                     placeholder="Ej: Pérez"
+                     [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientLastName')?.invalid && transferTicketForm.get('recipientLastName')?.touched }">
+              <div *ngIf="transferTicketForm.get('recipientLastName')?.invalid && transferTicketForm.get('recipientLastName')?.touched"
+                   class="invalid-feedback">
+                <div *ngIf="transferTicketForm.get('recipientLastName')?.errors?.['required']">El apellido es requerido</div>
+              </div>
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="recipientLastName" class="form-label">Apellido del Usuario Destinatario</label>
-            <input type="text" id="recipientLastName" formControlName="recipientLastName" class="form-control"
-                   [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientLastName')?.invalid && transferTicketForm.get('recipientLastName')?.touched }">
-            <div *ngIf="transferTicketForm.get('recipientLastName')?.invalid && transferTicketForm.get('recipientLastName')?.touched"
-                 class="invalid-feedback">
-              <div *ngIf="transferTicketForm.get('recipientLastName')?.errors?.['required']">Apellido del destinatario es requerido.</div>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="recipientDni" class="form-label">DNI del Usuario Destinatario</label>
-            <input type="text" id="recipientDni" formControlName="recipientDni" class="form-control"
+            <label for="recipientDni" class="form-label">
+              <i class="bi bi-card-text me-1"></i>
+              Documento de Identidad (DNI) *
+            </label>
+            <input type="text" 
+                   id="recipientDni" 
+                   formControlName="recipientDni" 
+                   class="form-control"
+                   placeholder="Ej: 12345678"
                    [ngClass]="{ 'is-invalid': transferTicketForm.get('recipientDni')?.invalid && transferTicketForm.get('recipientDni')?.touched }">
             <div *ngIf="transferTicketForm.get('recipientDni')?.invalid && transferTicketForm.get('recipientDni')?.touched"
                  class="invalid-feedback">
-              <div *ngIf="transferTicketForm.get('recipientDni')?.errors?.['required']">DNI del destinatario es requerido.</div>
+              <div *ngIf="transferTicketForm.get('recipientDni')?.errors?.['required']">El DNI es requerido</div>
             </div>
           </div>
 
-          <p class="form-text">El sistema buscará al usuario con estos datos. Si se encuentra, se le transferirá la entrada y sus datos (nombre, apellido, DNI) serán asignados como los del asistente. Esta acción es irreversible.</p>
+          <div class="alert alert-info">
+            <div class="d-flex">
+              <i class="bi bi-lightbulb flex-shrink-0 me-3 mt-1"></i>
+              <div>
+                <strong>¿Cómo funciona la transferencia?</strong>
+                <p class="mb-2 mt-1">El sistema buscará un usuario que coincida <strong>exactamente</strong> con el nombre, apellido y DNI proporcionados.</p>
+                <p class="mb-0">Solo cambiará la <strong>propiedad</strong> de la entrada. Los datos del asistente original se mantendrán igual.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning">
+            <div class="d-flex">
+              <i class="bi bi-exclamation-triangle flex-shrink-0 me-3 mt-1"></i>
+              <div>
+                <strong>¡Atención!</strong>
+                <p class="mb-0 mt-1">Esta acción es <strong>irreversible</strong>. Una vez transferida, el nuevo propietario tendrá control total sobre la entrada.</p>
+              </div>
+            </div>
+          </div>
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeTransferModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="transferTicketForm.invalid || transferLoading">Transferir por Búsqueda</button>
+          <button type="button" class="btn btn-secondary" (click)="closeTransferModal()">
+            <i class="bi bi-x-lg me-1"></i>
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="transferTicketForm.invalid || transferLoading">
+            <span *ngIf="transferLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <i *ngIf="!transferLoading" class="bi bi-search me-1"></i>
+            {{ transferLoading ? 'Buscando usuario...' : 'Buscar y Transferir' }}
+          </button>
         </div>
       </form>
     </div>

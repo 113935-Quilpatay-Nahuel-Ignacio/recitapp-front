@@ -114,14 +114,62 @@
     }
     
     .ticket-info {
-      .ticket-id {
-        color: var(--primary-green);
-        font-weight: 600;
-        font-size: 0.875rem;
-        font-family: 'Courier New', monospace;
+      // Header with ID and Status - improved flexbox layout
+      .ticket-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
         
-        i {
-          margin-right: 0.25rem;
+        .ticket-id {
+          color: var(--primary-green);
+          font-weight: 600;
+          font-size: 0.875rem;
+          font-family: 'Courier New', monospace;
+          
+          i {
+            margin-right: 0.25rem;
+          }
+        }
+        
+        .ticket-status {
+          .badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+            
+            i {
+              font-size: 0.75rem;
+              margin-right: 0.25rem;
+            }
+            
+            // Status-specific styling
+            &.bg-success {
+              background: linear-gradient(135deg, var(--success-green), #16a34a) !important;
+              color: white !important;
+            }
+            
+            &.bg-info {
+              background: linear-gradient(135deg, var(--info-blue), #1e40af) !important;
+              color: white !important;
+            }
+            
+            &.bg-danger {
+              background: linear-gradient(135deg, var(--danger-red), #dc2626) !important;
+              color: white !important;
+            }
+            
+            &.bg-secondary {
+              background: linear-gradient(135deg, var(--dark-text-muted), #6b7280) !important;
+              color: white !important;
+            }
+          }
         }
       }
       
@@ -129,6 +177,8 @@
         color: var(--dark-text);
         font-weight: 700;
         font-size: 1.125rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.3;
       }
       
       .event-details {
@@ -140,17 +190,6 @@
           color: var(--primary-green);
           margin-right: 0.5rem;
           width: 14px;
-        }
-      }
-      
-      .ticket-status {
-        .badge {
-          font-size: 0.75rem;
-          padding: 0.375rem 0.75rem;
-          
-          i {
-            font-size: 0.75rem;
-          }
         }
       }
     }
@@ -227,34 +266,51 @@
   }
 }
 
-// Search box styles
-.search-box {
-  position: relative;
-  
-  i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--dark-text-muted);
-    z-index: 2;
+// Search and filter section improvements
+.ticket-search-section {
+  .search-box {
+    position: relative;
+    
+    i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--dark-text-muted);
+      z-index: 2;
+    }
+    
+    .form-control {
+      padding-left: 3rem;
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      color: var(--dark-text);
+      height: 45px; // Fixed height for consistency
+      
+      &:focus {
+        background-color: var(--dark-card);
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+        color: var(--dark-text);
+      }
+      
+      &::placeholder {
+        color: var(--dark-text-muted);
+      }
+    }
   }
   
-  .form-control {
-    padding-left: 3rem;
+  .form-select {
     background-color: var(--dark-card);
     border: 1px solid var(--dark-border);
     color: var(--dark-text);
+    height: 45px; // Fixed height to match search box
     
     &:focus {
       background-color: var(--dark-card);
       border-color: var(--primary-green);
       box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
       color: var(--dark-text);
-    }
-    
-    &::placeholder {
-      color: var(--dark-text-muted);
     }
   }
 }
@@ -290,20 +346,6 @@
         }
       }
     }
-  }
-}
-
-// Form controls
-.form-select {
-  background-color: var(--dark-card);
-  border: 1px solid var(--dark-border);
-  color: var(--dark-text);
-  
-  &:focus {
-    background-color: var(--dark-card);
-    border-color: var(--primary-green);
-    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
-    color: var(--dark-text);
   }
 }
 
