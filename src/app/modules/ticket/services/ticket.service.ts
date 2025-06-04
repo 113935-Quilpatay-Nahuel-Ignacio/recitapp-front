@@ -1,10 +1,27 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Ticket } from '../models/ticket.model';
 import { environment } from '../../../../environments/environment';
-import { HttpParams } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { map } from 'rxjs/operators';
+
+// Define backend DTO interface to match Java TicketDTO
+interface BackendTicketDTO {
+  id: number;
+  eventId: number;
+  eventName: string;
+  eventDate: string; // LocalDateTime serialized as string
+  sectionId: number;
+  sectionName: string;
+  venueName: string;
+  price: number;
+  status: string;
+  attendeeFirstName: string;
+  attendeeLastName: string;
+  attendeeDni: string;
+  qrCode: string;
+  purchaseDate: string; // LocalDateTime serialized as string
+}
 
 export interface AttendeeUpdateRequest {
   attendeeFirstName?: string;
@@ -103,5 +120,38 @@ export class TicketService {
 
   createPromotionalTicket(request: PromotionalTicketRequest): Observable<PromotionalTicketResponse> {
     return this.http.post<PromotionalTicketResponse>(`${this.adminApiUrl}/promotional`, request);
+  }
+
+  /**
+   * Get tickets for a specific user
+   */
+  getUserTickets(userId: number): Observable<Ticket[]> {
+    return this.http.get<BackendTicketDTO[]>(`${this.apiUrl}/user/${userId}`)
+      .pipe(
+        map(backendTickets => backendTickets.map(this.mapBackendTicketToFrontend))
+      );
+  }
+
+  /**
+   * Map backend TicketDTO to frontend Ticket model
+   */
+  private mapBackendTicketToFrontend(backendTicket: BackendTicketDTO): Ticket {
+    return {
+      id: backendTicket.id,
+      eventName: backendTicket.eventName,
+      eventDate: backendTicket.eventDate,
+      venueName: backendTicket.venueName,
+      sectionName: backendTicket.sectionName,
+      seatNumber: null, // Not provided by backend DTO
+      price: backendTicket.price,
+      currency: 'ARS', // Default currency
+      attendeeFirstName: backendTicket.attendeeFirstName,
+      attendeeLastName: backendTicket.attendeeLastName,
+      attendeeDni: backendTicket.attendeeDni,
+      qrCode: backendTicket.qrCode,
+      status: backendTicket.status,
+      purchaseDate: backendTicket.purchaseDate,
+      eventId: backendTicket.eventId
+    };
   }
 }

@@ -336,7 +336,8 @@ export class TicketPurchaseComponent implements OnInit {
           totalAmount: response.totalAmount,
           publicKey: response.publicKey,
           preferenceId: response.preferenceId,
-          bricksConfig: response.bricksConfig
+          bricksConfig: response.bricksConfig,
+          paymentRequest: paymentRequest // Include original payment request
         };
         this.showPaymentForm = true;
       });

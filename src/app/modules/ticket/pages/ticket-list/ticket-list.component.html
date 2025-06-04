@@ -1,1 +1,238 @@
-<p>ticket-list works!</p>
+<div class="ticket-list-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="page-title">
+          <i class="bi bi-ticket-perforated-fill me-2"></i>
+          Mis Entradas
+        </h1>
+        <p class="page-subtitle text-muted">Gestiona y visualiza todas tus entradas</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-primary me-2" (click)="refreshTickets()" [disabled]="isLoading">
+          <i class="bi bi-arrow-clockwise me-1"></i>
+          Actualizar
+        </button>
+        <button class="btn btn-primary" (click)="goToEvents()">
+          <i class="bi bi-calendar-event me-1"></i>
+          Explorar Eventos
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando entradas...</span>
+    </div>
+    <h4>Cargando tus entradas...</h4>
+    <p class="text-muted">Por favor espera mientras obtenemos tu información</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="alert alert-danger" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button class="btn btn-outline-danger btn-sm ms-2" (click)="refreshTickets()">
+      Reintentar
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoading && !error">
+    <!-- Statistics Section -->
+    <div class="ticket-stats">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <i class="bi bi-ticket-perforated"></i>
+        </div>
+        <div class="stat-number">{{ stats.total }}</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon active">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="stat-number">{{ stats.active }}</div>
+        <div class="stat-label">Activas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon used">
+          <i class="bi bi-check2-all"></i>
+        </div>
+        <div class="stat-number">{{ stats.used }}</div>
+        <div class="stat-label">Usadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon expired">
+          <i class="bi bi-x-circle"></i>
+        </div>
+        <div class="stat-number">{{ stats.expired }}</div>
+        <div class="stat-label">Expiradas</div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="ticket-filter-tabs mb-4">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="activeTab === 'all'"
+             (click)="onTabChange('all')" 
+             href="javascript:void(0)">
+            Todas ({{ stats.total }})
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="activeTab === 'active'"
+             (click)="onTabChange('active')" 
+             href="javascript:void(0)">
+            Activas ({{ stats.active }})
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="activeTab === 'used'"
+             (click)="onTabChange('used')" 
+             href="javascript:void(0)">
+            Usadas ({{ stats.used }})
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [class.active]="activeTab === 'expired'"
+             (click)="onTabChange('expired')" 
+             href="javascript:void(0)">
+            Expiradas ({{ stats.expired }})
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="ticket-search-section mb-4">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" 
+                   class="form-control" 
+                   placeholder="Buscar por evento, lugar o sección..."
+                   [(ngModel)]="searchTerm"
+                   (input)="onSearchChange()">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" 
+                  [(ngModel)]="selectedDateFilter"
+                  (change)="onDateFilterChange()">
+            <option value="all">Todas las fechas</option>
+            <option value="upcoming">Próximos eventos</option>
+            <option value="this-week">Esta semana</option>
+            <option value="this-month">Este mes</option>
+            <option value="past">Eventos pasados</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tickets Grid -->
+    <div class="tickets-grid" *ngIf="filteredTickets.length > 0">
+      <div class="ticket-card" *ngFor="let ticket of filteredTickets">
+        <!-- QR Code Section -->
+        <div class="ticket-qr">
+          <img *ngIf="ticket.qrCode" [src]="ticket.qrCode" alt="QR Code" />
+          <div *ngIf="!ticket.qrCode" class="qr-placeholder">
+            <i class="bi bi-qr-code"></i>
+          </div>
+        </div>
+
+        <!-- Ticket Information -->
+        <div class="ticket-info">
+          <div class="ticket-id">
+            <i class="bi bi-hash"></i>{{ ticket.id }}
+          </div>
+          
+          <h4 class="event-name">{{ ticket.eventName }}</h4>
+          
+          <div class="event-details">
+            <i class="bi bi-geo-alt-fill"></i>{{ ticket.venueName }}
+          </div>
+          
+          <div class="event-details">
+            <i class="bi bi-diagram-3-fill"></i>{{ ticket.sectionName }}
+            <span *ngIf="ticket.seatNumber"> - Asiento {{ ticket.seatNumber }}</span>
+          </div>
+          
+          <div class="event-details">
+            <i class="bi bi-calendar-event"></i>{{ formatDate(ticket.eventDate) }}
+          </div>
+          
+          <div class="event-details">
+            <i class="bi bi-person-fill"></i>{{ ticket.attendeeFirstName }} {{ ticket.attendeeLastName }}
+          </div>
+          
+          <div class="event-details">
+            <i class="bi bi-credit-card-fill"></i>{{ formatPrice(ticket.price) }}
+          </div>
+          
+          <div class="ticket-status">
+            <span class="badge bg-{{ getStatusClass(ticket.status) }}">
+              <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
+              {{ ticket.status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="ticket-actions">
+          <div class="btn-group-vertical" role="group">
+            <button class="btn btn-primary btn-sm" 
+                    (click)="viewTicketDetails(ticket)">
+              <i class="bi bi-eye me-1"></i>
+              Ver Detalles
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" 
+                    (click)="downloadTicket(ticket)">
+              <i class="bi bi-download me-1"></i>
+              Descargar
+            </button>
+            <button class="btn btn-outline-info btn-sm" 
+                    (click)="shareTicket(ticket)">
+              <i class="bi bi-share me-1"></i>
+              Compartir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredTickets.length === 0 && tickets.length > 0" class="no-tickets-state">
+      <div class="empty-icon">
+        <i class="bi bi-search"></i>
+      </div>
+      <h3>No se encontraron entradas</h3>
+      <p>No hay entradas que coincidan con tus criterios de búsqueda. Intenta ajustar los filtros.</p>
+      <button class="btn btn-outline-primary" (click)="searchTerm = ''; selectedStatus = 'all'; selectedDateFilter = 'all'; onSearchChange()">
+        Limpiar Filtros
+      </button>
+    </div>
+
+    <!-- No Tickets State -->
+    <div *ngIf="tickets.length === 0" class="no-tickets-state">
+      <div class="empty-icon">
+        <i class="bi bi-ticket-perforated"></i>
+      </div>
+      <h3>¡Aún no tienes entradas!</h3>
+      <p>Explora nuestros increíbles eventos y compra tu primera entrada.</p>
+      <button class="btn btn-primary" (click)="goToEvents()">
+        <i class="bi bi-calendar-event me-1"></i>
+        Explorar Eventos
+      </button>
+    </div>
+  </div>
+</div>

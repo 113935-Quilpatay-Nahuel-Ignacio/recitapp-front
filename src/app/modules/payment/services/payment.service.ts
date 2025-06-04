@@ -74,6 +74,10 @@ export class PaymentService {
     return this.http.post<PaymentResponse>(`${this.apiUrl}/create-preference`, paymentRequest);
   }
 
+  processPayment(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
+    return this.http.post<PaymentResponse>(`${this.apiUrl}/process-payment`, paymentRequest);
+  }
+
   getPaymentStatus(paymentId: string): Observable<string> {
     return this.http.get<string>(`${this.apiUrl}/status/${paymentId}`);
   }

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { PaymentService, PaymentRequest } from '../../services/payment.service';
 
 declare var MercadoPago: any;
 
@@ -20,6 +21,7 @@ export interface PaymentData {
   publicKey: string;
   preferenceId: string;
   bricksConfig: BricksConfiguration;
+  paymentRequest?: PaymentRequest; // Original payment request data
 }
 
 @Component({
@@ -27,20 +29,27 @@ export interface PaymentData {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="mercadopago-container">
-      <div class="alert alert-info mb-4">
-        <i class="bi bi-shield-check me-2"></i>
+    <div class="mercadopago-container" role="main" aria-label="Pago con MercadoPago">
+      <div class="alert alert-info mb-4" role="banner" aria-live="polite">
+        <i class="bi bi-shield-check me-2" aria-hidden="true"></i>
         <strong>Pago seguro con MercadoPago</strong>
         <p class="mb-0 mt-1">Completa los datos de tu tarjeta de forma segura. No almacenamos tu información financiera.</p>
       </div>
       
-      <div id="cardPaymentBrick_container"></div>
+      <div id="cardPaymentBrick_container" 
+           role="region" 
+           aria-label="Formulario de pago"></div>
       
-      <div class="mt-3 text-center" *ngIf="isLoading">
-        <div class="spinner-border text-primary" role="status">
+      <div class="mt-3 text-center" 
+           *ngIf="isLoading" 
+           role="status" 
+           aria-live="assertive">
+        <div class="spinner-border text-primary" 
+             role="status" 
+             aria-label="Procesando pago">
           <span class="visually-hidden">Procesando pago...</span>
         </div>
-        <p class="mt-2 text-muted">Procesando tu pago...</p>
+        <p class="mt-2 text-muted" aria-live="polite">Procesando tu pago...</p>
       </div>
     </div>
   `,
@@ -68,17 +77,23 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
   private mp: any;
   private bricks: any;
   private cardPaymentBrickController: any;
+  private accessibilityMonitor: any;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private paymentService: PaymentService
+  ) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.loadMercadoPagoSDK();
+      this.startAccessibilityMonitor();
     }
   }
 
   ngOnDestroy(): void {
     this.destroyBricks();
+    this.stopAccessibilityMonitor();
   }
 
   private destroyBricks(): void {
@@ -92,7 +107,12 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
       const container = document.getElementById('cardPaymentBrick_container');
       if (container) {
         container.innerHTML = '';
+        // Remove any problematic attributes
+        container.removeAttribute('aria-hidden');
       }
+      
+      // Clean up any accessibility issues that might persist
+      this.cleanupGlobalAccessibilityIssues();
       
       // Resetear las referencias
       this.cardPaymentBrickController = null;
@@ -100,6 +120,30 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
       this.mp = null;
     } catch (error) {
       console.warn('Error destroying MercadoPago Bricks:', error);
+    }
+  }
+
+  private cleanupGlobalAccessibilityIssues(): void {
+    try {
+      // Remove aria-hidden from app-root if it was added
+      const appRoot = document.querySelector('app-root');
+      if (appRoot && appRoot.hasAttribute('aria-hidden')) {
+        appRoot.removeAttribute('aria-hidden');
+      }
+      
+      // Remove any lingering aria-hidden attributes from focusable elements
+      const focusableWithAriaHidden = document.querySelectorAll(
+        '[aria-hidden="true"] button, [aria-hidden="true"] input, [aria-hidden="true"] select, [aria-hidden="true"] textarea, [aria-hidden="true"] a[href]'
+      );
+      
+      focusableWithAriaHidden.forEach(element => {
+        const parent = element.closest('[aria-hidden="true"]');
+        if (parent) {
+          parent.removeAttribute('aria-hidden');
+        }
+      });
+    } catch (error) {
+      console.warn('Error cleaning up accessibility issues:', error);
     }
   }
 
@@ -175,6 +219,7 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
           callbacks: {
             onReady: () => {
               console.log('MercadoPago Card Payment Brick ready');
+              this.fixAccessibilityIssues();
             },
             onSubmit: (cardFormData: any) => {
               this.handlePaymentSubmission(cardFormData);
@@ -200,16 +245,109 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
   private handlePaymentSubmission(cardFormData: any): void {
     this.isLoading = true;
     
-    // Aquí normalmente enviarías los datos al backend para procesar el pago
-    // Por ahora simularemos el proceso
-    setTimeout(() => {
+    if (!this.paymentData.paymentRequest) {
+      console.error('Payment request data is missing');
+      this.paymentError.emit({ error: 'Datos de pago faltantes' });
       this.isLoading = false;
-      // Simular éxito del pago
-      this.paymentSuccess.emit({
-        paymentId: 'MP_' + Date.now(),
-        status: 'approved',
-        ...cardFormData
-      });
+      return;
+    }
+    
+    // Process the payment through the backend
+    this.paymentService.processPayment(this.paymentData.paymentRequest).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        console.log('Payment processed successfully:', response);
+        
+        this.paymentSuccess.emit({
+          paymentId: response.preferenceId,
+          ...response,
+          cardFormData
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Payment processing failed:', error);
+        
+        this.paymentError.emit({
+          error: 'Error procesando el pago',
+          details: error
+        });
+      }
+    });
+  }
+
+  private fixAccessibilityIssues(): void {
+    try {
+      // Wait a bit for DOM to settle
+      setTimeout(() => {
+        const container = document.getElementById('cardPaymentBrick_container');
+        if (container) {
+          // Remove aria-hidden from interactive elements
+          const interactiveElements = container.querySelectorAll(
+            'button, input, select, textarea, [tabindex]:not([tabindex="-1"]), a[href]'
+          );
+          
+          interactiveElements.forEach(element => {
+            // Remove aria-hidden from focusable elements
+            if (element.hasAttribute('aria-hidden')) {
+              element.removeAttribute('aria-hidden');
+            }
+            
+            // Ensure proper accessibility attributes
+            if (element.tagName === 'BUTTON' && !element.hasAttribute('aria-label')) {
+              const buttonText = element.textContent?.trim();
+              if (buttonText) {
+                element.setAttribute('aria-label', buttonText);
+              }
+            }
+          });
+          
+          // Remove aria-hidden from any parent containers that contain focusable elements
+          const elementsWithAriaHidden = container.querySelectorAll('[aria-hidden="true"]');
+          elementsWithAriaHidden.forEach(element => {
+            const hasFocusableDescendants = element.querySelectorAll(
+              'button, input, select, textarea, [tabindex]:not([tabindex="-1"]), a[href]'
+            ).length > 0;
+            
+            if (hasFocusableDescendants) {
+              element.removeAttribute('aria-hidden');
+            }
+          });
+          
+          // Ensure the container itself is accessible
+          container.removeAttribute('aria-hidden');
+          
+          // Add proper role and label to the container
+          if (!container.hasAttribute('role')) {
+            container.setAttribute('role', 'region');
+          }
+          if (!container.hasAttribute('aria-label')) {
+            container.setAttribute('aria-label', 'Formulario de pago con MercadoPago');
+          }
+        }
+        
+        // Also check for issues at app-root level
+        const appRoot = document.querySelector('app-root');
+        if (appRoot && appRoot.hasAttribute('aria-hidden')) {
+          appRoot.removeAttribute('aria-hidden');
+        }
+      }, 500);
+    } catch (error) {
+      console.warn('Error fixing accessibility issues:', error);
+    }
+  }
+
+  private startAccessibilityMonitor(): void {
+    // Monitor accessibility issues every 2 seconds
+    this.accessibilityMonitor = setInterval(() => {
+      this.cleanupGlobalAccessibilityIssues();
     }, 2000);
+  }
+
+  private stopAccessibilityMonitor(): void {
+    if (this.accessibilityMonitor) {
+      clearInterval(this.accessibilityMonitor);
+      this.accessibilityMonitor = null;
+    }
   }
 } 
