@@ -1,290 +1,159 @@
 /* src/app/shared/components/navbar/navbar.component.scss */
 .navbar {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%) !important;
-  border-bottom: 1px solid var(--primary-green-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   padding: 0.75rem 0;
   position: sticky;
   top: 0;
   z-index: 1030;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: white !important;
+  text-decoration: none;
   
-  .container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+  &:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
   }
   
-  .navbar-brand {
-    font-weight: 700;
-    font-size: 1.5rem;
+  i {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
     color: white !important;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    
-    &:hover {
-      color: rgba(255, 255, 255, 0.9) !important;
-      transform: scale(1.05);
-    }
-    
-    i {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.25rem;
-      margin-right: 0.5rem;
-    }
+    background-color: rgba(255, 255, 255, 0.15);
   }
   
-  .navbar-nav {
-    display: flex;
-    align-items: center;
-    
-    .nav-item {
-      margin: 0 0.25rem;
-      
-      .nav-link {
-        color: rgba(255, 255, 255, 0.9) !important;
-        font-weight: 500;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        
-        i {
-          opacity: 0.9;
-          font-size: 0.9rem;
-          margin-right: 0.25rem;
-        }
-        
-        &:hover {
-          color: white !important;
-          background-color: rgba(255, 255, 255, 0.15);
-          transform: translateY(-1px);
-        }
-        
-        &.active {
-          color: white !important;
-          background-color: rgba(255, 255, 255, 0.2);
-          font-weight: 600;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          
-          i {
-            opacity: 1;
-          }
-        }
-        
-        // Special styling for admin link
-        &.admin-link {
-          background-color: rgba(244, 67, 54, 0.2);
-          border: 1px solid rgba(244, 67, 54, 0.3);
-          
-          &:hover {
-            background-color: rgba(244, 67, 54, 0.3);
-            border-color: rgba(244, 67, 54, 0.5);
-          }
-        }
-        
-        // Special styling for user menu
-        &.user-menu {
-          background-color: rgba(33, 150, 243, 0.2);
-          border: 1px solid rgba(33, 150, 243, 0.3);
-          
-          &:hover {
-            background-color: rgba(33, 150, 243, 0.3);
-            border-color: rgba(33, 150, 243, 0.5);
-          }
-        }
-      }
-      
-      // Register button styling
-      .btn-outline-light {
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        font-weight: 600;
-        
-        &:hover {
-          background-color: white;
-          color: var(--primary-green) !important;
-          border-color: white;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-      }
-    }
-    
-    .dropdown-toggle {
-      position: relative;
-      
-      &::after {
-        transition: transform 0.3s ease;
-        margin-left: 0.5rem;
-      }
-      
-      &[aria-expanded="true"]::after {
-        transform: rotate(180deg);
-      }
-    }
+  &.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
   }
+}
+
+.navbar-nav .nav-link.admin-link {
+  background-color: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.3);
   
-  .navbar-toggler {
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    background-color: rgba(255, 255, 255, 0.1);
-    
-    &:focus {
-      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
-    }
-    
-    .navbar-toggler-icon {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-    }
+  &:hover {
+    background-color: rgba(244, 67, 54, 0.3);
   }
+}
+
+.navbar-nav .nav-link.user-menu {
+  background-color: rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.3);
   
-  // Ensure proper collapse behavior
-  .navbar-collapse {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    
-    .navbar-nav:first-child {
-      margin-right: auto;
-    }
-    
-    .navbar-nav:last-child {
-      margin-left: auto;
-    }
+  &:hover {
+    background-color: rgba(33, 150, 243, 0.3);
+  }
+}
+
+.btn-outline-light {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  
+  &:hover {
+    background-color: white;
+    color: var(--primary-green) !important;
+    border-color: white;
+  }
+}
+
+.navbar-toggler {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
+  
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
   }
 }
 
 .dropdown-menu {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  border-radius: 0.75rem;
-  border: 1px solid var(--dark-border);
-  padding: 0.5rem 0;
   background-color: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
   margin-top: 0.5rem;
   min-width: 250px;
-  z-index: 1050;
-  position: absolute;
+}
+
+.dropdown-header {
+  color: var(--primary-green);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dropdown-item {
+  color: var(--dark-text);
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
   
-  .dropdown-header {
-    color: var(--primary-green);
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 0.5rem 1rem;
-    margin-bottom: 0.25rem;
-    background-color: rgba(76, 175, 80, 0.1);
+  &:hover {
+    background-color: var(--primary-green);
+    color: white;
   }
   
-  .dropdown-item {
-    padding: 0.75rem 1.5rem;
-    transition: all 0.3s ease;
-    color: var(--dark-text);
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    border-radius: 0;
+  &.text-danger {
+    color: #ef5350 !important;
     
-    i {
-      width: 20px;
-      text-align: center;
-      opacity: 0.8;
+    &:hover {
+      background-color: #ef5350;
+      color: white !important;
     }
-    
-    &:hover,
-    &:focus {
-      background-color: var(--primary-green);
-      color: white;
-      transform: translateX(4px);
-      
-      i {
-        opacity: 1;
-      }
-    }
-    
-    &.text-danger {
-      color: #ef5350 !important;
-      
-      &:hover {
-        background-color: #ef5350;
-        color: white !important;
-      }
-    }
-    
-    &:active {
-      background-color: var(--primary-green-dark);
-      color: white;
-    }
-    
-    &.active {
-      background-color: var(--primary-green);
-      color: white;
-      font-weight: 600;
-    }
-  }
-  
-  .dropdown-divider {
-    margin: 0.5rem 0;
-    border-color: var(--dark-border);
-    opacity: 0.5;
   }
 }
 
-// Enhanced dropdown show animation
-.dropdown.show .dropdown-toggle::after {
-  transform: rotate(180deg);
+.dropdown-divider {
+  margin: 0.5rem 0;
+  border-color: var(--dark-border);
+  opacity: 0.5;
 }
 
-// Responsive adjustments
+/* Responsive */
 @media (max-width: 991.98px) {
-  .navbar {
-    .navbar-collapse {
-      .navbar-nav {
-        padding-top: 1rem;
-        width: 100%;
-        
-        .nav-item {
-          margin: 0.25rem 0;
-          
-          .nav-link {
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            
-            span {
-              margin-left: 0.5rem;
-            }
-          }
-        }
-      }
-    }
+  .navbar-collapse {
+    margin-top: 1rem;
+  }
+  
+  .navbar-nav {
+    width: 100%;
+  }
+  
+  .navbar-nav .nav-item {
+    margin: 0.25rem 0;
   }
   
   .dropdown-menu {
     border: none;
     box-shadow: none;
-    padding-left: 1rem;
     background-color: rgba(255, 255, 255, 0.1);
-    margin-top: 0.5rem;
     border-radius: 0.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    margin: 0.25rem 0;
     
-    .dropdown-item {
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      margin: 0.25rem 0;
-      
-      &:hover {
-        transform: none;
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-    }
-    
-    .dropdown-header {
-      background-color: transparent;
-      color: rgba(255, 255, 255, 0.9);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
     }
   }
 }
@@ -292,76 +161,9 @@
 @media (max-width: 576px) {
   .navbar {
     padding: 0.5rem 0;
-    
-    .container {
-      padding: 0 1rem;
-    }
-    
-    .navbar-brand {
-      font-size: 1.25rem;
-      
-      i {
-        font-size: 1rem;
-      }
-    }
-    
-    .navbar-nav {
-      .nav-item {
-        .nav-link {
-          font-size: 0.9rem;
-          padding: 0.5rem 0.75rem;
-        }
-      }
-    }
   }
   
-  .dropdown-menu {
-    min-width: 200px;
-    
-    .dropdown-item {
-      font-size: 0.9rem;
-      padding: 0.5rem 1rem;
-      
-      i {
-        width: 16px;
-        font-size: 0.8rem;
-      }
-    }
+  .navbar-brand {
+    font-size: 1.25rem;
   }
-}
-
-// Animation for navbar collapse
-.navbar-collapse {
-  transition: all 0.3s ease;
-}
-
-// Dropdown behavior: remove problematic hover rules that conflict
-// Keep only the manual control through our custom directive
-
-// Improved dropdown positioning and z-index
-.dropdown-menu {
-  z-index: 1050;
-  position: absolute;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Focus styles for accessibility
-.navbar-nav .nav-link:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.8);
-  outline-offset: 2px;
-}
-
-.dropdown-item:focus {
-  outline: 2px solid var(--primary-green);
-  outline-offset: -2px;
 }

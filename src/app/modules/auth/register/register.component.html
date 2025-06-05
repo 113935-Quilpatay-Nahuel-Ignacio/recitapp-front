@@ -4,7 +4,7 @@
       <div class="card shadow">
         <div class="card-header text-center">
           <h3 class="card-title mb-0">
-            <i class="fas fa-user-plus me-2 text-green-emerald"></i>
+            <i class="fas fa-user-plus me-2 text-green-medium"></i>
             Crear Cuenta
           </h3>
           <p class="text-muted mt-2 mb-0">Únete a RecitApp</p>
@@ -28,7 +28,7 @@
               <!-- Nombre -->
               <div class="col-md-6 mb-3">
                 <label for="firstName" class="form-label">
-                  <i class="fas fa-user me-2 text-green-light"></i>
+                  <i class="fas fa-user me-2 text-green-medium"></i>
                   Nombre *
                 </label>
                 <input
@@ -52,7 +52,7 @@
               <!-- Apellido -->
               <div class="col-md-6 mb-3">
                 <label for="lastName" class="form-label">
-                  <i class="fas fa-user me-2 text-green-light"></i>
+                  <i class="fas fa-user me-2 text-green-medium"></i>
                   Apellido *
                 </label>
                 <input
@@ -102,7 +102,7 @@
               <!-- DNI -->
               <div class="col-md-6 mb-3">
                 <label for="dni" class="form-label">
-                  <i class="fas fa-id-card me-2 text-green-emerald"></i>
+                  <i class="fas fa-id-card me-2 text-green-medium"></i>
                   DNI *
                 </label>
                 <input
@@ -126,7 +126,7 @@
               <!-- Teléfono -->
               <div class="col-md-6 mb-3">
                 <label for="phone" class="form-label">
-                  <i class="fas fa-phone me-2 text-green-lime"></i>
+                  <i class="fas fa-phone me-2 text-green-medium"></i>
                   Teléfono
                 </label>
                 <input
@@ -148,7 +148,7 @@
             <!-- Dirección -->
             <div class="mb-3">
               <label for="address" class="form-label">
-                <i class="fas fa-map-marker-alt me-2 text-green-forest"></i>
+                <i class="fas fa-map-marker-alt me-2 text-green-medium"></i>
                 Dirección
               </label>
               <input
@@ -163,7 +163,7 @@
             <!-- Contraseña -->
             <div class="mb-3">
               <label for="password" class="form-label">
-                <i class="fas fa-lock me-2 text-green-dark"></i>
+                <i class="fas fa-lock me-2 text-green-medium"></i>
                 Contraseña *
               </label>
               <div class="input-group">
@@ -180,7 +180,7 @@
                   class="btn btn-outline-secondary"
                   (click)="togglePasswordVisibility()"
                 >
-                  <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i [class]="showPassword ? 'fas fa-eye-slash text-green-medium' : 'fas fa-eye text-green-medium'"></i>
                 </button>
               </div>
               <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="invalid-feedback d-block">
@@ -209,7 +209,7 @@
             <!-- Confirmar contraseña -->
             <div class="mb-3">
               <label for="confirmPassword" class="form-label">
-                <i class="fas fa-lock me-2 text-green-dark"></i>
+                <i class="fas fa-lock me-2 text-green-medium"></i>
                 Confirmar Contraseña *
               </label>
               <div class="input-group">
@@ -226,7 +226,7 @@
                   class="btn btn-outline-secondary"
                   (click)="toggleConfirmPasswordVisibility()"
                 >
-                  <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i [class]="showConfirmPassword ? 'fas fa-eye-slash text-green-medium' : 'fas fa-eye text-green-medium'"></i>
                 </button>
               </div>
               <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="invalid-feedback d-block">
@@ -267,7 +267,7 @@
                 [disabled]="registerForm.invalid || isLoading"
               >
                 <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                <i *ngIf="!isLoading" class="fas fa-user-plus me-2"></i>
+                <i *ngIf="!isLoading" class="fas fa-user-plus me-2 text-white"></i>
                 {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
               </button>
             </div>
@@ -277,7 +277,7 @@
         <div class="card-footer text-center">
           <span class="text-muted">¿Ya tienes cuenta?</span>
           <a routerLink="/auth/login" class="text-decoration-none ms-1">
-            <i class="fas fa-sign-in-alt me-1"></i>
+            <i class="fas fa-sign-in-alt me-1 text-green-medium"></i>
             Inicia sesión aquí
           </a>
         </div>
