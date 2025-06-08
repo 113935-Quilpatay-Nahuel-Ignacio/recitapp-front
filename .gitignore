@@ -40,3 +40,14 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+### Security - Environment and configuration files with credentials ###
+.env
+.env.local
+.env.prod
+.env.production
+src/environments/environment.*.ts
+!src/environments/environment.ts
+!src/environments/environment.prod.ts
+firebase-config.json
+config/credentials.json
