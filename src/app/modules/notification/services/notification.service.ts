@@ -4,6 +4,13 @@ import { Observable, of } from 'rxjs';
 import { NotificationPreferenceDTO } from '../models/notification-preference.dto';
 import { Notification } from '../models/notification.model';
 import { SessionService } from '../../../core/services/session.service';
+import { 
+  NotificationPreferences, 
+  TestEmailRequest, 
+  TestPushRequest, 
+  TestSmsRequest,
+  ApiResponse 
+} from '../models/notification.models';
 
 @Injectable({
   providedIn: 'root'
@@ -38,8 +45,8 @@ export class NotificationService {
     );
   }
 
-  // RAPP113935-125: Consultar historial de notificaciones
-  getNotificationHistory(startDate?: string, endDate?: string): Observable<Notification[]> {
+  // RAPP113935-125: Consultar historial de notificaciones (legacy method)
+  getNotificationHistoryByDate(startDate?: string, endDate?: string): Observable<Notification[]> {
     const userId = this.sessionService.getCurrentUserId();
     if (!userId) {
       throw new Error('Usuario no autenticado');
@@ -95,6 +102,131 @@ export class NotificationService {
       `${this.apiUrlBase}/notifications/user/${userId}/read-multiple`,
       notificationIds
     );
+  }
+
+  // Device Token Management for Push Notifications
+  registerDeviceToken(deviceToken: string, deviceType: string, deviceName?: string): Observable<any> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
+    const requestBody = {
+      userId: userId,
+      deviceToken: deviceToken,
+      deviceType: deviceType,
+      deviceName: deviceName || navigator.userAgent.split(' ')[0] // Fallback device name
+    };
+    
+    return this.http.post<any>(`${this.apiUrlBase}/device-tokens/register-from-app`, requestBody);
+  }
+
+  updateDeviceToken(oldToken: string, newToken: string): Observable<any> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
+    const params = new HttpParams()
+      .set('userId', userId.toString())
+      .set('oldToken', oldToken)
+      .set('newToken', newToken);
+    
+    return this.http.put<any>(`${this.apiUrlBase}/device-tokens/update`, null, { params });
+  }
+
+  deactivateDeviceToken(deviceToken: string): Observable<void> {
+    const params = new HttpParams().set('deviceToken', deviceToken);
+    return this.http.delete<void>(`${this.apiUrlBase}/device-tokens/deactivate`, { params });
+  }
+
+  getUserDeviceTokens(): Observable<any[]> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
+    return this.http.get<any[]>(`${this.apiUrlBase}/device-tokens/user/${userId}`);
+  }
+
+  validateDeviceToken(deviceToken: string): Observable<boolean> {
+    const params = new HttpParams().set('deviceToken', deviceToken);
+    return this.http.get<boolean>(`${this.apiUrlBase}/device-tokens/validate`, { params });
+  }
+
+  // Enhanced methods for notification preferences
+  getUserPreferences(): Observable<NotificationPreferences> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    return this.http.get<NotificationPreferences>(`${this.apiUrlBase}/users/${userId}/notification-preferences`);
+  }
+
+  updateUserPreferences(preferences: NotificationPreferences): Observable<NotificationPreferences> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    return this.http.put<NotificationPreferences>(
+      `${this.apiUrlBase}/users/${userId}/notification-preferences`,
+      preferences
+    );
+  }
+
+  // Enhanced test methods for notification system
+  testEmailNotification(request?: TestEmailRequest): Observable<ApiResponse<string>> {
+    const userId = this.sessionService.getCurrentUserId();
+    const body = {
+      to: request?.to || 'test@example.com',
+      subject: request?.subject || 'Test Email RecitApp',
+      message: request?.message || 'Esta es una notificación de prueba desde RecitApp'
+    };
+    
+    return this.http.post<ApiResponse<string>>(`${this.apiUrlBase}/notifications/test/email`, body);
+  }
+
+  testPushNotification(request?: TestPushRequest): Observable<ApiResponse<string>> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
+    const body = {
+      deviceToken: request?.deviceToken || '',
+      title: request?.title || 'Test Push RecitApp',
+      body: request?.body || 'Esta es una notificación push de prueba',
+      data: request?.data || { test: true }
+    };
+    
+    return this.http.post<ApiResponse<string>>(`${this.apiUrlBase}/notifications/test/push`, body);
+  }
+
+  testSmsNotification(request?: TestSmsRequest): Observable<ApiResponse<string>> {
+    const body = {
+      phoneNumber: request?.phoneNumber || '+549113456789',
+      message: request?.message || 'Hola! Este es un test SMS desde RecitApp'
+    };
+    
+    return this.http.post<ApiResponse<string>>(`${this.apiUrlBase}/notifications/test/sms`, body);
+  }
+
+  // Notification metrics and monitoring
+  getNotificationMetrics(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrlBase}/notifications/metrics`);
+  }
+
+  getNotificationHistory(page: number = 0, size: number = 20): Observable<any> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    return this.http.get<any>(`${this.apiUrlBase}/notifications/user/${userId}/history`, { params });
   }
 
   // The following methods are for admin or backend-triggered actions, 

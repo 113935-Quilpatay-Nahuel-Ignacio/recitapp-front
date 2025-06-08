@@ -47,7 +47,8 @@ import { PaymentPendingComponent } from './modules/payment/pages/payment-pending
 
 // Notification module
 import { NotificationCenterComponent } from './modules/notification/pages/notification-center/notification-center.component';
-import { NotificationPreferencesComponent } from './modules/notification/pages/notification-preferences/notification-preferences.component'; // New import
+import { NotificationPreferencesComponent } from './modules/notification/pages/notification-preferences/notification-preferences.component';
+import { NotificationSettingsPageComponent } from './modules/notification/pages/notification-settings-page/notification-settings-page.component';
 
 export const routes: Routes = [
   // Default route
@@ -194,6 +195,11 @@ export const routes: Routes = [
   { 
     path: 'notifications', 
     component: NotificationCenterComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'notifications/settings', 
+    component: NotificationSettingsPageComponent,
     canActivate: [AuthGuard]
   },
   { 
