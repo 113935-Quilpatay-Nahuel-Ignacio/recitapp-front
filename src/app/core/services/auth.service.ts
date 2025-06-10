@@ -81,6 +81,8 @@ export class AuthService {
     }
   }
 
+
+
   /**
    * Iniciar sesión
    */
@@ -395,4 +397,6 @@ export class AuthService {
 
     return throwError(() => new Error(errorMessage));
   };
+
+
 } 

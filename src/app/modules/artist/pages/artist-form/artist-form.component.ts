@@ -13,11 +13,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { ArtistService } from '../../services/artist.service';
 import { Artist } from '../../models/artist';
 import { MusicGenre } from '../../models/music-genre';
+import { GenreNameFormatterPipe } from '../../../../shared/pipes/genre-name-formatter.pipe';
 
 @Component({
   selector: 'app-artist-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, HttpClientModule, GenreNameFormatterPipe],
   templateUrl: './artist-form.component.html',
   styleUrls: ['./artist-form.component.scss'],
 })

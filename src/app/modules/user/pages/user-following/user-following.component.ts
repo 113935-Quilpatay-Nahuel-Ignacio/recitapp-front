@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { SessionService } from '../../../../core/services/session.service';
 import { ArtistFollower } from '../../../artist/models/artist';
@@ -12,7 +12,8 @@ import { VenueFollower } from '../../../venue/models/venue';
   selector: 'app-user-following',
   standalone: true,
   imports: [CommonModule, HttpClientModule, RouterModule],
-  templateUrl: './user-following.component.html'
+  templateUrl: './user-following.component.html',
+  styleUrl: './user-following.component.scss'
 })
 export class UserFollowingComponent implements OnInit {
   followedArtists: ArtistFollower[] = [];
@@ -30,7 +31,8 @@ export class UserFollowingComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -131,14 +133,14 @@ export class UserFollowingComponent implements OnInit {
   }
 
   navigateToArtist(artistId: number): void {
-    // Implementar navegación al detalle del artista
-    console.log(`Navegar al artista ${artistId}`);
-    // Para futuro: this.router.navigate(['/artist', artistId]);
+    this.router.navigate(['/artists', artistId]).catch(err => {
+      console.error('Error navegando al artista:', err);
+    });
   }
 
   navigateToVenue(venueId: number): void {
-    // Implementar navegación al detalle del recinto
-    console.log(`Navegar al recinto ${venueId}`);
-    // Para futuro: this.router.navigate(['/venue', venueId]);
+    this.router.navigate(['/venues', venueId]).catch(err => {
+      console.error('Error navegando al recinto:', err);
+    });
   }
 }

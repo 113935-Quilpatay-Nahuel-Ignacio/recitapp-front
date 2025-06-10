@@ -164,7 +164,7 @@
                                                     (change)="updateGenres($event, genre.id)">
                                                 <label class="form-check-label" [for]="'genre-' + genre.id">
                                                             <i class="bi bi-music-note me-1"></i>
-                                                    {{ genre.name }}
+                                                    {{ genre.name | genreNameFormatter }}
                                                 </label>
                                                     </div>
                                                 </div>

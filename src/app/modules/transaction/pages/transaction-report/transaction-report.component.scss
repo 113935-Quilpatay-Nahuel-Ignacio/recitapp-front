@@ -2,15 +2,16 @@
   max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--bs-border-color);
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--bs-body-color);
 }
 
 form {
@@ -32,7 +33,7 @@ label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-  color: #555;
+  color: var(--bs-body-color);
 }
 
 input[type='text'],
@@ -40,17 +41,27 @@ input[type='date'],
 select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--bs-border-color);
   border-radius: 4px;
   box-sizing: border-box;
   font-size: 1rem;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+input[type='text']:focus,
+input[type='date']:focus,
+select:focus {
+  outline: none;
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 button[type='submit'] {
   display: block;
   width: auto;
   padding: 0.75rem 1.5rem;
-  background-color: #007bff;
+  background-color: var(--bs-primary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -61,27 +72,28 @@ button[type='submit'] {
 }
 
 button[type='submit']:disabled {
-  background-color: #aaa;
+  background-color: var(--bs-secondary);
   cursor: not-allowed;
 }
 
 button[type='submit']:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--bs-primary);
+  filter: brightness(0.9);
 }
 
 .error-message-banner {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--bs-danger-bg-subtle);
+  color: var(--bs-danger-text);
   padding: 1rem;
   margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
+  border: 1px solid var(--bs-danger-border-subtle);
   border-radius: 4px;
 }
 
 .report-results h3 {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--bs-body-color);
 }
 
 .transactions-table-wrapper {
@@ -91,34 +103,37 @@ button[type='submit']:hover:not(:disabled) {
 table {
   width: 100%;
   border-collapse: collapse;
+  background-color: var(--bs-body-bg);
 }
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--bs-border-color);
   padding: 0.75rem;
   text-align: left;
+  color: var(--bs-body-color);
 }
 
 th {
-  background-color: #f2f2f2;
+  background-color: var(--bs-tertiary-bg);
+  font-weight: 600;
 }
 
 /* Status styling - can reuse from transaction-history or define separately */
 .status-completed {
-  color: green;
+  color: var(--bs-success);
   font-weight: bold;
 }
 .status-pending {
-  color: orange;
+  color: var(--bs-warning);
   font-weight: bold;
 }
 .status-failed,
 .status-cancelled {
-  color: red;
+  color: var(--bs-danger);
   font-weight: bold;
 }
 .status-refunded {
-  color: #555;
+  color: var(--bs-secondary);
   font-style: italic;
 } 

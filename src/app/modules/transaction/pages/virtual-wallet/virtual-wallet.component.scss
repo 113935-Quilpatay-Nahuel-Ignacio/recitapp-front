@@ -2,13 +2,14 @@
   max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--bs-border-color);
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 h2, h3 {
-  color: #333;
+  color: var(--bs-body-color);
   margin-bottom: 1rem;
 }
 
@@ -18,22 +19,23 @@ h2 {
 }
 
 .wallet-overview {
-  background-color: #e9ecef;
+  background-color: var(--bs-tertiary-bg);
   padding: 1.5rem;
   border-radius: 6px;
   margin-bottom: 2rem;
   text-align: center;
+  border: 1px solid var(--bs-border-color);
 }
 
 .balance {
   font-size: 2rem;
   font-weight: bold;
-  color: #007bff;
+  color: var(--bs-primary);
 }
 
 .loading-text {
   font-style: italic;
-  color: #6c757d;
+  color: var(--bs-secondary);
 }
 
 .wallet-actions form {
@@ -48,55 +50,64 @@ label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-  color: #555;
+  color: var(--bs-body-color);
 }
 
 input[type='text'],
 input[type='number'] {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--bs-border-color);
   border-radius: 4px;
   box-sizing: border-box;
   font-size: 1rem;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+input[type='text']:focus,
+input[type='number']:focus {
+  outline: none;
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 button[type='submit'],
 .refresh-button {
   padding: 0.75rem 1.5rem;
-  background-color: #007bff;
+  background-color: var(--bs-primary);
   color: white;
   border: none;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: all 0.2s ease;
   margin-top: 0.5rem;
 }
 
 button[type='submit']:disabled,
 .refresh-button:disabled {
-  background-color: #aaa;
+  background-color: var(--bs-secondary);
   cursor: not-allowed;
 }
 
 button[type='submit']:hover:not(:disabled),
 .refresh-button:hover:not(:disabled) {
-  background-color: #0056b3;
+  filter: brightness(0.9);
 }
 
 .error-message {
-  color: #dc3545;
+  color: var(--bs-danger);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 .error-message-banner {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--bs-danger-bg-subtle);
+  color: var(--bs-danger-text);
   padding: 1rem;
   margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
+  border: 1px solid var(--bs-danger-border-subtle);
   border-radius: 4px;
 }
 
@@ -112,38 +123,44 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  background-color: var(--bs-body-bg);
 }
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--bs-border-color);
   padding: 0.75rem;
   text-align: left;
+  color: var(--bs-body-color);
 }
 
 th {
-  background-color: #f2f2f2;
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  font-weight: 600;
 }
 
 .positive-amount {
-  color: green;
+  color: var(--bs-success);
+  font-weight: 600;
 }
 
 .negative-amount {
-  color: red;
+  color: var(--bs-danger);
+  font-weight: 600;
 }
 
 /* Reusing status styles */
 .status-completed {
-  color: green;
+  color: var(--bs-success);
   font-weight: bold;
 }
 .status-pending {
-  color: orange;
+  color: var(--bs-warning);
   font-weight: bold;
 }
 .status-failed,
 .status-cancelled {
-  color: red;
+  color: var(--bs-danger);
   font-weight: bold;
 } 

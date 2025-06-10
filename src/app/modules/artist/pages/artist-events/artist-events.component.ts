@@ -28,24 +28,32 @@ export class ArtistEventsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('🎵 ArtistEventsComponent: ngOnInit called');
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
+      console.log('🎵 Route params received:', params.keys, 'id:', id);
       if (id) {
         this.artistId = +id;
+        console.log('🎵 Artist ID parsed:', this.artistId);
         this.loadArtistDetails();
         this.loadArtistEvents();
+      } else {
+        console.error('🎵 No artist ID found in route params');
       }
     });
   }
 
   loadArtistDetails(): void {
+    console.log('🎵 Loading artist details for ID:', this.artistId);
     this.loading = true;
     this.artistService.getArtistDetail(this.artistId).subscribe({
       next: (artist) => {
+        console.log('🎵 Artist details loaded successfully:', artist);
         this.artist = artist;
         this.loading = false;
       },
       error: (err) => {
+        console.error('🎵 Error loading artist details:', err);
         this.error = err.error?.message || 'Error al cargar datos del artista';
         this.loading = false;
       },
@@ -53,6 +61,9 @@ export class ArtistEventsComponent implements OnInit {
   }
 
   loadArtistEvents(): void {
+    console.log('🎵 Starting to load events for artist ID:', this.artistId);
+    console.log('🎵 Include past events:', this.includePastEvents);
+    
     this.loading = true;
     this.error = '';
 
@@ -60,10 +71,26 @@ export class ArtistEventsComponent implements OnInit {
       .getArtistEvents(this.artistId, this.includePastEvents)
       .subscribe({
         next: (events) => {
-          this.events = events;
+          console.log('🎵 Events API response received:', events);
+          console.log('🎵 Number of events:', events ? events.length : 0);
+          this.events = events || [];
           this.loading = false;
+          
+          if (this.events.length === 0) {
+            console.warn('🎵 No events found for this artist');
+          } else {
+            console.log('🎵 Events loaded successfully:', this.events);
+          }
         },
         error: (err) => {
+          console.error('🎵 Error loading artist events:', err);
+          console.error('🎵 Error details:', {
+            status: err.status,
+            statusText: err.statusText,
+            error: err.error,
+            message: err.message,
+            url: err.url
+          });
           this.error =
             err.error?.message || 'Error al cargar los eventos del artista';
           this.loading = false;

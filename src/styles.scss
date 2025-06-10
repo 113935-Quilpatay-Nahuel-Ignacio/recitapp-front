@@ -1,7 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Importar Angular Material Core ANTES que Bootstrap
+// Importar Angular Material Core ANTES que Bootstrap (las reglas @use deben ir primero)
 @use '@angular/material' as mat;
+
+// Importar Bootstrap Icons
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // Configurar tema Material personalizado
 @include mat.core();
