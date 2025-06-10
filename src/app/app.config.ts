@@ -9,11 +9,6 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
-// Firebase imports
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { provideMessaging, getMessaging } from '@angular/fire/messaging';
-import { firebaseConfig } from './firebase-config';
-
 // Register the locale data for 'es-AR'
 registerLocaleData(localeEsAR);
 
@@ -26,9 +21,8 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([authInterceptor])
     ),
-    { provide: LOCALE_ID, useValue: 'es-AR' },
-    // Firebase providers
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideMessaging(() => getMessaging())
+    { provide: LOCALE_ID, useValue: 'es-AR' }
+    // TODO: Firebase providers will be added after resolving compatibility issues
+    // See FIREBASE_SETUP.md for configuration instructions
   ],
 };

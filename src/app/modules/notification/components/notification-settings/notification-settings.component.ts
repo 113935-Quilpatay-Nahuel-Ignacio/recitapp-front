@@ -468,6 +468,11 @@ export class NotificationSettingsComponent implements OnInit {
       
       if (permission === 'granted') {
         this.preferences.channels.PUSH = true;
+        // Register the device token with the backend
+        const token = await this.firebaseMessaging.getToken();
+        if (token) {
+          await this.registerDeviceToken(token);
+        }
         this.showMessage('Permisos de notificación concedidos', 'success');
       } else {
         this.showMessage('Permisos de notificación denegados', 'warning');
@@ -475,6 +480,15 @@ export class NotificationSettingsComponent implements OnInit {
     } catch (error) {
       console.error('Error requesting permission:', error);
       this.showMessage('Error al solicitar permisos', 'error');
+    }
+  }
+
+  private async registerDeviceToken(token: string) {
+    try {
+      await this.notificationService.registerDeviceToken(token, 'WEB', navigator.userAgent).toPromise();
+      console.log('Device token registered successfully');
+    } catch (error) {
+      console.error('Error registering device token:', error);
     }
   }
 

@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { NotificationPreferenceDTO } from '../models/notification-preference.dto';
 import { Notification } from '../models/notification.model';
 import { SessionService } from '../../../core/services/session.service';
+import { environment } from '../../../../environments/environment';
 import { 
   NotificationPreferences, 
   TestEmailRequest, 
@@ -18,8 +19,7 @@ import {
 export class NotificationService {
   private http = inject(HttpClient);
   private sessionService = inject(SessionService);
-  // TODO: Replace with actual API URL from environment config
-  private apiUrlBase = '/api'; // Example base API URL 
+  private apiUrlBase = environment.apiUrl; 
 
   constructor() { }
 
@@ -29,7 +29,7 @@ export class NotificationService {
     if (!userId) {
       throw new Error('Usuario no autenticado');
     }
-    return this.http.get<NotificationPreferenceDTO>(`${this.apiUrlBase}/users/${userId}/notification-preferences`);
+    return this.http.get<NotificationPreferenceDTO>(`${this.apiUrlBase}/notifications/user/${userId}/preferences`);
   }
 
   updateNotificationPreferences(
@@ -40,7 +40,7 @@ export class NotificationService {
       throw new Error('Usuario no autenticado');
     }
     return this.http.put<NotificationPreferenceDTO>(
-      `${this.apiUrlBase}/users/${userId}/notification-preferences`,
+      `${this.apiUrlBase}/notifications/user/${userId}/preferences`,
       preferencesDTO
     );
   }
@@ -160,7 +160,7 @@ export class NotificationService {
     if (!userId) {
       throw new Error('Usuario no autenticado');
     }
-    return this.http.get<NotificationPreferences>(`${this.apiUrlBase}/users/${userId}/notification-preferences`);
+    return this.http.get<NotificationPreferences>(`${this.apiUrlBase}/notifications/user/${userId}/preferences`);
   }
 
   updateUserPreferences(preferences: NotificationPreferences): Observable<NotificationPreferences> {
@@ -169,7 +169,7 @@ export class NotificationService {
       throw new Error('Usuario no autenticado');
     }
     return this.http.put<NotificationPreferences>(
-      `${this.apiUrlBase}/users/${userId}/notification-preferences`,
+      `${this.apiUrlBase}/notifications/user/${userId}/preferences`,
       preferences
     );
   }

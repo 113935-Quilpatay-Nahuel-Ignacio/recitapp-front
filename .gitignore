@@ -49,5 +49,13 @@ Thumbs.db
 src/environments/environment.*.ts
 !src/environments/environment.ts
 !src/environments/environment.prod.ts
+
+# Firebase configuration files with real credentials
+src/app/firebase-config.ts
+src/firebase-messaging-sw.js
 firebase-config.json
 config/credentials.json
+
+# Allow example files
+!src/app/firebase-config.example.ts
+!src/firebase-messaging-sw.example.js

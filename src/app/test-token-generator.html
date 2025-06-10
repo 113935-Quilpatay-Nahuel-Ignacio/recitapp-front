@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔑 RecitApp - Generador de Device Tokens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        .step {
+            background: #f7fafc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .step h3 {
+            color: #2d3748;
+            margin-top: 0;
+        }
+        .button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #5a67d8;
+        }
+        .button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        .token-display {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #c6f6d5;
+            color: #2d7d32;
+            border: 1px solid #9ae6b4;
+        }
+        .status.error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+        .status.info {
+            background: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
+        .curl-example {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 Generador de Device Tokens</h1>
+            <p>Herramienta para obtener tokens FCM para testing de push notifications</p>
+        </div>
+
+        <div class="step">
+            <h3>📋 Estado del Servicio</h3>
+            <button class="button" onclick="checkFirebaseSupport()">🔍 Verificar Soporte Firebase</button>
+            <div id="supportStatus"></div>
+        </div>
+
+        <div class="step">
+            <h3>🚀 Obtener Token</h3>
+            <button class="button" onclick="requestPermissionAndGetToken()">🔑 Generar Device Token</button>
+            <div id="tokenStatus"></div>
+            <div id="tokenDisplay"></div>
+        </div>
+
+        <div class="step">
+            <h3>🧪 Ejemplo de Uso</h3>
+            <div id="curlExample"></div>
+        </div>
+
+        <div class="step">
+            <h3>📝 Instrucciones</h3>
+            <ol>
+                <li><strong>Permitir notificaciones:</strong> El navegador te pedirá permiso para enviar notificaciones</li>
+                <li><strong>Copiar token:</strong> Una vez generado, copia el token completo</li>
+                <li><strong>Usar en cURL:</strong> Reemplaza <code>YOUR_DEVICE_TOKEN</code> en los ejemplos</li>
+                <li><strong>Probar endpoints:</strong> Usa los endpoints de la API para enviar push notifications</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getMessaging, getToken, isSupported } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging.js';
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzqGYrhYcYWsTG0SA6kzaXNxT6HxJbNHM",
+            authDomain: "recitapp-niquilpatay.firebaseapp.com",
+            projectId: "recitapp-niquilpatay",
+            storageBucket: "recitapp-niquilpatay.firebasestorage.app",
+            messagingSenderId: "465296679606",
+            appId: "1:465296679606:web:405f7d93bbcb4c2434fc17",
+            measurementId: "G-PE8KGJD89P"
+        };
+
+        // VAPID Key - Necesitarás conseguir esto de Firebase Console
+        const vapidKey = "BK7hiDOD5gocnmqmqiJ-nRXT2oo3JAGrfntmNohq5abTF1osFrmtCVY-nTGSXVwjiffWl3a7PzcN6MD2XptwOx0";
+
+        let app;
+        let messaging;
+
+        // Inicializar Firebase
+        try {
+            app = initializeApp(firebaseConfig);
+            console.log('Firebase inicializado correctamente');
+        } catch (error) {
+            console.error('Error inicializando Firebase:', error);
+        }
+
+        // Funciones globales
+        window.checkFirebaseSupport = async function() {
+            const statusDiv = document.getElementById('supportStatus');
+            
+            try {
+                statusDiv.innerHTML = '<div class="status info">🔍 Verificando soporte...</div>';
+                
+                const supported = await isSupported();
+                if (supported) {
+                    messaging = getMessaging(app);
+                    statusDiv.innerHTML = '<div class="status success">✅ Firebase Messaging es compatible con este navegador</div>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Firebase Messaging no es compatible con este navegador</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Error verificando soporte: ${error.message}</div>`;
+            }
+        };
+
+        window.requestPermissionAndGetToken = async function() {
+            const statusDiv = document.getElementById('tokenStatus');
+            const tokenDiv = document.getElementById('tokenDisplay');
+            const curlDiv = document.getElementById('curlExample');
+            
+            try {
+                statusDiv.innerHTML = '<div class="status info">🔍 Solicitando permisos...</div>';
+                
+                // Solicitar permisos de notificación
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    statusDiv.innerHTML = '<div class="status info">🔑 Generando token...</div>';
+                    
+                    if (!messaging) {
+                        const supported = await isSupported();
+                        if (supported) {
+                            messaging = getMessaging(app);
+                        } else {
+                            throw new Error('Firebase Messaging no soportado');
+                        }
+                    }
+                    
+                    // Obtener token
+                    const currentToken = await getToken(messaging, { vapidKey: vapidKey });
+                    
+                    if (currentToken) {
+                        statusDiv.innerHTML = '<div class="status success">✅ Token generado exitosamente</div>';
+                        tokenDiv.innerHTML = `
+                            <div class="token-display">
+                                <strong>Device Token:</strong><br>
+                                ${currentToken}
+                                <br><br>
+                                <button class="button" onclick="copyToClipboard('${currentToken}')">📋 Copiar Token</button>
+                            </div>
+                        `;
+                        
+                        // Generar ejemplo de cURL
+                        curlDiv.innerHTML = `
+                            <div class="curl-example">
+# Ejemplo de cURL para probar push notification:
+
+curl --location 'http://localhost:8080/api/notifications/test/push' \\
+--header 'Content-Type: application/x-www-form-urlencoded' \\
+--header 'Authorization: Bearer YOUR_JWT_TOKEN' \\
+--data-urlencode 'deviceToken=${currentToken}' \\
+--data-urlencode 'title=🎵 Prueba RecitApp' \\
+--data-urlencode 'body=Esta es una notificación de prueba'
+
+# Ejemplo avanzado con datos:
+
+curl --location 'http://localhost:8080/api/notifications/test/push/advanced' \\
+--header 'Content-Type: application/x-www-form-urlencoded' \\
+--header 'Authorization: Bearer YOUR_JWT_TOKEN' \\
+--data-urlencode 'deviceToken=${currentToken}' \\
+--data-urlencode 'title=🎵 Nuevo Evento' \\
+--data-urlencode 'body=Concierto disponible en RecitApp' \\
+--data-urlencode 'eventId=123' \\
+--data-urlencode 'actionUrl=/events/123'
+                            </div>
+                        `;
+                        
+                    } else {
+                        statusDiv.innerHTML = '<div class="status error">❌ No se pudo obtener el token. Verifica la configuración.</div>';
+                    }
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Permisos de notificación denegados</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+                console.error('Error completo:', error);
+            }
+        };
+
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Token copiado al portapapeles');
+            }).catch(err => {
+                console.error('Error copiando al portapapeles:', err);
+                // Fallback para navegadores que no soportan clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('✅ Token copiado al portapapeles');
+            });
+        };
+
+        // Auto-verificar soporte al cargar
+        window.addEventListener('load', () => {
+            setTimeout(checkFirebaseSupport, 1000);
+        });
+    </script>
+</body>
+</html> 
