@@ -1,41 +1,41 @@
 <div class="management-container">
-  <h2>Payment Method Management</h2>
+  <h2>Gestión de Métodos de Pago</h2>
 
-  <!-- Error/Success Messages -->
+  <!-- Mensajes de Error/Éxito -->
   <div *ngIf="errorMessage" class="error-message-banner">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="success-message-banner">{{ successMessage }}</div>
 
-  <!-- Form for Add/Edit -->
+  <!-- Formulario para Agregar/Editar -->
   <form [formGroup]="paymentMethodForm" (ngSubmit)="onSubmit()" class="pm-form">
-    <h3>{{ editingPaymentMethod ? 'Edit' : 'Add New' }} Payment Method</h3>
+    <h3>{{ editingPaymentMethod ? 'Editar' : 'Agregar Nuevo' }} Método de Pago</h3>
     <div class="form-group">
-      <label for="name">Name:</label>
+      <label for="name">Nombre:</label>
       <input id="name" type="text" formControlName="name" />
       <div *ngIf="paymentMethodForm.get('name')?.invalid && paymentMethodForm.get('name')?.touched" class="error-message">
-        Name is required.
+        El nombre es requerido.
       </div>
     </div>
     <div class="form-group">
-      <label for="description">Description:</label>
+      <label for="description">Descripción:</label>
       <input id="description" type="text" formControlName="description" />
     </div>
     <div class="form-group checkbox-group">
       <input id="active" type="checkbox" formControlName="active" />
-      <label for="active">Active</label>
+      <label for="active">Activo</label>
     </div>
     <div class="form-actions">
       <button type="submit" [disabled]="paymentMethodForm.invalid || isLoading">
-        {{ isLoading ? 'Saving...' : (editingPaymentMethod ? 'Update' : 'Create') }}
+        {{ isLoading ? 'Guardando...' : (editingPaymentMethod ? 'Actualizar' : 'Crear') }}
       </button>
       <button type="button" (click)="cancelEdit()" *ngIf="editingPaymentMethod" class="cancel-button">
-        Cancel Edit
+        Cancelar Edición
       </button>
     </div>
   </form>
 
-  <!-- List of Payment Methods -->
-  <h3>Available Payment Methods</h3>
-  <div *ngIf="isLoading && !(paymentMethods$ | async)" class="loading-indicator">Loading methods...</div>
+  <!-- Lista de Métodos de Pago -->
+  <h3>Métodos de Pago Disponibles</h3>
+  <div *ngIf="isLoading && !(paymentMethods$ | async)" class="loading-indicator">Cargando métodos...</div>
 
   <div *ngIf="paymentMethods$ | async as methods">
     <div *ngIf="methods.length > 0; else noMethods" class="pm-list">
@@ -43,10 +43,10 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -56,19 +56,19 @@
             <td>{{ pm.description || 'N/A' }}</td>
             <td>
               <span [ngClass]="pm.active ? 'status-active' : 'status-inactive'">
-                {{ pm.active ? 'Active' : 'Inactive' }}
+                {{ pm.active ? 'Activo' : 'Inactivo' }}
               </span>
             </td>
             <td class="actions-cell">
-              <button (click)="editPaymentMethod(pm)" class="action-button edit-button">Edit</button>
-              <button (click)="deletePaymentMethod(pm.id)" class="action-button delete-button">Delete</button>
+              <button (click)="editPaymentMethod(pm)" class="action-button edit-button">Editar</button>
+              <button (click)="deletePaymentMethod(pm.id)" class="action-button delete-button">Eliminar</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <ng-template #noMethods>
-      <p *ngIf="!isLoading">No payment methods found. Add one using the form above.</p>
+      <p *ngIf="!isLoading">No se encontraron métodos de pago. Agrega uno usando el formulario de arriba.</p>
     </ng-template>
   </div>
 </div> 

@@ -48,7 +48,7 @@ export class VirtualWalletComponent implements OnInit {
     this.walletForm = this.fb.group({
       amount: [null, [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]{1,2})?$/)]],
       currency: ['USD', Validators.required],
-      description: ['Wallet adjustment'] // Optional description for wallet transaction
+      description: ['Ajuste de billetera'] // Descripción opcional para transacción de billetera
     });
     this.loadWalletData();
   }
@@ -58,7 +58,7 @@ export class VirtualWalletComponent implements OnInit {
     this.errorMessage = null;
     const numericUserId = Number(this.userId);
     if (isNaN(numericUserId)) {
-      this.errorMessage = 'Invalid User ID.';
+      this.errorMessage = 'ID de Usuario inválido.';
       this.isLoading = false;
       return;
     }
@@ -66,16 +66,16 @@ export class VirtualWalletComponent implements OnInit {
     const balance$ = this.transactionService.getUserWalletBalance(numericUserId).pipe(
       catchError(err => {
         console.error('Error fetching wallet balance:', err);
-        this.errorMessage = (this.errorMessage ? this.errorMessage + ' ' : '') + 'Failed to load wallet balance.';
-        return of(0); // Default to 0 on error
+        this.errorMessage = (this.errorMessage ? this.errorMessage + ' ' : '') + 'Error al cargar el saldo de la billetera.';
+        return of(0); // Por defecto 0 en caso de error
       })
     );
 
-    this.recentTransactions$ = this.transactionService.getPaymentHistory(numericUserId, undefined, undefined) // Fetch all recent for user, no date filter for now, adjust page/limit as needed.
+    this.recentTransactions$ = this.transactionService.getPaymentHistory(numericUserId, undefined, undefined) // Obtener todas las recientes para el usuario, sin filtro de fecha por ahora, ajustar página/límite según sea necesario.
       .pipe(
         catchError((err) => {
           console.error('Error fetching recent transactions:', err);
-          this.errorMessage = (this.errorMessage ? this.errorMessage + ' ' : '') + 'Failed to load recent transactions.';
+          this.errorMessage = (this.errorMessage ? this.errorMessage + ' ' : '') + 'Error al cargar las transacciones recientes.';
           return of([]);
         })
       );
@@ -95,7 +95,7 @@ export class VirtualWalletComponent implements OnInit {
 
   adjustBalance(): void {
     if (this.walletForm.invalid) {
-      this.errorMessage = 'Please enter a valid amount and currency.';
+      this.errorMessage = 'Por favor ingresa un monto y moneda válidos.';
       this.walletForm.markAllAsTouched();
       return;
     }
@@ -107,12 +107,12 @@ export class VirtualWalletComponent implements OnInit {
     const numericUserId = Number(this.userId);
 
     if (isNaN(numericUserId)) {
-      this.errorMessage = 'Invalid User ID for balance adjustment.';
+      this.errorMessage = 'ID de Usuario inválido para el ajuste de saldo.';
       this.isLoading = false;
       return;
     }
     if (isNaN(amount)) {
-        this.errorMessage = 'Amount must be a valid number.';
+        this.errorMessage = 'El monto debe ser un número válido.';
         this.isLoading = false;
         return;
     }
@@ -120,24 +120,24 @@ export class VirtualWalletComponent implements OnInit {
     const walletTransaction: WalletTransactionDTO = {
       userId: numericUserId,
       operation: amount >= 0 ? 'ADD' : 'SUBTRACT',
-      amount: Math.abs(amount), // Amount should be positive for the DTO
+      amount: Math.abs(amount), // El monto debe ser positivo para el DTO
       currency: formValue.currency,
-      description: formValue.description || (amount >=0 ? 'Deposit to wallet' : 'Withdrawal from wallet')
+      description: formValue.description || (amount >=0 ? 'Depósito a billetera' : 'Retiro de billetera')
     };
 
     this.transactionService.updateVirtualWalletBalance(walletTransaction)
       .pipe(
         switchMap(() => {
-          // Reload wallet balance and recent transactions after adjustment
-          this.walletForm.reset({ currency: 'USD', description: 'Wallet adjustment' });
+          // Recargar saldo de billetera y transacciones recientes después del ajuste
+          this.walletForm.reset({ currency: 'USD', description: 'Ajuste de billetera' });
           return forkJoin([
-            this.transactionService.getUserWalletBalance(numericUserId).pipe(catchError(() => of(this.walletBalance$.value))), // Keep old balance on error
-            this.transactionService.getPaymentHistory(numericUserId, undefined, undefined).pipe(catchError(() => of([]))) // Empty transactions on error
+            this.transactionService.getUserWalletBalance(numericUserId).pipe(catchError(() => of(this.walletBalance$.value))), // Mantener saldo anterior en caso de error
+            this.transactionService.getPaymentHistory(numericUserId, undefined, undefined).pipe(catchError(() => of([]))) // Transacciones vacías en caso de error
           ]);
         }),
         catchError((err) => {
           console.error('Error updating wallet balance:', err);
-          this.errorMessage = 'Failed to update wallet balance.';
+          this.errorMessage = 'Error al actualizar el saldo de la billetera.';
           this.isLoading = false;
           return of(null); 
         })

@@ -47,7 +47,7 @@ export class PaymentMethodManagementComponent implements OnInit {
       .pipe(
         tap(() => (this.isLoading = false)),
         catchError((err) => {
-          this.errorMessage = 'Failed to load payment methods.';
+          this.errorMessage = 'Error al cargar los métodos de pago.';
           this.isLoading = false;
           console.error(err);
           return of([]);
@@ -115,7 +115,7 @@ export class PaymentMethodManagementComponent implements OnInit {
 
   onSubmit(): void {
     if (this.paymentMethodForm.invalid) {
-      this.errorMessage = 'Please fill all required fields.';
+      this.errorMessage = 'Por favor completa todos los campos requeridos.';
       return;
     }
 
@@ -125,7 +125,7 @@ export class PaymentMethodManagementComponent implements OnInit {
     const formValue = this.paymentMethodForm.value;
 
     const dto: PaymentMethodDTO = {
-      id: this.editingPaymentMethod ? this.editingPaymentMethod.id : 0, // ID is ignored by backend for create
+      id: this.editingPaymentMethod ? this.editingPaymentMethod.id : 0, // ID es ignorado por el backend para crear
       name: formValue.name,
       description: formValue.description,
       active: formValue.active,
@@ -143,7 +143,7 @@ export class PaymentMethodManagementComponent implements OnInit {
       .pipe(
         tap(() => {
           this.isLoading = false;
-          this.successMessage = `Payment method ${this.editingPaymentMethod ? 'updated' : 'created'} successfully.`;
+          this.successMessage = `Método de pago ${this.editingPaymentMethod ? 'actualizado' : 'creado'} exitosamente.`;
           this.loadPaymentMethods();
           this.cancelEdit();
         }),
@@ -152,8 +152,8 @@ export class PaymentMethodManagementComponent implements OnInit {
           this.errorMessage =
             err.error?.message ||
             (this.editingPaymentMethod
-              ? 'Failed to update payment method.'
-              : 'Failed to create payment method.');
+              ? 'Error al actualizar el método de pago.'
+              : 'Error al crear el método de pago.');
           console.error(err);
           return of(null);
         })

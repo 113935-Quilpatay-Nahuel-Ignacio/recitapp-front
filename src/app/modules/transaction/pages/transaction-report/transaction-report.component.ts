@@ -47,9 +47,9 @@ export class TransactionReportComponent implements OnInit {
   ];
 
   paymentMethods: { id: number; name: string }[] = [
-    { id: 1, name: 'Credit Card' },
+    { id: 1, name: 'Tarjeta de Crédito' },
     { id: 2, name: 'PayPal' },
-    { id: 3, name: 'Bank Transfer' },
+    { id: 3, name: 'Transferencia Bancaria' },
   ];
 
   private fb = inject(FormBuilder);
@@ -90,7 +90,7 @@ export class TransactionReportComponent implements OnInit {
 
   generateReport(): void {
     if (this.reportForm.invalid) {
-      this.errorMessage = 'Please fill all required fields for the selected report type.';
+      this.errorMessage = 'Por favor completa todos los campos requeridos para el tipo de reporte seleccionado.';
       this.reportForm.markAllAsTouched();
       Object.keys(this.reportForm.controls).forEach(key => {
         const controlErrors = this.reportForm.get(key)?.errors;
@@ -107,12 +107,12 @@ export class TransactionReportComponent implements OnInit {
     const formValue = this.reportForm.value;
 
     if (formValue.startDate && formValue.endDate && formValue.endDate < formValue.startDate) {
-      this.errorMessage = 'End date cannot be before start date.';
+      this.errorMessage = 'La fecha de fin no puede ser anterior a la fecha de inicio.';
       this.isLoading = false;
       return;
     }
 
-    // Append time to dates to match LocalDateTime format expected by backend
+    // Agregar tiempo a las fechas para coincidir con el formato LocalDateTime esperado por el backend
     const startDateWithTime = formValue.startDate ? `${formValue.startDate}T00:00:00` : '';
     const endDateWithTime = formValue.endDate ? `${formValue.endDate}T23:59:59` : '';
 
@@ -132,7 +132,7 @@ export class TransactionReportComponent implements OnInit {
         catchError((err) => {
           console.error('Error generating transaction report:', err);
           this.errorMessage =
-            err.error?.message || err.message || 'Failed to generate transaction report. Please try again.';
+            err.error?.message || err.message || 'Error al generar el reporte de transacciones. Por favor intenta de nuevo.';
           this.isLoading = false;
           return of(null);
         })

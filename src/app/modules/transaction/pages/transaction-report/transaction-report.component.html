@@ -1,10 +1,10 @@
 <div class="transaction-report-container">
-  <h2>Generate Transaction Report</h2>
+  <h2>Generar Reporte de Transacciones</h2>
 
   <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
-    <!-- Report Type Selector -->
+    <!-- Selector de Tipo de Reporte -->
     <div class="form-group">
-      <label for="reportType">Report Type:</label>
+      <label for="reportType">Tipo de Reporte:</label>
       <select id="reportType" formControlName="reportType">
         <option *ngFor="let type of reportTypes" [value]="type">
           {{ type | titlecase }}
@@ -12,61 +12,61 @@
       </select>
     </div>
 
-    <!-- Date Range -->
+    <!-- Rango de Fechas -->
     <div class="form-row">
       <div class="form-group">
-        <label for="startDate">Start Date:</label>
+        <label for="startDate">Fecha de Inicio:</label>
         <input id="startDate" type="date" formControlName="startDate" />
         <div *ngIf="reportForm.get('startDate')?.hasError('required') && reportForm.get('startDate')?.touched" class="error-message">
-          Start Date is required.
+          La fecha de inicio es requerida.
         </div>
       </div>
       <div class="form-group">
-        <label for="endDate">End Date:</label>
+        <label for="endDate">Fecha de Fin:</label>
         <input id="endDate" type="date" formControlName="endDate" />
         <div *ngIf="reportForm.get('endDate')?.hasError('required') && reportForm.get('endDate')?.touched" class="error-message">
-          End Date is required.
+          La fecha de fin es requerida.
         </div>
       </div>
     </div>
 
-    <!-- Conditional Fields based on Report Type -->
+    <!-- Campos Condicionales basados en el Tipo de Reporte -->
     <div *ngIf="reportForm.get('reportType')?.value === 'USER'" class="form-group">
-      <label for="userId">User ID:</label>
-      <input id="userId" type="number" formControlName="userId" placeholder="Enter User ID"/>
+      <label for="userId">ID de Usuario:</label>
+      <input id="userId" type="number" formControlName="userId" placeholder="Ingresa el ID de Usuario"/>
       <div *ngIf="reportForm.get('userId')?.hasError('required') && reportForm.get('userId')?.touched" class="error-message">
-        User ID is required for USER report type.
+        El ID de Usuario es requerido para el tipo de reporte de USUARIO.
       </div>
     </div>
 
     <div *ngIf="reportForm.get('reportType')?.value === 'PAYMENT_METHOD'" class="form-group">
-      <label for="paymentMethodId">Payment Method:</label>
+      <label for="paymentMethodId">Método de Pago:</label>
       <select id="paymentMethodId" formControlName="paymentMethodId">
-        <option [ngValue]="null" disabled>Select Payment Method</option>
+        <option [ngValue]="null" disabled>Seleccionar Método de Pago</option>
         <option *ngFor="let pm of paymentMethods" [value]="pm.id">
           {{ pm.name }}
         </option>
       </select>
       <div *ngIf="reportForm.get('paymentMethodId')?.hasError('required') && reportForm.get('paymentMethodId')?.touched" class="error-message">
-        Payment Method is required for PAYMENT_METHOD report type.
+        El Método de Pago es requerido para el tipo de reporte de MÉTODO DE PAGO.
       </div>
     </div>
 
     <div *ngIf="reportForm.get('reportType')?.value === 'STATUS'" class="form-group">
-      <label for="statusName">Status:</label>
+      <label for="statusName">Estado:</label>
       <select id="statusName" formControlName="statusName">
-        <option value="" disabled>Select Status</option>
+        <option value="" disabled>Seleccionar Estado</option>
         <option *ngFor="let s of transactionStatuses" [value]="s">
           {{ s | titlecase }}
         </option>
       </select>
       <div *ngIf="reportForm.get('statusName')?.hasError('required') && reportForm.get('statusName')?.touched" class="error-message">
-        Status is required for STATUS report type.
+        El Estado es requerido para el tipo de reporte de ESTADO.
       </div>
     </div>
 
     <button type="submit" [disabled]="reportForm.invalid || isLoading">
-      {{ isLoading ? 'Generating...' : 'Generate Report' }}
+      {{ isLoading ? 'Generando...' : 'Generar Reporte' }}
     </button>
   </form>
 
@@ -74,36 +74,36 @@
     {{ errorMessage }}
   </div>
 
-  <!-- Displaying TransactionStatisticsDTO -->
+  <!-- Mostrando TransactionStatisticsDTO -->
   <div *ngIf="reportData$ | async as stats; else noReportOrLoading">
     <div *ngIf="stats; else noResults" class="report-results">
-      <h3>Report Results</h3>
+      <h3>Resultados del Reporte</h3>
       <div class="stats-overview">
-        <p><strong>Report Type:</strong> {{ stats.reportType | titlecase }}</p>
-        <p><strong>Period:</strong> {{ stats.startDate | date:'shortDate' }} - {{ stats.endDate | date:'shortDate' }}</p>
-        <p><strong>Generated On:</strong> {{ stats.generatedDate | date:'medium' }}</p>
-        <p *ngIf="stats.reportType === 'USER' && stats.userName"><strong>User:</strong> {{ stats.userName }} (ID: {{ stats.userId }})</p>
-        <p *ngIf="stats.reportType === 'PAYMENT_METHOD' && stats.paymentMethodName"><strong>Payment Method:</strong> {{ stats.paymentMethodName }}</p>
-        <p *ngIf="stats.reportType === 'STATUS' && stats.statusName"><strong>Status:</strong> {{ stats.statusName | titlecase }}</p>
+        <p><strong>Tipo de Reporte:</strong> {{ stats.reportType | titlecase }}</p>
+        <p><strong>Período:</strong> {{ stats.startDate | date:'shortDate' }} - {{ stats.endDate | date:'shortDate' }}</p>
+        <p><strong>Generado el:</strong> {{ stats.generatedDate | date:'medium' }}</p>
+        <p *ngIf="stats.reportType === 'USER' && stats.userName"><strong>Usuario:</strong> {{ stats.userName }} (ID: {{ stats.userId }})</p>
+        <p *ngIf="stats.reportType === 'PAYMENT_METHOD' && stats.paymentMethodName"><strong>Método de Pago:</strong> {{ stats.paymentMethodName }}</p>
+        <p *ngIf="stats.reportType === 'STATUS' && stats.statusName"><strong>Estado:</strong> {{ stats.statusName | titlecase }}</p>
       </div>
 
-      <h4>Summary Statistics:</h4>
+      <h4>Estadísticas de Resumen:</h4>
       <ul>
-        <li><strong>Total Transactions:</strong> {{ stats.totalTransactions }}</li>
-        <li><strong>Total Amount:</strong> {{ stats.totalAmount | currency }}</li>
-        <li><strong>Average Amount:</strong> {{ stats.averageAmount | currency }}</li>
-        <li><strong>Max Amount:</strong> {{ stats.maxAmount | currency }}</li>
-        <li><strong>Min Amount:</strong> {{ stats.minAmount | currency }}</li>
+        <li><strong>Total de Transacciones:</strong> {{ stats.totalTransactions }}</li>
+        <li><strong>Monto Total:</strong> {{ stats.totalAmount | currency }}</li>
+        <li><strong>Monto Promedio:</strong> {{ stats.averageAmount | currency }}</li>
+        <li><strong>Monto Máximo:</strong> {{ stats.maxAmount | currency }}</li>
+        <li><strong>Monto Mínimo:</strong> {{ stats.minAmount | currency }}</li>
       </ul>
 
       <div class="stats-group" *ngIf="stats.transactionsByStatus && objectKeys(stats.transactionsByStatus).length > 0">
-        <h4>Transactions by Status:</h4>
+        <h4>Transacciones por Estado:</h4>
         <table>
           <thead>
             <tr>
-              <th>Status</th>
-              <th>Count</th>
-              <th>Total Amount</th>
+              <th>Estado</th>
+              <th>Cantidad</th>
+              <th>Monto Total</th>
             </tr>
           </thead>
           <tbody>
@@ -117,13 +117,13 @@
       </div>
 
       <div class="stats-group" *ngIf="stats.transactionsByPaymentMethod && objectKeys(stats.transactionsByPaymentMethod).length > 0">
-        <h4>Transactions by Payment Method:</h4>
+        <h4>Transacciones por Método de Pago:</h4>
         <table>
           <thead>
             <tr>
-              <th>Payment Method</th>
-              <th>Count</th>
-              <th>Total Amount</th>
+              <th>Método de Pago</th>
+              <th>Cantidad</th>
+              <th>Monto Total</th>
             </tr>
           </thead>
           <tbody>
@@ -137,14 +137,14 @@
       </div>
 
       <div class="stats-group" *ngIf="stats.timeSegmentStatistics && stats.timeSegmentStatistics.length > 0">
-        <h4>Time Segment Statistics:</h4>
+        <h4>Estadísticas por Segmento de Tiempo:</h4>
         <table>
           <thead>
             <tr>
-              <th>Segment Start</th>
-              <th>Segment End</th>
-              <th>Transaction Count</th>
-              <th>Total Amount</th>
+              <th>Inicio del Segmento</th>
+              <th>Fin del Segmento</th>
+              <th>Cantidad de Transacciones</th>
+              <th>Monto Total</th>
             </tr>
           </thead>
           <tbody>
@@ -159,12 +159,12 @@
       </div>
     </div>
     <ng-template #noResults>
-      <p *ngIf="!isLoading && reportForm.dirty && !errorMessage">No statistics found for the selected criteria.</p>
+      <p *ngIf="!isLoading && reportForm.dirty && !errorMessage">No se encontraron estadísticas para los criterios seleccionados.</p>
     </ng-template>
   </div>
   <ng-template #noReportOrLoading>
-    <p *ngIf="isLoading">Loading report...</p>
-    <p *ngIf="!isLoading && !errorMessage && reportForm.pristine">Select criteria and generate a report.</p>
+    <p *ngIf="isLoading">Cargando reporte...</p>
+    <p *ngIf="!isLoading && !errorMessage && reportForm.pristine">Selecciona criterios y genera un reporte.</p>
   </ng-template>
 
 </div> 
