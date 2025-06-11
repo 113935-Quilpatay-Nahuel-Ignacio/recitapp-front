@@ -6,6 +6,7 @@ import { TicketValidationComponent } from './components/ticket-validation/ticket
 import { PromotionalTicketFormComponent } from './components/promotional-ticket-form/promotional-ticket-form.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { MusicGenreAdminComponent } from '../artist/pages/music-genre-admin/music-genre-admin.component';
+import { NotificationTestComponent } from './pages/notification-test/notification-test.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,10 @@ const routes: Routes = [
   {
     path: 'create-promotional-ticket',
     component: PromotionalTicketFormComponent
+  },
+  {
+    path: 'notification-test',
+    component: NotificationTestComponent
   },
   // Redirigir por defecto a gestión de usuarios
   {

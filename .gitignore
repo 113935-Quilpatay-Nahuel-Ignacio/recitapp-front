@@ -56,6 +56,19 @@ src/firebase-messaging-sw.js
 firebase-config.json
 config/credentials.json
 
+# Firebase service worker and environment configurations
+public/firebase-messaging-sw.js
+src/environments/environment.prod.ts
+src/environments/environment.staging.ts
+
+# API Keys and sensitive configuration
+**/api-keys.json
+**/secrets.json
+**/credentials.json
+**/firebase-adminsdk-*.json
+**/service-account-*.json
+
 # Allow example files
 !src/app/firebase-config.example.ts
 !src/firebase-messaging-sw.example.js
+!src/environments/environment.example.ts

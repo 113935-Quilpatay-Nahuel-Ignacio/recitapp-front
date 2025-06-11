@@ -1,0 +1,459 @@
+<div class="notification-test-container">
+  <mat-card class="main-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>notifications</mat-icon>
+        Panel de Prueba de Notificaciones
+      </mat-card-title>
+      <mat-card-subtitle>
+        Prueba y demostración de los diferentes tipos de notificaciones disponibles en RecitApp
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-tab-group class="notification-tabs">
+        <!-- Tab Email -->
+        <mat-tab label="Email">
+          <div class="tab-content">
+            <h3>Notificaciones por Email</h3>
+            <form [formGroup]="emailForm" (ngSubmit)="testEmail()" class="notification-form">
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Tipo de Template</mat-label>
+                <mat-select formControlName="template" (selectionChange)="onEmailTemplateChange()">
+                  <mat-option *ngFor="let template of emailTemplates" [value]="template.value">
+                    {{ template.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email Destinatario</mat-label>
+                <input matInput formControlName="to" type="email" placeholder="test@example.com">
+                <mat-error *ngIf="emailForm.get('to')?.hasError('required')">
+                  El email es requerido
+                </mat-error>
+                <mat-error *ngIf="emailForm.get('to')?.hasError('email')">
+                  Formato de email inválido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Asunto</mat-label>
+                <input matInput formControlName="subject" placeholder="Asunto del email">
+                <mat-error *ngIf="emailForm.get('subject')?.hasError('required')">
+                  El asunto es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width" 
+                              *ngIf="emailForm.get('template')?.value === 'custom'">
+                <mat-label>Mensaje</mat-label>
+                <textarea matInput formControlName="message" rows="4" 
+                         placeholder="Contenido del mensaje"></textarea>
+                <mat-error *ngIf="emailForm.get('message')?.hasError('required')">
+                  El mensaje es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Campos específicos para templates -->
+              <div *ngIf="emailForm.get('template')?.value === 'new-event'" class="template-fields">
+                <h4>Datos del Evento</h4>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nombre del Evento</mat-label>
+                    <input matInput formControlName="eventName">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Artista</mat-label>
+                    <input matInput formControlName="artistName">
+                  </mat-form-field>
+                </div>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Venue</mat-label>
+                    <input matInput formControlName="venueName">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Fecha del Evento</mat-label>
+                    <input matInput formControlName="eventDate" type="datetime-local">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div *ngIf="emailForm.get('template')?.value === 'low-availability'" class="template-fields">
+                <h4>Datos de Disponibilidad</h4>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nombre del Evento</mat-label>
+                    <input matInput formControlName="eventName">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Tickets Restantes</mat-label>
+                    <input matInput formControlName="ticketsRemaining" type="number">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" 
+                        [disabled]="isLoading.email || emailForm.invalid">
+                  <mat-icon *ngIf="isLoading.email">
+                    <mat-spinner diameter="20"></mat-spinner>
+                  </mat-icon>
+                  <mat-icon *ngIf="!isLoading.email">email</mat-icon>
+                  Enviar Email
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Tab SMS -->
+        <mat-tab label="SMS">
+          <div class="tab-content">
+            <h3>Notificaciones por SMS</h3>
+            <form [formGroup]="smsForm" (ngSubmit)="testSms()" class="notification-form">
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Tipo de Template</mat-label>
+                <mat-select formControlName="template" (selectionChange)="onSmsTemplateChange()">
+                  <mat-option *ngFor="let template of smsTemplates" [value]="template.value">
+                    {{ template.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Número de Teléfono</mat-label>
+                <input matInput formControlName="phoneNumber" placeholder="+1234567890">
+                <mat-hint>Incluye el código de país (ej: +57 para Colombia)</mat-hint>
+                <mat-error *ngIf="smsForm.get('phoneNumber')?.hasError('required')">
+                  El número de teléfono es requerido
+                </mat-error>
+                <mat-error *ngIf="smsForm.get('phoneNumber')?.hasError('pattern')">
+                  Formato de número inválido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width" 
+                              *ngIf="smsForm.get('template')?.value === 'custom'">
+                <mat-label>Mensaje</mat-label>
+                <textarea matInput formControlName="message" rows="3" 
+                         placeholder="Contenido del SMS (máx. 160 caracteres)"></textarea>
+                <mat-hint>{{ smsForm.get('message')?.value?.length || 0 }}/160 caracteres</mat-hint>
+                <mat-error *ngIf="smsForm.get('message')?.hasError('required')">
+                  El mensaje es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Campos específicos para templates -->
+              <div *ngIf="smsForm.get('template')?.value !== 'custom'" class="template-fields">
+                <h4>Datos del Template</h4>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Template ID</mat-label>
+                    <mat-select formControlName="templateId">
+                      <mat-option value="event-reminder">Recordatorio de Evento</mat-option>
+                      <mat-option value="ticket-confirmation">Confirmación de Ticket</mat-option>
+                      <mat-option value="event-cancellation">Cancelación de Evento</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nombre del Evento</mat-label>
+                    <input matInput formControlName="eventName">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Venue</mat-label>
+                    <input matInput formControlName="venueName">
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" 
+                        [disabled]="isLoading.sms || smsForm.invalid">
+                  <mat-icon *ngIf="isLoading.sms">
+                    <mat-spinner diameter="20"></mat-spinner>
+                  </mat-icon>
+                  <mat-icon *ngIf="!isLoading.sms">sms</mat-icon>
+                  Enviar SMS
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Tab Push Notifications -->
+        <mat-tab label="Push Notifications">
+          <div class="tab-content">
+            <h3>Notificaciones Push</h3>
+            
+            <!-- Device Token Management -->
+            <mat-card class="token-card">
+              <mat-card-header>
+                <mat-card-title>Gestión de Device Tokens</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <form [formGroup]="deviceTokenForm" class="token-form">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Device Token</mat-label>
+                    <input matInput formControlName="deviceToken" 
+                           placeholder="Ingresa el device token a validar">
+                    <mat-hint>Token obtenido de Firebase Cloud Messaging</mat-hint>
+                  </mat-form-field>
+                  <button mat-stroked-button type="button" (click)="validateDeviceToken()"
+                          [disabled]="isLoading.deviceToken || deviceTokenForm.invalid">
+                    <mat-icon *ngIf="isLoading.deviceToken">
+                      <mat-spinner diameter="20"></mat-spinner>
+                    </mat-icon>
+                    <mat-icon *ngIf="!isLoading.deviceToken">verified</mat-icon>
+                    Validar Token
+                  </button>
+                </form>
+
+                <div *ngIf="deviceTokens.length > 0" class="tokens-list">
+                  <h4>Tokens Registrados del Usuario:</h4>
+                  <mat-selection-list>
+                    <mat-list-option *ngFor="let token of deviceTokens" 
+                                     (click)="pushForm.patchValue({deviceToken: token})">
+                      <mat-icon matListIcon>smartphone</mat-icon>
+                      <span>{{ token.substring(0, 20) }}...</span>
+                    </mat-list-option>
+                  </mat-selection-list>
+                </div>
+
+                <!-- Web Push Notifications Reales -->
+                <div class="real-tokens-section" *ngIf="webPushSupported">
+                  <div class="section-header">
+                    <h4><mat-icon>verified</mat-icon> Tokens FCM Reales (Web Push)</h4>
+                    <button mat-raised-button color="primary" (click)="generateRealToken()" 
+                            [disabled]="isLoading.deviceToken">
+                      <mat-icon *ngIf="isLoading.deviceToken">
+                        <mat-spinner diameter="20"></mat-spinner>
+                      </mat-icon>
+                      <mat-icon *ngIf="!isLoading.deviceToken">verified_user</mat-icon>
+                      Generar Token Real
+                    </button>
+                  </div>
+                  
+                  <div *ngIf="realTokens.length > 0" class="real-tokens-grid">
+                    <mat-card *ngFor="let token of realTokens; let i = index" class="token-item real-token">
+                      <mat-card-content>
+                        <div class="token-header">
+                          <mat-icon color="primary">verified</mat-icon>
+                          <span class="token-label">Token Real {{ i + 1 }}</span>
+                          <mat-icon class="status-badge" matTooltip="Token FCM válido">check_circle</mat-icon>
+                        </div>
+                        <div class="token-preview">
+                          <code>{{ token.substring(0, 40) }}...</code>
+                        </div>
+                        <div class="token-actions">
+                          <button mat-raised-button color="primary" (click)="useRealToken(token)">
+                            <mat-icon>check</mat-icon>
+                            Usar Token
+                          </button>
+                          <button mat-icon-button (click)="copyTokenToClipboard(token)" 
+                                  matTooltip="Copiar al portapapeles">
+                            <mat-icon>content_copy</mat-icon>
+                          </button>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                  
+                  <div *ngIf="realTokens.length === 0" class="no-tokens">
+                    <mat-icon>info</mat-icon>
+                    <p>Haz clic en "Generar Token Real" para obtener un token FCM válido desde tu navegador.</p>
+                    <p><small>Se solicitará permiso para mostrar notificaciones.</small></p>
+                  </div>
+                </div>
+
+                <!-- Generación Automática de Tokens (Para Pruebas de UI) -->
+                <div class="generated-tokens-section">
+                  <div class="section-header">
+                    <h4><mat-icon>auto_awesome</mat-icon> Tokens de Prueba (Solo para UI)</h4>
+                    <button mat-stroked-button color="accent" (click)="generateNewToken()">
+                      <mat-icon>add</mat-icon>
+                      Generar Token de Prueba
+                    </button>
+                  </div>
+                  
+                  <div *ngIf="generatedTokens.length > 0" class="generated-tokens-grid">
+                    <mat-card *ngFor="let token of generatedTokens; let i = index" class="token-item">
+                      <mat-card-content>
+                        <div class="token-header">
+                          <mat-icon color="primary">devices</mat-icon>
+                          <span class="token-label">Token {{ i + 1 }}</span>
+                        </div>
+                        <div class="token-preview">
+                          <code>{{ token.substring(0, 30) }}...</code>
+                        </div>
+                        <div class="token-actions">
+                          <button mat-button color="primary" (click)="useGeneratedToken(token)">
+                            <mat-icon>check</mat-icon>
+                            Usar Token
+                          </button>
+                          <button mat-icon-button (click)="copyTokenToClipboard(token)" 
+                                  matTooltip="Copiar al portapapeles">
+                            <mat-icon>content_copy</mat-icon>
+                          </button>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                  
+                  <div *ngIf="generatedTokens.length === 0" class="no-tokens">
+                    <mat-icon>info</mat-icon>
+                    <p>No hay tokens generados. Haz clic en "Generar Nuevo Token" para crear tokens de prueba.</p>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Push Notification Form -->
+            <form [formGroup]="pushForm" (ngSubmit)="testPush()" class="notification-form">
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Tipo de Notificación</mat-label>
+                <mat-select formControlName="type">
+                  <mat-option *ngFor="let type of pushTypes" [value]="type.value">
+                    {{ type.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width" 
+                              *ngIf="pushForm.get('type')?.value !== 'topic'">
+                <mat-label>Device Token</mat-label>
+                <input matInput formControlName="deviceToken" 
+                       placeholder="Token del dispositivo destino">
+                <mat-error *ngIf="pushForm.get('deviceToken')?.hasError('required')">
+                  El device token es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width" 
+                              *ngIf="pushForm.get('type')?.value === 'topic'">
+                <mat-label>Tópico</mat-label>
+                <input matInput formControlName="topic" placeholder="Nombre del tópico">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Título</mat-label>
+                <input matInput formControlName="title" placeholder="Título de la notificación">
+                <mat-error *ngIf="pushForm.get('title')?.hasError('required')">
+                  El título es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Cuerpo del Mensaje</mat-label>
+                <textarea matInput formControlName="body" rows="3" 
+                         placeholder="Contenido de la notificación"></textarea>
+                <mat-error *ngIf="pushForm.get('body')?.hasError('required')">
+                  El cuerpo del mensaje es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Campos adicionales para notificación avanzada -->
+              <div *ngIf="pushForm.get('type')?.value === 'advanced'" class="template-fields">
+                <h4>Configuración Avanzada</h4>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Event ID</mat-label>
+                    <input matInput formControlName="eventId" type="number">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Action URL</mat-label>
+                    <input matInput formControlName="actionUrl" placeholder="https://...">
+                  </mat-form-field>
+                </div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Image URL</mat-label>
+                  <input matInput formControlName="imageUrl" placeholder="URL de imagen (opcional)">
+                </mat-form-field>
+              </div>
+
+              <!-- Campos para notificación de evento -->
+              <div *ngIf="pushForm.get('type')?.value === 'event'" class="template-fields">
+                <h4>Datos del Evento</h4>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Event ID</mat-label>
+                    <input matInput formControlName="eventId" type="number">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nombre del Evento</mat-label>
+                    <input matInput formControlName="eventName">
+                  </mat-form-field>
+                </div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Artista</mat-label>
+                  <input matInput formControlName="artistName">
+                </mat-form-field>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" 
+                        [disabled]="isLoading.push || pushForm.invalid">
+                  <mat-icon *ngIf="isLoading.push">
+                    <mat-spinner diameter="20"></mat-spinner>
+                  </mat-icon>
+                  <mat-icon *ngIf="!isLoading.push">notifications</mat-icon>
+                  Enviar Push Notification
+                </button>
+                
+                <button mat-raised-button color="accent" type="button" 
+                        (click)="testWebPushNotification()" 
+                        [disabled]="isLoading.push || !webPushSupported"
+                        *ngIf="webPushSupported">
+                  <mat-icon>verified_user</mat-icon>
+                  Probar Web Push (Auto Token)
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Tab Resultados -->
+        <mat-tab label="Resultados">
+          <div class="tab-content">
+            <div class="results-header">
+              <h3>Historial de Pruebas</h3>
+              <button mat-stroked-button (click)="clearResults()" 
+                      [disabled]="testResults.length === 0">
+                <mat-icon>clear_all</mat-icon>
+                Limpiar Historial
+              </button>
+            </div>
+
+            <div *ngIf="testResults.length === 0" class="no-results">
+              <mat-icon class="large-icon">assessment</mat-icon>
+              <p>No hay resultados de pruebas aún.</p>
+              <p>Utiliza las pestañas anteriores para probar notificaciones.</p>
+            </div>
+
+            <div *ngIf="testResults.length > 0" class="results-list">
+              <mat-card *ngFor="let result of testResults" 
+                        class="result-card" 
+                        [ngClass]="{'success': result.success, 'error': !result.success}">
+                <mat-card-content>
+                  <div class="result-header">
+                    <mat-icon [class]="result.success ? 'success-icon' : 'error-icon'">
+                      {{ result.success ? 'check_circle' : 'error' }}
+                    </mat-icon>
+                    <span class="timestamp">{{ result.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+                  </div>
+                  <div class="result-message">{{ result.message }}</div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div> 

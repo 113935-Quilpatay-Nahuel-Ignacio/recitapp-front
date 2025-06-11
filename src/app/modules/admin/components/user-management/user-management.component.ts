@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -33,6 +33,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../shared/co
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
