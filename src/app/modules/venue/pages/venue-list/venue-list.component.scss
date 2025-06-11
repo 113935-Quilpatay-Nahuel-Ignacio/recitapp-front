@@ -38,14 +38,14 @@
   position: relative;
   border-radius: 0.75rem;
   overflow: hidden;
-  background-color: var(--dark-card);
+  background-color: #2D2D2D;
   border: 1px solid var(--dark-border);
   color: var(--dark-text);
 
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-    border-color: var(--primary-green);
+    border-color: #22C55E;
   }
 
   .card-img-container {
@@ -66,7 +66,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
+      background: linear-gradient(135deg, #3a3a3a, #2D2D2D);
       color: var(--dark-text-muted);
 
       i {
@@ -81,7 +81,7 @@
   }
 
   .card-body {
-    background-color: var(--dark-card);
+    background-color: #2D2D2D;
     color: var(--dark-text);
 
   .card-title {
@@ -107,13 +107,13 @@
   }
 
       i {
-        color: var(--primary-green);
+        color: #22C55E;
       }
     }
   }
 
   .card-footer {
-    background-color: var(--dark-card-hover);
+    background-color: #3a3a3a;
     border-top: 1px solid var(--dark-border);
 
   .social-link {
@@ -123,7 +123,7 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-      background-color: var(--dark-card-hover);
+      background-color: #3a3a3a;
       color: var(--dark-text-muted);
     text-decoration: none;
     transition: all 0.2s ease;

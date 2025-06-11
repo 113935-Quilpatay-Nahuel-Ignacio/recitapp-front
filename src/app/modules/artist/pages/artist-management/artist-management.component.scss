@@ -1,6 +1,6 @@
 // Artist Management Component Styles - Dark Theme
 .artist-management-container {
-  background-color: var(--bs-body-bg);
+  background-color: #1A1A1A;
   min-height: 100vh;
   color: var(--bs-body-color);
 }
@@ -12,32 +12,32 @@
 
 // Container and Bootstrap overrides
 .container {
-  background-color: var(--bs-body-bg) !important;
+  background-color: #1A1A1A !important;
   
   .py-4 {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #1A1A1A !important;
   }
   
   .row {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #1A1A1A !important;
   }
   
   .col-12 {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #1A1A1A !important;
   }
 }
 
 .card {
-  background-color: var(--bs-body-bg) !important;
+  background-color: #2D2D2D !important;
   border: 1px solid var(--bs-border-color) !important;
   
   .card-header {
-    background-color: var(--bs-tertiary-bg) !important;
+    background-color: #3a3a3a !important;
     border-bottom: 1px solid var(--bs-border-color) !important;
     color: var(--bs-body-color) !important;
     
     &.bg-light {
-      background-color: var(--bs-tertiary-bg) !important;
+      background-color: #3a3a3a !important;
     }
     
     h2 {
@@ -47,7 +47,7 @@
   }
   
   .card-body {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #2D2D2D !important;
     color: var(--bs-body-color) !important;
   }
 }
@@ -69,26 +69,26 @@
 
 // Search controls - NO WHITE
 .search-controls, .row {
-  background-color: var(--bs-body-bg) !important;
+  background-color: #1A1A1A !important;
   
   .col-md-6 {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #1A1A1A !important;
   }
   
   .input-group {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #1A1A1A !important;
   }
   
   .form-control {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #2D2D2D !important;
     border: 1px solid var(--bs-border-color) !important;
     color: var(--bs-body-color) !important;
     
     &:focus {
-      background-color: var(--bs-body-bg) !important;
-      border-color: var(--bs-primary) !important;
+      background-color: #2D2D2D !important;
+      border-color: #22C55E !important;
       color: var(--bs-body-color) !important;
-      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25) !important;
     }
     
     &::placeholder {
@@ -97,34 +97,34 @@
   }
   
   .input-group .btn {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #2D2D2D !important;
     border-color: var(--bs-border-color) !important;
     color: var(--bs-body-color) !important;
     
     &:hover {
-      background-color: var(--bs-tertiary-bg) !important;
+      background-color: #3a3a3a !important;
       border-color: var(--bs-border-color) !important;
     }
   }
   
   .form-check {
-    background-color: var(--bs-body-bg) !important;
+    background-color: #1A1A1A !important;
     
     .form-check-label {
       color: var(--bs-body-color) !important;
     }
     
     .form-check-input {
-      background-color: var(--bs-body-bg) !important;
+      background-color: #2D2D2D !important;
       border-color: var(--bs-border-color) !important;
       
       &:checked {
-        background-color: var(--bs-primary) !important;
-        border-color: var(--bs-primary) !important;
+        background-color: #22C55E !important;
+        border-color: #22C55E !important;
       }
       
       &:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25) !important;
       }
     }
   }
@@ -132,12 +132,12 @@
 
 // Spinner
 .spinner-border {
-  color: var(--bs-primary) !important;
+  color: #22C55E !important;
 }
 
 // Text elements
 .text-center {
-  background-color: var(--bs-body-bg) !important;
+  background-color: #1A1A1A !important;
   
   h3 {
     color: var(--bs-body-color) !important;
@@ -154,44 +154,44 @@
 
 // Table styling - COMPLETELY NO WHITE
 .table-responsive {
-  background-color: var(--bs-body-bg) !important;
+  background-color: #2D2D2D !important;
   
   .table {
-    --bs-table-bg: var(--bs-body-bg) !important;
+    --bs-table-bg: #2D2D2D !important;
     --bs-table-color: var(--bs-body-color) !important;
-    background-color: var(--bs-body-bg) !important;
+    background-color: #2D2D2D !important;
     color: var(--bs-body-color) !important;
     border-color: var(--bs-border-color) !important;
     
     &.table-hover tbody tr:hover {
-      --bs-table-hover-bg: var(--bs-tertiary-bg) !important;
+      --bs-table-hover-bg: #3a3a3a !important;
       --bs-table-hover-color: var(--bs-body-color) !important;
-      background-color: var(--bs-tertiary-bg) !important;
+      background-color: #3a3a3a !important;
     }
     
     thead {
-      background-color: var(--bs-tertiary-bg) !important;
+      background-color: #3a3a3a !important;
       
       &.table-light {
-        --bs-table-bg: var(--bs-tertiary-bg) !important;
+        --bs-table-bg: #3a3a3a !important;
         --bs-table-color: var(--bs-body-color) !important;
-        background-color: var(--bs-tertiary-bg) !important;
+        background-color: #3a3a3a !important;
         border-bottom: 2px solid var(--bs-border-color) !important;
         
         th {
           border-bottom: 1px solid var(--bs-border-color) !important;
           font-weight: 600;
-          background-color: var(--bs-tertiary-bg) !important;
+          background-color: #3a3a3a !important;
           color: var(--bs-body-color) !important;
           border-color: var(--bs-border-color) !important;
         }
       }
       
       tr {
-        background-color: var(--bs-tertiary-bg) !important;
+        background-color: #3a3a3a !important;
         
         th {
-          background-color: var(--bs-tertiary-bg) !important;
+          background-color: #3a3a3a !important;
           color: var(--bs-body-color) !important;
           border-color: var(--bs-border-color) !important;
         }
@@ -199,214 +199,170 @@
     }
     
     tbody {
-      background-color: var(--bs-body-bg) !important;
-      
       tr {
-        background-color: var(--bs-body-bg) !important;
-        border-color: var(--bs-border-color) !important;
+        background-color: #2D2D2D !important;
         
-        &:hover {
-          background-color: var(--bs-tertiary-bg) !important;
+        td {
+          background-color: #2D2D2D !important;
+          color: var(--bs-body-color) !important;
+          border-color: var(--bs-border-color) !important;
+          
+          // Image styling
+          img {
+            border: 2px solid var(--bs-border-color);
+          }
+          
+          .rounded-circle {
+            &.bg-secondary {
+              background-color: #3a3a3a !important;
+              color: var(--bs-body-color) !important;
+            }
+          }
+          
+          // Badge styling
+          .badge {
+            &.bg-success {
+              background-color: #22C55E !important;
+            }
+            
+            &.bg-danger {
+              background-color: var(--danger-red) !important;
+            }
+          }
+          
+          // Button styling
+          .btn {
+            &.btn-outline-success {
+              color: #22C55E !important;
+              border-color: #22C55E !important;
+              
+              &:hover {
+                background-color: #22C55E !important;
+                color: white !important;
+              }
+            }
+            
+            &.btn-outline-danger {
+              color: var(--danger-red) !important;
+              border-color: var(--danger-red) !important;
+              
+              &:hover {
+                background-color: var(--danger-red) !important;
+                color: white !important;
+              }
+            }
+            
+            &.btn-outline-primary {
+              color: #22C55E !important;
+              border-color: #22C55E !important;
+              
+              &:hover {
+                background-color: #22C55E !important;
+                color: white !important;
+              }
+            }
+            
+            &.btn-outline-secondary {
+              color: var(--bs-secondary-color) !important;
+              border-color: var(--bs-border-color) !important;
+              
+              &:hover {
+                background-color: #3a3a3a !important;
+                color: var(--bs-body-color) !important;
+              }
+            }
+            
+            &.btn-outline-warning {
+              color: var(--warning-yellow) !important;
+              border-color: var(--warning-yellow) !important;
+              
+              &:hover {
+                background-color: var(--warning-yellow) !important;
+                color: white !important;
+              }
+            }
+          }
         }
       }
+    }
+  }
+}
+
+// Modal styling
+.modal {
+  .modal-dialog {
+    .modal-content {
+      background-color: #2D2D2D !important;
+      border: 1px solid var(--bs-border-color) !important;
       
-      td {
+      .modal-header {
+        background-color: #3a3a3a !important;
         border-bottom: 1px solid var(--bs-border-color) !important;
-        color: var(--bs-body-color) !important;
-        background-color: var(--bs-body-bg) !important;
-        border-color: var(--bs-border-color) !important;
         
-        // Inner content
-        span {
+        .modal-title {
           color: var(--bs-body-color) !important;
         }
         
-        div {
-          background-color: transparent !important;
+        .btn-close {
+          filter: invert(1) grayscale(100%) brightness(200%);
+        }
+      }
+      
+      .modal-body {
+        background-color: #2D2D2D !important;
+        color: var(--bs-body-color) !important;
+        
+        p {
+          color: var(--bs-body-color) !important;
         }
         
-        // Status badges
-        .badge {
-          &.bg-success {
-            background-color: var(--bs-success) !important;
-            color: white !important;
+        strong {
+          color: var(--bs-body-color) !important;
+        }
+        
+        .alert {
+          &.alert-danger {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            color: #f87171 !important;
+          }
+        }
+      }
+      
+      .modal-footer {
+        background-color: #3a3a3a !important;
+        border-top: 1px solid var(--bs-border-color) !important;
+        
+        .btn {
+          &.btn-secondary {
+            background-color: #3a3a3a !important;
+            border-color: var(--bs-border-color) !important;
+            color: var(--bs-body-color) !important;
+            
+            &:hover {
+              background-color: #4a4a4a !important;
+            }
           }
           
-          &.bg-danger {
-            background-color: var(--bs-danger) !important;
+          &.btn-warning {
+            background-color: var(--warning-yellow) !important;
+            border-color: var(--warning-yellow) !important;
             color: white !important;
+            
+            &:hover {
+              background-color: #d97706 !important;
+            }
           }
           
-          &.bg-secondary {
-            background-color: var(--bs-secondary) !important;
+          &.btn-danger {
+            background-color: var(--danger-red) !important;
+            border-color: var(--danger-red) !important;
             color: white !important;
+            
+            &:hover {
+              background-color: #dc2626 !important;
+            }
           }
-        }
-        
-        // Platform icons
-        .platform-link {
-          display: inline-block;
-          margin-right: 0.25rem;
-          
-          img {
-            width: 20px;
-            height: 20px;
-            filter: brightness(1.2);
-          }
-        }
-      }
-    }
-    
-    // All table elements
-    th, td {
-      background-color: inherit !important;
-      border-color: var(--bs-border-color) !important;
-    }
-  }
-}
-
-// Button styling - NO WHITE
-.btn-group {
-  background-color: transparent !important;
-  
-  .btn {
-    &.btn-outline-primary {
-      border-color: var(--bs-primary) !important;
-      color: var(--bs-primary) !important;
-      background-color: transparent !important;
-      
-      &:hover {
-        background-color: var(--bs-primary) !important;
-        border-color: var(--bs-primary) !important;
-        color: white !important;
-      }
-    }
-    
-    &.btn-outline-secondary {
-      border-color: var(--bs-border-color) !important;
-      color: var(--bs-secondary) !important;
-      background-color: transparent !important;
-      
-      &:hover {
-        background-color: var(--bs-tertiary-bg) !important;
-        border-color: var(--bs-secondary) !important;
-        color: var(--bs-body-color) !important;
-      }
-    }
-    
-    &.btn-outline-warning {
-      border-color: var(--bs-warning) !important;
-      color: var(--bs-warning) !important;
-      background-color: transparent !important;
-      
-      &:hover {
-        background-color: var(--bs-warning) !important;
-        border-color: var(--bs-warning) !important;
-        color: white !important;
-      }
-    }
-    
-    &.btn-outline-danger {
-      border-color: var(--bs-danger) !important;
-      color: var(--bs-danger) !important;
-      background-color: transparent !important;
-      
-      &:hover {
-        background-color: var(--bs-danger) !important;
-        border-color: var(--bs-danger) !important;
-        color: white !important;
-      }
-    }
-    
-    &.btn-outline-success {
-      border-color: var(--bs-success) !important;
-      color: var(--bs-success) !important;
-      background-color: transparent !important;
-      
-      &:hover {
-        background-color: var(--bs-success) !important;
-        border-color: var(--bs-success) !important;
-        color: white !important;
-      }
-    }
-    
-    &.btn-primary {
-      background-color: var(--bs-primary) !important;
-      border-color: var(--bs-primary) !important;
-      color: white !important;
-    }
-  }
-}
-
-// Modal styling - NO WHITE
-.modal {
-  .modal-content {
-    background-color: var(--bs-body-bg) !important;
-    border: 1px solid var(--bs-border-color) !important;
-    
-    .modal-header {
-      border-bottom: 1px solid var(--bs-border-color) !important;
-      background-color: var(--bs-body-bg) !important;
-      
-      .modal-title {
-        color: var(--bs-body-color) !important;
-      }
-      
-      .btn-close {
-        filter: invert(1) grayscale(100%) brightness(200%) !important;
-      }
-    }
-    
-    .modal-body {
-      color: var(--bs-body-color) !important;
-      background-color: var(--bs-body-bg) !important;
-      
-      p {
-        color: var(--bs-body-color) !important;
-      }
-      
-      .alert {
-        &.alert-danger {
-          background-color: var(--bs-danger-bg-subtle) !important;
-          border-color: var(--bs-danger-border-subtle) !important;
-          color: var(--bs-danger-text) !important;
-        }
-      }
-    }
-    
-    .modal-footer {
-      border-top: 1px solid var(--bs-border-color) !important;
-      background-color: var(--bs-body-bg) !important;
-      
-      .btn-secondary {
-        background-color: var(--bs-secondary) !important;
-        border-color: var(--bs-secondary) !important;
-        color: white !important;
-        
-        &:hover {
-          background-color: var(--bs-secondary) !important;
-          border-color: var(--bs-secondary) !important;
-          filter: brightness(0.9) !important;
-        }
-      }
-      
-      .btn-warning {
-        background-color: var(--bs-warning) !important;
-        border-color: var(--bs-warning) !important;
-        color: white !important;
-        
-        &:hover {
-          filter: brightness(0.9) !important;
-        }
-      }
-      
-      .btn-danger {
-        background-color: var(--bs-danger) !important;
-        border-color: var(--bs-danger) !important;
-        color: white !important;
-        
-        &:hover {
-          filter: brightness(0.9) !important;
         }
       }
     }
@@ -415,18 +371,12 @@
 
 // Modal backdrop
 .modal-backdrop {
-  background-color: rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
-// Force all divs to inherit dark theme
-div {
-  background-color: inherit;
-}
-
-// Profile image fallback
-.rounded-circle {
-  &.bg-secondary {
-    background-color: var(--bs-secondary) !important;
-    color: white !important;
-  }
+// Page host
+:host {
+  display: block;
+  background-color: #1A1A1A;
+  min-height: 100vh;
 } 

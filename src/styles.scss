@@ -28,8 +28,8 @@ $custom-theme: mat.define-dark-theme((
   --primary-green: #22c55e;
   --primary-green-hover: #16a34a;
   --primary-green-dark: #15803d;
-  --dark-bg: #1a1a1a;
-  --dark-card: #2d2d2d;
+  --dark-bg: #1A1A1A;
+  --dark-card: #2D2D2D;
   --dark-card-hover: #3a3a3a;
   --dark-text: #ffffff;
   --dark-text-muted: #a3a3a3;
@@ -48,7 +48,7 @@ $custom-theme: mat.define-dark-theme((
 
 html, body { 
   height: 100%; 
-  background-color: var(--dark-bg);
+  background-color: #1A1A1A;
   color: var(--dark-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -58,7 +58,7 @@ html, body {
 body { 
   margin: 0; 
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-  background-color: var(--dark-bg);
+  background-color: #1A1A1A;
   color: var(--dark-text);
 }
 

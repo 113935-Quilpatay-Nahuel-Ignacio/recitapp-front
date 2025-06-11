@@ -4,19 +4,19 @@
 // Base host styling for all venue components
 @mixin venue-component-base {
   display: block;
-  background-color: var(--dark-bg);
+  background-color: #1A1A1A;
   min-height: 100vh;
 }
 
 // Container styling
 @mixin venue-container {
-  background-color: var(--dark-bg);
+  background-color: #1A1A1A;
   color: var(--dark-text);
 }
 
 // Card styling mixin
 @mixin venue-card {
-  background-color: var(--dark-card);
+  background-color: #2D2D2D;
   border: 1px solid var(--dark-border);
   color: var(--dark-text);
   border-radius: 0.75rem;
@@ -29,7 +29,7 @@
   }
 
   .card-header {
-    background-color: var(--dark-card-hover) !important;
+    background-color: #3a3a3a !important;
     border-bottom: 1px solid var(--dark-border);
     color: var(--dark-text);
     border-radius: 0.75rem 0.75rem 0 0;
@@ -41,7 +41,7 @@
   }
 
   .card-body {
-    background-color: var(--dark-card);
+    background-color: #2D2D2D;
     color: var(--dark-text);
   }
 
@@ -55,7 +55,7 @@
   }
 
   .card-footer {
-    background-color: var(--dark-card-hover);
+    background-color: #3a3a3a;
     border-top: 1px solid var(--dark-border);
 
     &.bg-transparent {

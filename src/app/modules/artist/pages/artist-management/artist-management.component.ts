@@ -10,7 +10,7 @@ import { Artist } from '../../models/artist';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './artist-management.component.html',
-  //styleUrls: ['./artist-management.component.scss'],
+  styleUrls: ['./artist-management.component.scss'],
 })
 export class ArtistManagementComponent implements OnInit {
   artists: Artist[] = [];

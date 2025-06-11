@@ -3,19 +3,19 @@
   max-width: 1400px;
   margin: 0 auto;
   min-height: 100vh;
-  background-color: #0f172a;
+  background-color: #1A1A1A;
 
   .main-card {
-    background-color: #1e293b;
+    background-color: #2D2D2D;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    border: 1px solid #334155;
+    border: 1px solid #404040;
 
     mat-card-header {
       padding: 32px 32px 24px 32px;
-      border-bottom: 2px solid #334155;
+      border-bottom: 2px solid #404040;
       margin-bottom: 0;
-      background: linear-gradient(135deg, #4c1d95 0%, #581c87 100%);
+      background: linear-gradient(135deg, #2D2D2D 0%, #3a3a3a 100%);
       color: white;
       border-radius: 12px 12px 0 0;
 
@@ -32,7 +32,7 @@
           font-size: 32px;
           width: 32px;
           height: 32px;
-          color: #ffffff;
+          color: #22C55E;
         }
       }
 
@@ -47,21 +47,21 @@
 
     mat-card-content {
       padding: 0;
-      background-color: #1e293b;
+      background-color: #2D2D2D;
     }
   }
 
   .notification-tabs {
     .mat-mdc-tab-group {
       .mat-mdc-tab-header {
-        background-color: #334155;
-        border-bottom: 3px solid #475569;
+        background-color: #3a3a3a;
+        border-bottom: 3px solid #404040;
         padding: 0 24px;
       }
 
       .mat-mdc-tab-body-wrapper {
         padding: 32px 32px 24px 32px;
-        background-color: #1e293b;
+        background-color: #2D2D2D;
       }
     }
   }
@@ -82,7 +82,7 @@
         content: '';
         width: 4px;
         height: 24px;
-        background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+        background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
         border-radius: 2px;
       }
     }
@@ -113,16 +113,16 @@
     }
 
     .template-fields {
-      background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+      background: linear-gradient(135deg, #2D2D2D 0%, #3a3a3a 100%);
       padding: 24px;
       border-radius: 12px;
       margin: 32px 0;
-      border: 2px solid #4338ca;
-      border-left: 6px solid #8b5cf6;
+      border: 2px solid #404040;
+      border-left: 6px solid #22C55E;
 
       h4 {
         margin-top: 0;
-        color: #c4b5fd;
+        color: #22C55E;
         font-weight: 600;
         margin-bottom: 20px;
       }
@@ -135,7 +135,7 @@
       gap: 16px;
       flex-wrap: wrap;
       padding-top: 24px;
-      border-top: 2px solid #475569;
+      border-top: 2px solid #404040;
 
       button {
         min-width: 180px;
@@ -172,16 +172,16 @@
 
       &.mat-mdc-form-field {
         .mat-mdc-text-field-wrapper {
-          background-color: #334155;
-          border: 2px solid #475569;
+          background-color: #3a3a3a;
+          border: 2px solid #404040;
           border-radius: 8px;
           
           &:hover {
-            border-color: #8b5cf6;
+            border-color: #22C55E;
           }
           
           &.mdc-text-field--focused {
-            border-color: #a855f7;
+            border-color: #22C55E;
           }
         }
       }
@@ -211,27 +211,27 @@
       font-family: inherit;
       line-height: 1.5;
       color: #f1f5f9;
-      background-color: #334155;
+      background-color: #3a3a3a;
     }
 
     input {
       font-family: inherit;
       color: #f1f5f9;
-      background-color: #334155;
+      background-color: #3a3a3a;
     }
   }
 
   // Token management card
   .token-card {
     margin-bottom: 32px;
-    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
-    border: 2px solid #dc2626;
+    background: linear-gradient(135deg, #2D2D2D 0%, #3a3a3a 100%);
+    border: 2px solid #22C55E;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
 
     mat-card-header {
       padding: 20px 24px 16px 24px;
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
       color: white;
       border-radius: 10px 10px 0 0;
 
@@ -245,7 +245,7 @@
 
     mat-card-content {
       padding: 24px;
-      background-color: #1e293b;
+      background-color: #2D2D2D;
     }
 
     .token-form {
@@ -280,7 +280,7 @@
 
       h4 {
         margin-bottom: 16px;
-        color: #fca5a5;
+        color: #22C55E;
         font-size: 16px;
         font-weight: 600;
       }
@@ -288,27 +288,27 @@
       mat-selection-list {
         max-height: 200px;
         overflow-y: auto;
-        border: 2px solid #475569;
+        border: 2px solid #404040;
         border-radius: 8px;
-        background-color: #334155;
+        background-color: #3a3a3a;
 
         mat-list-option {
-          border-bottom: 1px solid #475569;
-          background-color: #334155;
+          border-bottom: 1px solid #404040;
+          background-color: #3a3a3a;
           color: #f1f5f9;
           
           &:hover {
-            background-color: #475569;
+            background-color: #4a4a4a;
           }
 
           .mat-pseudo-checkbox-checked {
-            background-color: #dc2626;
+            background-color: #22C55E;
           }
 
           span {
             font-family: 'Courier New', monospace;
             font-size: 13px;
-            color: #fca5a5;
+            color: #22C55E;
             font-weight: 500;
           }
         }
@@ -323,7 +323,7 @@
     align-items: center;
     margin-bottom: 32px;
     padding-bottom: 16px;
-    border-bottom: 2px solid #475569;
+    border-bottom: 2px solid #404040;
 
     h3 {
       margin: 0;
@@ -345,9 +345,9 @@
     text-align: center;
     padding: 80px 40px;
     color: #94a3b8;
-    background: linear-gradient(135deg, #334155 0%, #475569 100%);
+    background: linear-gradient(135deg, #2D2D2D 0%, #3a3a3a 100%);
     border-radius: 12px;
-    border: 2px dashed #64748b;
+    border: 2px dashed #404040;
 
     .large-icon {
       font-size: 80px;
@@ -380,12 +380,12 @@
       transition: all 0.3s ease;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      background-color: #334155;
-      border: 1px solid #475569;
+      background-color: #2D2D2D;
+      border: 1px solid #404040;
 
       &.success {
         border-left-color: #22c55e;
-        background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+        background: linear-gradient(135deg, #2D2D2D 0%, #3a3a3a 100%);
 
         .success-icon {
           color: #22c55e;
@@ -399,7 +399,7 @@
 
       &.error {
         border-left-color: #ef4444;
-        background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+        background: linear-gradient(135deg, #2D2D2D 0%, #3a3a3a 100%);
 
         .error-icon {
           color: #ef4444;
@@ -544,12 +544,12 @@
       
       &.mat-mdc-tab-active {
         .mdc-tab__text-label {
-          color: #667eea;
+          color: #22C55E;
         }
       }
       
       .mdc-tab__text-label {
-        color: #64748b;
+        color: #94a3b8;
       }
     }
     
@@ -562,13 +562,13 @@
 
   .mat-mdc-raised-button {
     &.mat-primary {
-      background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+      background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
       color: white;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 
       &:hover:not([disabled]) {
-        background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
-        box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        box-shadow: 0 6px 16px rgba(34, 197, 94, 0.5);
         transform: translateY(-1px);
       }
       
@@ -579,14 +579,14 @@
   }
 
   .mat-mdc-stroked-button {
-    border: 2px solid #8b5cf6;
-    color: #8b5cf6;
+    border: 2px solid #22C55E;
+    color: #22C55E;
     font-weight: 600;
 
     &:hover:not([disabled]) {
-      background-color: rgba(139, 92, 246, 0.1);
-      border-color: #7c3aed;
-      color: #7c3aed;
+      background-color: rgba(34, 197, 94, 0.1);
+      border-color: #16a34a;
+      color: #16a34a;
     }
   }
 }
