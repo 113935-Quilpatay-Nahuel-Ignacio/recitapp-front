@@ -1,14 +1,20 @@
+:host {
+  display: block;
+  background-color: #1A1A1A;
+  min-height: 100vh;
+}
+
 .management-container {
   max-width: 900px;
   margin: 2rem auto;
   padding: 2rem;
   font-family: sans-serif;
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
+  background-color: #1A1A1A;
+  color: #ffffff;
 }
 
 h2, h3 {
-  color: var(--bs-body-color);
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
@@ -18,11 +24,11 @@ h2 {
 }
 
 .pm-form {
-  background-color: var(--bs-tertiary-bg);
+  background-color: #2D2D2D;
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 2rem;
-  border: 1px solid var(--bs-border-color);
+  border: 1px solid #404040;
 }
 
 .form-group {
@@ -33,24 +39,24 @@ h2 {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-  color: var(--bs-body-color);
+  color: #ffffff;
 }
 
 .form-group input[type='text'],
 .form-group input[type='checkbox'] {
   padding: 0.5rem;
-  border: 1px solid var(--bs-border-color);
+  border: 1px solid #404040;
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
+  background-color: #3a3a3a;
+  color: #ffffff;
 }
 
 .form-group input[type='text']:focus {
   outline: none;
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #22C55E;
+  box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
 }
 
 .form-group input[type='checkbox'] {
@@ -61,7 +67,7 @@ h2 {
 .checkbox-group label {
   font-weight: normal;
   display: inline-block;
-  color: var(--bs-body-color);
+  color: #ffffff;
 }
 
 .form-actions {
@@ -80,26 +86,26 @@ h2 {
 }
 
 .form-actions button[type='submit'] {
-  background-color: var(--bs-primary);
+  background-color: #22C55E;
   color: white;
 }
 
 .form-actions button[type='submit']:hover:not(:disabled) {
-  filter: brightness(0.9);
+  background-color: #16a34a;
 }
 
 .form-actions button[type='submit']:disabled {
-  background-color: var(--bs-secondary);
+  background-color: #404040;
   cursor: not-allowed;
 }
 
 .form-actions .cancel-button {
-  background-color: var(--bs-secondary);
+  background-color: #404040;
   color: white;
 }
 
 .form-actions .cancel-button:hover {
-  filter: brightness(0.9);
+  background-color: #525252;
 }
 
 .loading-indicator, .error-message-banner, .success-message-banner {
@@ -110,53 +116,53 @@ h2 {
 }
 
 .loading-indicator {
-  color: var(--bs-body-color);
+  color: #ffffff;
 }
 
 .error-message {
-  color: var(--bs-danger);
+  color: #ef4444;
   font-size: 0.875em;
   margin-top: 0.25rem;
 }
 
 .error-message-banner {
-  background-color: var(--bs-danger-bg-subtle);
-  color: var(--bs-danger-text);
-  border: 1px solid var(--bs-danger-border-subtle);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .success-message-banner {
-  background-color: var(--bs-success-bg-subtle);
-  color: var(--bs-success-text);
-  border: 1px solid var(--bs-success-border-subtle);
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22C55E;
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .pm-list table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
-  background-color: var(--bs-body-bg);
+  background-color: #2D2D2D;
 }
 
 .pm-list th, .pm-list td {
-  border: 1px solid var(--bs-border-color);
+  border: 1px solid #404040;
   padding: 0.75rem;
   text-align: left;
-  color: var(--bs-body-color);
+  color: #ffffff;
 }
 
 .pm-list th {
-  background-color: var(--bs-tertiary-bg);
+  background-color: #3a3a3a;
   font-weight: 600;
 }
 
 .status-active {
-  color: var(--bs-success);
+  color: #22C55E;
   font-weight: bold;
 }
 
 .status-inactive {
-  color: var(--bs-warning);
+  color: #f59e0b;
   font-weight: bold;
 }
 
@@ -175,19 +181,19 @@ h2 {
 }
 
 .edit-button {
-  background-color: var(--bs-warning);
-  color: var(--bs-dark);
+  background-color: #22C55E;
+  color: white;
 }
 
 .edit-button:hover {
-  filter: brightness(0.9);
+  background-color: #16a34a;
 }
 
 .delete-button {
-  background-color: var(--bs-danger);
+  background-color: #ef4444;
   color: white;
 }
 
 .delete-button:hover {
-  filter: brightness(0.9);
+  background-color: #dc2626;
 } 

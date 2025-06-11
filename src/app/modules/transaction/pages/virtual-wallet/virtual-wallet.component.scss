@@ -1,15 +1,21 @@
+:host {
+  display: block;
+  background-color: #1A1A1A;
+  min-height: 100vh;
+}
+
 .virtual-wallet-container {
   max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
-  border: 1px solid var(--bs-border-color);
+  border: 1px solid #404040;
   border-radius: 8px;
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
+  background-color: #2D2D2D;
+  color: #ffffff;
 }
 
 h2, h3 {
-  color: var(--bs-body-color);
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
@@ -19,23 +25,23 @@ h2 {
 }
 
 .wallet-overview {
-  background-color: var(--bs-tertiary-bg);
+  background-color: #3a3a3a;
   padding: 1.5rem;
   border-radius: 6px;
   margin-bottom: 2rem;
   text-align: center;
-  border: 1px solid var(--bs-border-color);
+  border: 1px solid #404040;
 }
 
 .balance {
   font-size: 2rem;
   font-weight: bold;
-  color: var(--bs-primary);
+  color: #22C55E;
 }
 
 .loading-text {
   font-style: italic;
-  color: var(--bs-secondary);
+  color: #94a3b8;
 }
 
 .wallet-actions form {
@@ -50,32 +56,32 @@ label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-  color: var(--bs-body-color);
+  color: #ffffff;
 }
 
 input[type='text'],
 input[type='number'] {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--bs-border-color);
+  border: 1px solid #404040;
   border-radius: 4px;
   box-sizing: border-box;
   font-size: 1rem;
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
+  background-color: #3a3a3a;
+  color: #ffffff;
 }
 
 input[type='text']:focus,
 input[type='number']:focus {
   outline: none;
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #22C55E;
+  box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
 }
 
 button[type='submit'],
 .refresh-button {
   padding: 0.75rem 1.5rem;
-  background-color: var(--bs-primary);
+  background-color: #22C55E;
   color: white;
   border: none;
   border-radius: 4px;
@@ -87,27 +93,27 @@ button[type='submit'],
 
 button[type='submit']:disabled,
 .refresh-button:disabled {
-  background-color: var(--bs-secondary);
+  background-color: #404040;
   cursor: not-allowed;
 }
 
 button[type='submit']:hover:not(:disabled),
 .refresh-button:hover:not(:disabled) {
-  filter: brightness(0.9);
+  background-color: #16a34a;
 }
 
 .error-message {
-  color: var(--bs-danger);
+  color: #ef4444;
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 .error-message-banner {
-  background-color: var(--bs-danger-bg-subtle);
-  color: var(--bs-danger-text);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #f87171;
   padding: 1rem;
   margin-bottom: 1rem;
-  border: 1px solid var(--bs-danger-border-subtle);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 4px;
 }
 
@@ -123,44 +129,44 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
-  background-color: var(--bs-body-bg);
+  background-color: #2D2D2D;
 }
 
 th,
 td {
-  border: 1px solid var(--bs-border-color);
+  border: 1px solid #404040;
   padding: 0.75rem;
   text-align: left;
-  color: var(--bs-body-color);
+  color: #ffffff;
 }
 
 th {
-  background-color: var(--bs-tertiary-bg);
-  color: var(--bs-body-color);
+  background-color: #3a3a3a;
+  color: #ffffff;
   font-weight: 600;
 }
 
 .positive-amount {
-  color: var(--bs-success);
+  color: #22C55E;
   font-weight: 600;
 }
 
 .negative-amount {
-  color: var(--bs-danger);
+  color: #ef4444;
   font-weight: 600;
 }
 
 /* Reusing status styles */
 .status-completed {
-  color: var(--bs-success);
+  color: #22C55E;
   font-weight: bold;
 }
 .status-pending {
-  color: var(--bs-warning);
+  color: #f59e0b;
   font-weight: bold;
 }
 .status-failed,
 .status-cancelled {
-  color: var(--bs-danger);
+  color: #ef4444;
   font-weight: bold;
 } 
