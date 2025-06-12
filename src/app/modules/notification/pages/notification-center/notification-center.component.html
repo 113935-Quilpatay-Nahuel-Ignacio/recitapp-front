@@ -1,46 +1,160 @@
 <div class="notification-center-container">
   <header class="notification-header">
-    <h2>Notification Center</h2>
-    <button (click)="markAllAsRead()" class="mark-all-read-btn">
-      Mark All as Read
-    </button>
-    <a routerLink="/user/preferences" class="preferences-link">
-      Notification Settings
-    </a>
+    <h2>Centro de Notificaciones</h2>
+    <div class="header-actions">
+      <button 
+        (click)="markAllAsRead()" 
+        class="btn btn-outline-primary"
+        title="Marcar todas como leídas">
+        <i class="bi bi-check-all me-2"></i>
+        Marcar Todas como Leídas
+      </button>
+      <button 
+        (click)="deleteReadNotifications()" 
+        class="btn btn-outline-danger"
+        title="Eliminar notificaciones leídas">
+        <i class="bi bi-trash me-2"></i>
+        Eliminar Leídas
+      </button>
+      <a routerLink="/user/preferences" class="btn btn-outline-secondary">
+        <i class="bi bi-gear me-2"></i>
+        Configuración
+      </a>
+    </div>
   </header>
 
   <div *ngIf="isLoading" class="loading-indicator">
-    <p>Loading notifications...</p>
-    <!-- Add a spinner or more elaborate loading animation here -->
+    <div class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border text-primary me-3" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mb-0">Cargando notificaciones...</p>
+    </div>
   </div>
 
   <div *ngIf="errorLoading" class="error-message">
-    <p>Could not load notifications. Please try again later.</p>
+    <div class="alert alert-danger" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      No se pudieron cargar las notificaciones. Por favor, inténtalo de nuevo más tarde.
+    </div>
   </div>
 
   <div *ngIf="!(isLoading || errorLoading) && (notifications$ | async) as notifications">
-    <ul *ngIf="notifications.length > 0; else noNotifications" class="notification-list">
-      <li 
+    <!-- Bulk Actions -->
+    <div *ngIf="notifications.length > 0" class="bulk-actions mb-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="select-all-container">
+          <div class="form-check">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="selectAll"
+              [checked]="selectAll"
+              (change)="toggleSelectAll()">
+            <label class="form-check-label" for="selectAll">
+              Seleccionar todas
+            </label>
+          </div>
+        </div>
+        <div class="selected-actions" *ngIf="hasSelectedNotifications()">
+          <span class="selected-count me-3">
+            {{ selectedNotifications.size }} seleccionada(s)
+          </span>
+          <button 
+            (click)="markSelectedAsRead()" 
+            class="btn btn-sm btn-outline-success me-2"
+            title="Marcar seleccionadas como leídas">
+            <i class="bi bi-check me-1"></i>
+            Marcar como Leídas
+          </button>
+          <button 
+            (click)="deleteSelectedNotifications()" 
+            class="btn btn-sm btn-outline-danger"
+            title="Eliminar seleccionadas">
+            <i class="bi bi-trash me-1"></i>
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div *ngIf="notifications.length > 0; else noNotifications" class="notification-list">
+      <div 
         *ngFor="let notification of notifications" 
         class="notification-item" 
         [class.unread]="!notification.isRead"
-        (click)="markAsRead(notification)"
+        [class.selected]="isSelected(notification.id)"
       >
-        <a [routerLink]="getNotificationLink(notification)" class="notification-link">
-          <div class="notification-content">
-            <strong class="notification-title">
-              {{ notification.relatedEventName || notification.relatedArtistName || notification.typeName }}
-            </strong>
-            <p class="notification-message">{{ notification.content }}</p>
-            <small class="notification-timestamp">{{ notification.sentAt | date:'short' }}</small>
+        <div class="notification-checkbox">
+          <input 
+            class="form-check-input" 
+            type="checkbox" 
+            [id]="'notification-' + notification.id"
+            [checked]="isSelected(notification.id)"
+            (change)="toggleNotificationSelection(notification.id)">
+        </div>
+        
+        <div class="notification-content" (click)="markAsRead(notification)">
+          <div class="notification-header-info">
+            <div class="notification-type-badge">
+              <span class="badge bg-primary">
+                {{ getNotificationTypeText(notification.typeName) }}
+              </span>
+            </div>
+            <div class="notification-status">
+              <span *ngIf="!notification.isRead" class="unread-indicator" title="No leída">
+                <i class="bi bi-circle-fill text-primary"></i>
+              </span>
+              <span *ngIf="notification.isRead" class="read-indicator" title="Leída">
+                <i class="bi bi-check-circle-fill text-success"></i>
+              </span>
+            </div>
           </div>
-          <span *ngIf="!notification.isRead" class="unread-indicator" title="Mark as read"></span>
-        </a>
-      </li>
-    </ul>
+          
+          <div class="notification-main">
+            <h6 class="notification-title">
+              {{ notification.relatedEventName || notification.relatedArtistName || getNotificationTypeText(notification.typeName) }}
+            </h6>
+            <p class="notification-message">{{ notification.content }}</p>
+            <small class="notification-timestamp">
+              <i class="bi bi-clock me-1"></i>
+              {{ notification.sentAt | date:'dd/MM/yyyy HH:mm' }}
+            </small>
+          </div>
+        </div>
+
+        <div class="notification-actions">
+          <button 
+            *ngIf="!notification.isRead"
+            (click)="markAsRead(notification)" 
+            class="btn btn-sm btn-outline-success"
+            title="Marcar como leída">
+            <i class="bi bi-check"></i>
+          </button>
+          <a 
+            *ngIf="getNotificationLink(notification)" 
+            [routerLink]="getNotificationLink(notification)" 
+            class="btn btn-sm btn-outline-primary"
+            title="Ver detalles">
+            <i class="bi bi-eye"></i>
+          </a>
+          <button 
+            (click)="deleteNotification(notification.id)" 
+            class="btn btn-sm btn-outline-danger"
+            title="Eliminar notificación">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <ng-template #noNotifications>
-      <p class="empty-state">You have no new notifications.</p>
+      <div class="empty-state text-center py-5">
+        <i class="bi bi-bell-slash text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3 text-muted">No tienes notificaciones</h4>
+        <p class="text-muted">Cuando recibas notificaciones, aparecerán aquí.</p>
+      </div>
     </ng-template>
   </div>
-
 </div>

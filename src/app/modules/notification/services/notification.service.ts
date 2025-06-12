@@ -73,6 +73,17 @@ export class NotificationService {
       throw new Error('Usuario no autenticado');
     }
     return this.http.get<Notification[]>(
+      `${this.apiUrlBase}/notifications/user/${userId}/history`
+    );
+  }
+
+  // Get only unread notifications
+  getUnreadNotifications(): Observable<Notification[]> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    return this.http.get<Notification[]>(
       `${this.apiUrlBase}/notifications/user/${userId}/unread`
     );
   }
@@ -101,6 +112,34 @@ export class NotificationService {
     return this.http.patch<void>(
       `${this.apiUrlBase}/notifications/user/${userId}/read-multiple`,
       notificationIds
+    );
+  }
+
+  // Delete notification methods
+  deleteNotification(notificationId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrlBase}/notifications/${notificationId}`
+    );
+  }
+
+  deleteMultipleNotifications(notificationIds: string[]): Observable<void> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    return this.http.delete<void>(
+      `${this.apiUrlBase}/notifications/user/${userId}/multiple`,
+      { body: notificationIds }
+    );
+  }
+
+  deleteReadNotifications(): Observable<void> {
+    const userId = this.sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    return this.http.delete<void>(
+      `${this.apiUrlBase}/notifications/user/${userId}/read`
     );
   }
 
