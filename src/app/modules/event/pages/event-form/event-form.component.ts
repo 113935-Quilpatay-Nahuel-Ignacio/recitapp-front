@@ -34,6 +34,7 @@ export class EventFormComponent implements OnInit {
   successMessage = '';
   isEditMode = false; // Para futura funcionalidad de edición
   eventId: number | null = null; // Para futura funcionalidad de edición
+  private isLoadingForEdit = false; // Flag to prevent clearing during edit loading
   
   constructor(
     private fb: FormBuilder,
@@ -70,8 +71,8 @@ export class EventFormComponent implements OnInit {
   private initForm(): void {
     this.eventForm = this.fb.group({
       name: ['', Validators.required],
-      description: [''],
-      flyerImage: [''], // Campo para URL de la imagen del evento
+      description: ['', Validators.required],
+      flyerImage: [''],
       startDateTime: ['', Validators.required],
       endDateTime: [''],
       venueId: [null, Validators.required],
@@ -81,9 +82,9 @@ export class EventFormComponent implements OnInit {
 
     // Escuchar cambios en el venue seleccionado para cargar sus secciones
     this.eventForm.get('venueId')?.valueChanges.subscribe(venueId => {
-      if (venueId) {
+      if (venueId && !this.isLoadingForEdit) {
         this.loadVenueSections(venueId);
-      } else {
+      } else if (!venueId && !this.isLoadingForEdit) {
         this.selectedVenueSections = [];
         this.clearTicketPrices();
       }
@@ -133,6 +134,7 @@ export class EventFormComponent implements OnInit {
 
   loadEventForEdit(id: number): void {
     this.isLoading = true;
+    this.isLoadingForEdit = true;
     this.eventService.getEventById(id).subscribe({
       next: (event) => {
         // Formatear fechas para datetime-local input
@@ -193,9 +195,11 @@ export class EventFormComponent implements OnInit {
         }
         
         this.isLoading = false;
+        this.isLoadingForEdit = false;
       },
       error: (err) => {
         this.isLoading = false;
+        this.isLoadingForEdit = false;
         this.errorMessage = `Error al cargar datos del evento: ${err.error?.message || err.message}`;
         // Considerar redirigir si el evento no se encuentra
         // this.router.navigate(['/events']);
