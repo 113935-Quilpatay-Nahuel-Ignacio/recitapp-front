@@ -215,11 +215,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
-  { 
-    path: 'admin/dashboard', 
-    redirectTo: '/admin/dashboard',
-    pathMatch: 'full'
-  },
 
   // Admin module (lazy loaded and protected)
   {
