@@ -1,28 +1,28 @@
 <div class="modal-overlay" *ngIf="receipt">
   <div class="modal-content">
     <button class="close-button" (click)="onClose()">&times;</button>
-    <h2>Transaction Receipt</h2>
+    <h2>Recibo de Transacción</h2>
     <div *ngIf="receipt">
-      <p><strong>Receipt Number:</strong> {{ receipt.receiptNumber }}</p>
-      <p><strong>Transaction ID:</strong> {{ receipt.transactionId }}</p>
-      <p><strong>Issue Date:</strong> {{ receipt.issueDate | date: 'medium' }}</p>
-      <p><strong>Client:</strong> {{ receipt.userFullName }} (DNI: {{ receipt.userDni }})</p>
-      <p><strong>Total Amount:</strong> {{ receipt.totalAmount | currency }}</p>
-      <p><strong>Payment Method:</strong> {{ receipt.paymentMethod }}</p>
-      <p><strong>Refunded:</strong> {{ receipt.isRefund ? 'Yes' : 'No' }}</p>
+      <p><strong>Número de Recibo:</strong> {{ receipt.receiptNumber }}</p>
+      <p><strong>ID de Transacción:</strong> {{ receipt.transactionId }}</p>
+      <p><strong>Fecha de Emisión:</strong> {{ receipt.issueDate | date: 'medium' }}</p>
+      <p><strong>Cliente:</strong> {{ receipt.userFullName }} (DNI: {{ receipt.userDni }})</p>
+      <p><strong>Monto Total:</strong> {{ receipt.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</p>
+      <p><strong>Método de Pago:</strong> {{ receipt.paymentMethod }}</p>
+      <p><strong>Reembolsado:</strong> {{ receipt.isRefund ? 'Sí' : 'No' }}</p>
 
-      <h3>Items:</h3>
+      <h3>Artículos:</h3>
       <ul *ngIf="receipt.items && receipt.items.length > 0">
         <li *ngFor="let item of receipt.items">
-          {{ item.itemDescription }} - {{ item.quantity }} x {{ item.unitPrice | currency }} = {{ item.subtotal | currency }}
+          {{ item.itemDescription }} - {{ item.quantity }} x {{ item.unitPrice | currency:'ARS':'symbol':'1.2-2':'es-AR' }} = {{ item.subtotal | currency:'ARS':'symbol':'1.2-2':'es-AR' }}
         </li>
       </ul>
-      <p *ngIf="!receipt.items || receipt.items.length === 0">No items found for this transaction.</p>
+      <p *ngIf="!receipt.items || receipt.items.length === 0">No se encontraron artículos para esta transacción.</p>
     </div>
     <div class="modal-actions">
-      <button (click)="onClose()" class="button">Close</button>
+      <button (click)="onClose()" class="button">Cerrar</button>
       <!-- Add a print button if desired -->
-      <!-- <button (click)="printReceipt()" class="button primary-button">Print</button> -->
+      <!-- <button (click)="printReceipt()" class="button primary-button">Imprimir</button> -->
     </div>
   </div>
 </div> 

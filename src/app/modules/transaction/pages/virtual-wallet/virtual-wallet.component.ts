@@ -47,7 +47,7 @@ export class VirtualWalletComponent implements OnInit {
     
     this.walletForm = this.fb.group({
       amount: [null, [Validators.required, Validators.pattern(/^-?[0-9]+(\.[0-9]{1,2})?$/)]],
-      currency: ['USD', Validators.required],
+      currency: ['ARS', Validators.required],
       description: ['Ajuste de billetera'] // Descripción opcional para transacción de billetera
     });
     this.loadWalletData();
@@ -129,7 +129,7 @@ export class VirtualWalletComponent implements OnInit {
       .pipe(
         switchMap(() => {
           // Recargar saldo de billetera y transacciones recientes después del ajuste
-          this.walletForm.reset({ currency: 'USD', description: 'Ajuste de billetera' });
+          this.walletForm.reset({ currency: 'ARS', description: 'Ajuste de billetera' });
           return forkJoin([
             this.transactionService.getUserWalletBalance(numericUserId).pipe(catchError(() => of(this.walletBalance$.value))), // Mantener saldo anterior en caso de error
             this.transactionService.getPaymentHistory(numericUserId, undefined, undefined).pipe(catchError(() => of([]))) // Transacciones vacías en caso de error

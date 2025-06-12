@@ -163,23 +163,32 @@ export class EventFormComponent implements OnInit {
           mainArtistId: event.mainArtistId,
         });
         
+        // Cargar las secciones del venue inmediatamente después de establecer el venueId
+        this.loadVenueSections(event.venueId);
+        
         // Cargar precios de tickets si existen
         if (event.ticketPrices && event.ticketPrices.length > 0) {
-          // Primero cargar las secciones del venue
-          this.loadVenueSections(event.venueId);
-          
-          // Luego cargar los precios de tickets
-          setTimeout(() => {
-            event.ticketPrices?.forEach(ticketPrice => {
-              const ticketPriceGroup = this.fb.group({
-                sectionId: [ticketPrice.sectionId, Validators.required],
-                ticketType: [ticketPrice.ticketType, Validators.required],
-                price: [ticketPrice.price, [Validators.required, Validators.min(0)]],
-                availableQuantity: [ticketPrice.availableQuantity, [Validators.required, Validators.min(1)]]
+          // Usar una promesa para asegurar que las secciones se carguen antes de los precios
+          this.venueService.getVenueSections(event.venueId).subscribe({
+            next: (sections: VenueSection[]) => {
+              this.selectedVenueSections = sections.filter(section => section.active);
+              
+              // Ahora cargar los precios de tickets
+              event.ticketPrices?.forEach(ticketPrice => {
+                const ticketPriceGroup = this.fb.group({
+                  sectionId: [ticketPrice.sectionId, Validators.required],
+                  ticketType: [ticketPrice.ticketType, Validators.required],
+                  price: [ticketPrice.price, [Validators.required, Validators.min(0)]],
+                  availableQuantity: [ticketPrice.availableQuantity, [Validators.required, Validators.min(1)]]
+                });
+                this.ticketPrices.push(ticketPriceGroup);
               });
-              this.ticketPrices.push(ticketPriceGroup);
-            });
-          }, 500); // Pequeño delay para asegurar que las secciones se carguen primero
+            },
+            error: (err: any) => {
+              console.error('Error loading venue sections for editing:', err);
+              this.errorMessage = 'No se pudieron cargar las secciones del recinto.';
+            }
+          });
         }
         
         // Establecer vista previa de imagen si existe

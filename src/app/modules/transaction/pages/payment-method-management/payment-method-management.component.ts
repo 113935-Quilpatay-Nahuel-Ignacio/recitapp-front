@@ -5,9 +5,10 @@ import {
   FormGroup,
   ReactiveFormsModule,
   Validators,
+  FormsModule,
 } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { catchError, startWith, switchMap, tap } from 'rxjs/operators';
+import { catchError, startWith, switchMap, tap, map } from 'rxjs/operators';
 import { TransactionService } from '../../services/transaction.service';
 import { PaymentMethodDTO } from '../../models/dto';
 import { ModalService } from '../../../../shared/services/modal.service';
@@ -15,7 +16,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 @Component({
   selector: 'app-payment-method-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './payment-method-management.component.html',
   styleUrl: './payment-method-management.component.scss',
 })
@@ -26,6 +27,7 @@ export class PaymentMethodManagementComponent implements OnInit {
   errorMessage: string | null = null;
   isLoading = false;
   successMessage: string | null = null;
+  showInactive = false;
 
   private fb = inject(FormBuilder);
   private transactionService = inject(TransactionService);
@@ -43,9 +45,10 @@ export class PaymentMethodManagementComponent implements OnInit {
   loadPaymentMethods(): void {
     this.isLoading = true;
     this.paymentMethods$ = this.transactionService
-      .getAvailablePaymentMethods()
+      .getAvailablePaymentMethods(true)
       .pipe(
         tap(() => (this.isLoading = false)),
+        map(methods => this.showInactive ? methods : methods.filter(m => m.active)),
         catchError((err) => {
           this.errorMessage = 'Error al cargar los métodos de pago.';
           this.isLoading = false;
@@ -53,6 +56,10 @@ export class PaymentMethodManagementComponent implements OnInit {
           return of([]);
         })
       );
+  }
+
+  toggleInactiveFilter(): void {
+    this.loadPaymentMethods();
   }
 
   editPaymentMethod(pm: PaymentMethodDTO): void {

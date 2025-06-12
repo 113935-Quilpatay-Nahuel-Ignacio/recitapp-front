@@ -59,7 +59,6 @@ export class ArtistManagementComponent implements OnInit {
   }
 
   toggleActiveFilter(): void {
-    this.showInactive = !this.showInactive;
     this.loadArtists();
   }
 

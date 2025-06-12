@@ -152,6 +152,28 @@
   }
 }
 
+// Force proper text color for all text elements
+p, span, div, label {
+  &.text-muted {
+    color: #94a3b8 !important;
+  }
+}
+
+// Ensure all text in the component has proper color
+* {
+  &.text-muted {
+    color: #94a3b8 !important;
+  }
+  
+  &.text-dark {
+    color: #f1f5f9 !important;
+  }
+  
+  &.text-secondary {
+    color: #94a3b8 !important;
+  }
+}
+
 // Table styling - COMPLETELY NO WHITE
 .table-responsive {
   background-color: #2D2D2D !important;

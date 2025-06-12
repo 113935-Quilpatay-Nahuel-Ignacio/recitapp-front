@@ -79,8 +79,12 @@ export class TransactionService {
   }
 
   // Corresponds to RAPP113935-103 / [GET] /payment-methods
-  getAvailablePaymentMethods(): Observable<PaymentMethodDTO[]> {
-    return this.http.get<PaymentMethodDTO[]>(`${this.baseUrl}/payment-methods`)
+  getAvailablePaymentMethods(includeInactive: boolean = false): Observable<PaymentMethodDTO[]> {
+    let params = new HttpParams();
+    if (includeInactive) {
+      params = params.set('includeInactive', 'true');
+    }
+    return this.http.get<PaymentMethodDTO[]>(`${this.baseUrl}/payment-methods`, { params })
       .pipe(catchError(this.handleError));
   }
 

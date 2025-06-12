@@ -5,7 +5,7 @@
     <h3>Saldo Actual:</h3>
     <p class="balance" [class.loading-text]="isLoading && (walletBalance$ | async) === null">
       <span *ngIf="(walletBalance$ | async) !== null; else balanceLoading">
-        {{ (walletBalance$ | async) | currency: 'USD':'symbol' }} <!-- Asumiendo USD por ahora -->
+        {{ (walletBalance$ | async) | currency: 'ARS':'symbol':'1.2-2':'es-AR' }}
       </span>
       <ng-template #balanceLoading>Cargando saldo...</ng-template>
     </p>
@@ -60,7 +60,7 @@
               <td>{{ tx.transactionDate | date: 'medium' }}</td>
               <td>{{ tx.description || 'N/A' }}</td>
               <td [ngClass]="{'positive-amount': tx.totalAmount > 0, 'negative-amount': tx.totalAmount < 0}">
-                {{ tx.totalAmount | currency }}
+                {{ tx.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}
               </td>
               <td><span [ngClass]="'status-' + tx.statusName.toLowerCase()">{{ tx.statusName }}</span></td>
             </tr>
