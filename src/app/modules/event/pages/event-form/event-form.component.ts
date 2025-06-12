@@ -135,7 +135,7 @@ export class EventFormComponent implements OnInit {
   loadEventForEdit(id: number): void {
     this.isLoading = true;
     this.isLoadingForEdit = true;
-    this.eventService.getEventById(id).subscribe({
+    this.eventService.getEventForEdit(id).subscribe({
       next: (event) => {
         // Formatear fechas para datetime-local input
         // El backend devuelve ISO string (e.g., "2025-06-15T18:00:00Z" o similar)

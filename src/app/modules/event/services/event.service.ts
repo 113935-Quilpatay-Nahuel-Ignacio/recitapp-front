@@ -62,6 +62,10 @@ export class EventService {
     return this.http.get<EventDTO>(`${this.apiUrl}/${id}`);
   }
 
+  getEventForEdit(id: number): Observable<EventDTO> {
+    return this.http.get<EventDTO>(`${this.apiUrl}/${id}/edit`);
+  }
+
   updateEvent(id: number, eventData: EventCreateDTO): Observable<EventDTO> {
     return this.http.put<EventDTO>(`${this.apiUrl}/${id}`, eventData);
   }
