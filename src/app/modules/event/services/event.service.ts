@@ -50,6 +50,14 @@ export class EventService {
     return this.http.get<EventDTO[]>(`${this.apiUrl}/search`, { params });
   }
 
+  getAllEvents(upcomingOnly?: boolean): Observable<EventDTO[]> {
+    let params = new HttpParams();
+    if (upcomingOnly !== undefined) {
+      params = params.set('upcomingOnly', upcomingOnly.toString());
+    }
+    return this.http.get<EventDTO[]>(this.apiUrl, { params });
+  }
+
   getEventById(id: number): Observable<EventDTO> {
     return this.http.get<EventDTO>(`${this.apiUrl}/${id}`);
   }

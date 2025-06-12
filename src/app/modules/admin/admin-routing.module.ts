@@ -7,8 +7,13 @@ import { PromotionalTicketFormComponent } from './components/promotional-ticket-
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { MusicGenreAdminComponent } from '../artist/pages/music-genre-admin/music-genre-admin.component';
 import { NotificationTestComponent } from './pages/notification-test/notification-test.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 
 const routes: Routes = [
+  {
+    path: 'dashboard',
+    component: AdminDashboardComponent
+  },
   {
     path: 'users',
     component: UserManagementComponent
@@ -38,10 +43,10 @@ const routes: Routes = [
     path: 'notification-test',
     component: NotificationTestComponent
   },
-  // Redirigir por defecto a gestión de usuarios
+  // Redirigir por defecto al dashboard
   {
     path: '',
-    redirectTo: 'users',
+    redirectTo: 'dashboard',
     pathMatch: 'full'
   }
 ];

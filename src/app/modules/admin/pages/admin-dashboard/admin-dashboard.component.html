@@ -1,0 +1,346 @@
+<div class="admin-dashboard-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="page-title">
+          <i class="bi bi-speedometer2 me-2"></i>
+          Dashboard Administrativo
+        </h1>
+        <p class="page-subtitle">Panel de control y reportes del sistema</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-light" (click)="loadDashboardData()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando dashboard...</span>
+    </div>
+    <h4>Cargando datos del dashboard...</h4>
+    <p class="text-muted">Por favor espera mientras obtenemos la información</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="alert alert-danger" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading && !error">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card border-left-primary">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                  Total Eventos
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  {{ dashboardStats.totalEvents }}
+                </div>
+                <div class="text-xs text-muted">
+                  {{ dashboardStats.upcomingEvents }} próximos
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="bi bi-calendar-event fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card border-left-success">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                  Total Artistas
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  {{ dashboardStats.totalArtists }}
+                </div>
+                <div class="text-xs text-muted">
+                  {{ dashboardStats.activeArtists }} activos
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="bi bi-music-note-beamed fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card border-left-info">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                  Total Recintos
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  {{ dashboardStats.totalVenues }}
+                </div>
+                <div class="text-xs text-muted">
+                  {{ dashboardStats.activeVenues }} activos
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="bi bi-building fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card border-left-warning">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                  Métodos de Pago
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  {{ dashboardStats.totalActivePaymentMethods }}
+                </div>
+                <div class="text-xs text-muted">
+                  activos
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="bi bi-credit-card fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-lightning me-2"></i>
+              Acciones Rápidas
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <a [routerLink]="['/events/new']" class="btn btn-primary w-100">
+                  <i class="bi bi-plus-circle me-2"></i>
+                  Nuevo Evento
+                </a>
+              </div>
+              <div class="col-md-3 mb-3">
+                <a [routerLink]="['/artists/new']" class="btn btn-success w-100">
+                  <i class="bi bi-person-plus me-2"></i>
+                  Nuevo Artista
+                </a>
+              </div>
+              <div class="col-md-3 mb-3">
+                <a [routerLink]="['/venues/new']" class="btn btn-info w-100">
+                  <i class="bi bi-building-add me-2"></i>
+                  Nuevo Recinto
+                </a>
+              </div>
+              <div class="col-md-3 mb-3">
+                <a [routerLink]="['/transactions/manage-payment-methods']" class="btn btn-warning w-100">
+                  <i class="bi bi-credit-card me-2"></i>
+                  Métodos de Pago
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-graph-up me-2"></i>
+              Reportes Disponibles
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="report-card">
+                  <div class="report-icon">
+                    <i class="bi bi-bar-chart-line"></i>
+                  </div>
+                  <div class="report-content">
+                    <h6>Reporte de Ventas</h6>
+                    <p class="text-muted">Análisis de ventas por evento</p>
+                    <a [routerLink]="['/admin/event-sales-report']" class="btn btn-sm btn-outline-primary">
+                      Ver Reporte
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="report-card">
+                  <div class="report-icon">
+                    <i class="bi bi-people"></i>
+                  </div>
+                  <div class="report-content">
+                    <h6>Estadísticas de Artistas</h6>
+                    <p class="text-muted">Rendimiento y popularidad</p>
+                    <a [routerLink]="['/artists/management']" class="btn btn-sm btn-outline-primary">
+                      Ver Estadísticas
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="report-card">
+                  <div class="report-icon">
+                    <i class="bi bi-cash-stack"></i>
+                  </div>
+                  <div class="report-content">
+                    <h6>Transacciones</h6>
+                    <p class="text-muted">Historial de pagos y reembolsos</p>
+                    <a [routerLink]="['/transactions/history']" class="btn btn-sm btn-outline-primary">
+                      Ver Transacciones
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Events and Popular Artists -->
+    <div class="row">
+      <!-- Recent Events -->
+      <div class="col-lg-8 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-clock-history me-2"></i>
+              Eventos Recientes
+            </h5>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentEvents.length === 0" class="text-center py-4">
+              <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+              <p class="text-muted mt-2">No hay eventos recientes</p>
+            </div>
+            <div *ngIf="recentEvents.length > 0" class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Evento</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let event of recentEvents">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <img *ngIf="event.flyerImage" 
+                             [src]="event.flyerImage" 
+                             class="rounded me-2" 
+                             style="width: 40px; height: 40px; object-fit: cover;"
+                             [alt]="event.name">
+                        <div *ngIf="!event.flyerImage" 
+                             class="bg-secondary rounded me-2 d-flex align-items-center justify-content-center"
+                             style="width: 40px; height: 40px;">
+                          <i class="bi bi-music-note text-white"></i>
+                        </div>
+                        <div>
+                          <div class="fw-bold">{{ event.name }}</div>
+                          <small class="text-muted">{{ event.venueName }}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ formatDate(event.startDateTime) }}</td>
+                    <td>
+                      <span [class]="getStatusClass(event.statusName)">
+                        {{ event.statusName }}
+                      </span>
+                    </td>
+                    <td>
+                      <a [routerLink]="['/events', event.id]" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Popular Artists -->
+      <div class="col-lg-4 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-star me-2"></i>
+              Artistas Populares
+            </h5>
+          </div>
+          <div class="card-body">
+            <div *ngIf="popularArtists.length === 0" class="text-center py-4">
+              <i class="bi bi-person-x text-muted" style="font-size: 3rem;"></i>
+              <p class="text-muted mt-2">No hay datos de popularidad</p>
+            </div>
+            <div *ngIf="popularArtists.length > 0">
+              <div *ngFor="let artist of popularArtists; let i = index" class="d-flex align-items-center mb-3">
+                <div class="rank-badge me-3">
+                  {{ i + 1 }}
+                </div>
+                <img *ngIf="artist.profileImage" 
+                     [src]="artist.profileImage" 
+                     class="rounded-circle me-3" 
+                     style="width: 50px; height: 50px; object-fit: cover;"
+                     [alt]="artist.name">
+                <div *ngIf="!artist.profileImage" 
+                     class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center"
+                     style="width: 50px; height: 50px;">
+                  <i class="bi bi-person text-white"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-bold">{{ artist.name }}</div>
+                  <small class="text-muted">
+                    <span [class]="artist.active ? 'text-success' : 'text-danger'">
+                      {{ artist.active ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </small>
+                </div>
+                <a [routerLink]="['/artists', artist.id]" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

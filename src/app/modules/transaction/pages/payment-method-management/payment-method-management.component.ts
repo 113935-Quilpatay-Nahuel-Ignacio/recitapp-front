@@ -45,10 +45,9 @@ export class PaymentMethodManagementComponent implements OnInit {
   loadPaymentMethods(): void {
     this.isLoading = true;
     this.paymentMethods$ = this.transactionService
-      .getAvailablePaymentMethods(true)
+      .getAvailablePaymentMethods(this.showInactive)
       .pipe(
         tap(() => (this.isLoading = false)),
-        map(methods => this.showInactive ? methods : methods.filter(m => m.active)),
         catchError((err) => {
           this.errorMessage = 'Error al cargar los métodos de pago.';
           this.isLoading = false;

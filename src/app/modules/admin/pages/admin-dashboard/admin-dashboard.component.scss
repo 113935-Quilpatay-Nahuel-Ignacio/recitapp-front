@@ -1,0 +1,361 @@
+.admin-dashboard-container {
+  background: #1A1A1A;
+  min-height: 100vh;
+  padding: 2rem;
+  color: #f1f5f9;
+
+  .page-header {
+    .page-title {
+      color: #22C55E;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 0;
+    }
+
+    .header-actions {
+      .btn {
+        border-color: #404040;
+        color: #f1f5f9;
+        
+        &:hover {
+          background-color: #22C55E;
+          border-color: #22C55E;
+          color: #1A1A1A;
+        }
+      }
+    }
+  }
+
+  .loading-state {
+    .spinner-border {
+      color: #22C55E !important;
+    }
+
+    h4 {
+      color: #f1f5f9;
+    }
+  }
+
+  // Statistics Cards
+  .stats-card {
+    background: #2D2D2D;
+    border: 1px solid #404040;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+    }
+
+    &.border-left-primary {
+      border-left: 4px solid #22C55E;
+    }
+
+    &.border-left-success {
+      border-left: 4px solid #10b981;
+    }
+
+    &.border-left-info {
+      border-left: 4px solid #06b6d4;
+    }
+
+    &.border-left-warning {
+      border-left: 4px solid #f59e0b;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+
+      .text-xs {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
+
+      .text-primary {
+        color: #22C55E !important;
+      }
+
+      .text-success {
+        color: #10b981 !important;
+      }
+
+      .text-info {
+        color: #06b6d4 !important;
+      }
+
+      .text-warning {
+        color: #f59e0b !important;
+      }
+
+      .text-gray-800 {
+        color: #f1f5f9 !important;
+      }
+
+      .text-gray-300 {
+        color: #94a3b8 !important;
+      }
+
+      .h5 {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .fa-2x {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  // Cards
+  .card {
+    background: #2D2D2D;
+    border: 1px solid #404040;
+    border-radius: 0.5rem;
+    color: #f1f5f9;
+
+    .card-header {
+      background: #1A1A1A;
+      border-bottom: 1px solid #404040;
+      padding: 1rem 1.5rem;
+
+      .card-title {
+        color: #22C55E;
+        font-weight: 600;
+        margin-bottom: 0;
+      }
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  // Report Cards
+  .report-card {
+    background: #1A1A1A;
+    border: 1px solid #404040;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+      border-color: #22C55E;
+    }
+
+    .report-icon {
+      font-size: 3rem;
+      color: #22C55E;
+      margin-bottom: 1rem;
+    }
+
+    .report-content {
+      h6 {
+        color: #f1f5f9;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .btn {
+        background: transparent;
+        border-color: #22C55E;
+        color: #22C55E;
+
+        &:hover {
+          background: #22C55E;
+          color: #1A1A1A;
+        }
+      }
+    }
+  }
+
+  // Tables
+  .table {
+    color: #f1f5f9;
+
+    thead th {
+      background: #1A1A1A;
+      border-color: #404040;
+      color: #22C55E;
+      font-weight: 600;
+    }
+
+    tbody {
+      tr {
+        border-color: #404040;
+
+        &:hover {
+          background: rgba(34, 197, 94, 0.05);
+        }
+
+        td {
+          border-color: #404040;
+          vertical-align: middle;
+
+          .fw-bold {
+            color: #f1f5f9;
+          }
+
+          .text-muted {
+            color: #94a3b8 !important;
+          }
+        }
+      }
+    }
+  }
+
+  // Badges
+  .badge {
+    &.bg-success {
+      background-color: #10b981 !important;
+    }
+
+    &.bg-warning {
+      background-color: #f59e0b !important;
+      color: #1A1A1A !important;
+    }
+
+    &.bg-danger {
+      background-color: #ef4444 !important;
+    }
+
+    &.bg-secondary {
+      background-color: #6b7280 !important;
+    }
+  }
+
+  // Buttons
+  .btn {
+    &.btn-primary {
+      background-color: #22C55E;
+      border-color: #22C55E;
+      color: #1A1A1A;
+
+      &:hover {
+        background-color: #16a34a;
+        border-color: #16a34a;
+      }
+    }
+
+    &.btn-success {
+      background-color: #10b981;
+      border-color: #10b981;
+
+      &:hover {
+        background-color: #059669;
+        border-color: #059669;
+      }
+    }
+
+    &.btn-info {
+      background-color: #06b6d4;
+      border-color: #06b6d4;
+
+      &:hover {
+        background-color: #0891b2;
+        border-color: #0891b2;
+      }
+    }
+
+    &.btn-warning {
+      background-color: #f59e0b;
+      border-color: #f59e0b;
+      color: #1A1A1A;
+
+      &:hover {
+        background-color: #d97706;
+        border-color: #d97706;
+      }
+    }
+
+    &.btn-outline-primary {
+      border-color: #22C55E;
+      color: #22C55E;
+
+      &:hover {
+        background-color: #22C55E;
+        color: #1A1A1A;
+      }
+    }
+
+    &.btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  // Rank Badge
+  .rank-badge {
+    background: #22C55E;
+    color: #1A1A1A;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  // Alert
+  .alert {
+    &.alert-danger {
+      background-color: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+  }
+
+  // Text utilities
+  .text-success {
+    color: #10b981 !important;
+  }
+
+  .text-danger {
+    color: #ef4444 !important;
+  }
+
+  .text-muted {
+    color: #94a3b8 !important;
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .page-header {
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .header-actions {
+        margin-top: 1rem;
+      }
+    }
+
+    .stats-card {
+      margin-bottom: 1rem;
+    }
+
+    .report-card {
+      margin-bottom: 1rem;
+    }
+  }
+} 
