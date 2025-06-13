@@ -280,7 +280,7 @@
                     <td>{{ formatDate(event.startDateTime) }}</td>
                     <td>
                       <span [class]="getStatusClass(event.statusName)">
-                        {{ event.statusName }}
+                        {{ getStatusLabel(event.statusName) }}
                       </span>
                     </td>
                     <td>

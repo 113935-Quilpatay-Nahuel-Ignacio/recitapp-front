@@ -6,8 +6,8 @@
     <div class="form-group">
       <label for="reportType">Tipo de Reporte:</label>
       <select id="reportType" formControlName="reportType">
-        <option *ngFor="let type of reportTypes" [value]="type">
-          {{ type | titlecase }}
+        <option *ngFor="let type of reportTypes" [value]="type.value">
+          {{ type.label }}
         </option>
       </select>
     </div>
@@ -90,10 +90,10 @@
       <h4>Estadísticas de Resumen:</h4>
       <ul>
         <li><strong>Total de Transacciones:</strong> {{ stats.totalTransactions }}</li>
-        <li><strong>Monto Total:</strong> {{ stats.totalAmount | currency }}</li>
-        <li><strong>Monto Promedio:</strong> {{ stats.averageAmount | currency }}</li>
-        <li><strong>Monto Máximo:</strong> {{ stats.maxAmount | currency }}</li>
-        <li><strong>Monto Mínimo:</strong> {{ stats.minAmount | currency }}</li>
+        <li><strong>Monto Total:</strong> {{ stats.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</li>
+        <li><strong>Monto Promedio:</strong> {{ stats.averageAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</li>
+        <li><strong>Monto Máximo:</strong> {{ stats.maxAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</li>
+        <li><strong>Monto Mínimo:</strong> {{ stats.minAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</li>
       </ul>
 
       <div class="stats-group" *ngIf="stats.transactionsByStatus && objectKeys(stats.transactionsByStatus).length > 0">
@@ -110,7 +110,7 @@
             <tr *ngFor="let status of objectKeys(stats.transactionsByStatus)">
               <td>{{ status | titlecase }}</td>
               <td>{{ stats.transactionsByStatus[status] }}</td>
-              <td>{{ stats.amountByStatus[status] | currency }}</td>
+              <td>{{ stats.amountByStatus[status] | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</td>
             </tr>
           </tbody>
         </table>
@@ -130,7 +130,7 @@
             <tr *ngFor="let pm of objectKeys(stats.transactionsByPaymentMethod)">
               <td>{{ pm }}</td>
               <td>{{ stats.transactionsByPaymentMethod[pm] }}</td>
-              <td>{{ stats.amountByPaymentMethod[pm] | currency }}</td>
+              <td>{{ stats.amountByPaymentMethod[pm] | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</td>
             </tr>
           </tbody>
         </table>
@@ -152,7 +152,7 @@
               <td>{{ segment.segmentStart | date:'short' }}</td>
               <td>{{ segment.segmentEnd | date:'short' }}</td>
               <td>{{ segment.transactionCount }}</td>
-              <td>{{ segment.totalAmount | currency }}</td>
+              <td>{{ segment.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</td>
             </tr>
           </tbody>
         </table>

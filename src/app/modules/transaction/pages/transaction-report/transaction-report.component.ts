@@ -30,11 +30,11 @@ export class TransactionReportComponent implements OnInit {
   // Method to use Object.keys in the template
   objectKeys = Object.keys;
 
-  reportTypes: TransactionReportDTO['reportType'][] = [
-    'ALL',
-    'USER',
-    'PAYMENT_METHOD',
-    'STATUS',
+  reportTypes: { value: TransactionReportDTO['reportType']; label: string }[] = [
+    { value: 'ALL', label: 'Todos los Reportes' },
+    { value: 'USER', label: 'Por Usuario' },
+    { value: 'PAYMENT_METHOD', label: 'Por Método de Pago' },
+    { value: 'STATUS', label: 'Por Estado' },
   ];
 
   transactionStatuses: string[] = [

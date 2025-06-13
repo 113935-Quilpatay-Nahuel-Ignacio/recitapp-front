@@ -27,7 +27,7 @@
           <td>{{ tx.id }}</td>
           <td>{{ tx.transactionDate | date: 'medium' }}</td>
           <td>{{ tx.description || 'N/A' }}</td>
-          <td>{{ tx.totalAmount | currency }}</td>
+          <td>{{ tx.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</td>
           <td>
             <span [ngClass]="'status-' + tx.statusName.toLowerCase()">{{ tx.statusName }}</span>
           </td>

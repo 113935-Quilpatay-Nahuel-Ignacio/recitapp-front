@@ -119,6 +119,19 @@ export class AdminDashboardComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status?.toLowerCase()) {
+      case 'en_venta':
+      case 'en venta':
+        return 'badge bg-success';
+      case 'proximo':
+      case 'próximo':
+        return 'badge bg-info';
+      case 'agotado':
+        return 'badge bg-warning';
+      case 'cancelado':
+      case 'cancelled':
+        return 'badge bg-danger';
+      case 'finalizado':
+        return 'badge bg-secondary';
       case 'active':
       case 'activo':
       case 'confirmed':
@@ -127,11 +140,25 @@ export class AdminDashboardComponent implements OnInit {
       case 'pending':
       case 'pendiente':
         return 'badge bg-warning';
-      case 'cancelled':
-      case 'cancelado':
-        return 'badge bg-danger';
       default:
         return 'badge bg-secondary';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'en_venta':
+        return 'En Venta';
+      case 'proximo':
+        return 'Próximo';
+      case 'agotado':
+        return 'Agotado';
+      case 'cancelado':
+        return 'Cancelado';
+      case 'finalizado':
+        return 'Finalizado';
+      default:
+        return status || 'Sin Estado';
     }
   }
 } 

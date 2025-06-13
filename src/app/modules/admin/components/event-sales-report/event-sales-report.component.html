@@ -54,7 +54,7 @@
             <p *ngIf="report.promotionalTicketsCount">
               <strong>Entradas Promocionales (Evento):</strong> {{ report.promotionalTicketsCount }}
             </p>
-            <p><strong>Ingresos Totales (Evento):</strong> {{ report.totalRevenue | currency:'':'symbol':'1.2-2' }}</p>
+            <p><strong>Ingresos Totales (Evento):</strong> {{ report.totalRevenue | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</p>
             <p *ngIf="report.occupancyRateOverall">
               <strong>Tasa de Ocupación General:</strong> {{ report.occupancyRateOverall | percent:'1.2-2' }}
             </p>
@@ -80,7 +80,7 @@
             <tr *ngFor="let item of report.items">
               <td>{{ item.sectionName }} <span *ngIf="item.sectionId" class="text-muted small">(ID: {{item.sectionId}})</span></td>
               <td class="text-end">{{ item.ticketsSold }}</td>
-              <td class="text-end">{{ item.revenue | currency:'':'symbol':'1.2-2' }}</td>
+                              <td class="text-end">{{ item.revenue | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</td>
             </tr>
             <tr *ngIf="report.items.length === 0">
               <td colspan="3" class="text-center fst-italic">No hay datos detallados disponibles para este reporte.</td>
