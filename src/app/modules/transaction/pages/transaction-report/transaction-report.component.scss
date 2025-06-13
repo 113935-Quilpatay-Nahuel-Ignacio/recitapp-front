@@ -35,6 +35,16 @@ form {
   min-width: 0; /* Prevent overflow in flex items */
 }
 
+/* Alineación específica para las fechas */
+.date-row {
+  align-items: flex-start;
+}
+
+.date-label {
+  min-width: 120px; /* Ancho mínimo para alinear los labels */
+  display: inline-block;
+}
+
 label {
   display: block;
   margin-bottom: 0.5rem;

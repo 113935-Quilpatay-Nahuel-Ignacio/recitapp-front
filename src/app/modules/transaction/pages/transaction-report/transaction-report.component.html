@@ -13,16 +13,16 @@
     </div>
 
     <!-- Rango de Fechas -->
-    <div class="form-row">
+    <div class="form-row date-row">
       <div class="form-group">
-        <label for="startDate">Fecha de Inicio:</label>
+        <label for="startDate" class="date-label">Fecha de Inicio:</label>
         <input id="startDate" type="date" formControlName="startDate" />
         <div *ngIf="reportForm.get('startDate')?.hasError('required') && reportForm.get('startDate')?.touched" class="error-message">
           La fecha de inicio es requerida.
         </div>
       </div>
       <div class="form-group">
-        <label for="endDate">Fecha de Fin:</label>
+        <label for="endDate" class="date-label">Fecha de Fin:</label>
         <input id="endDate" type="date" formControlName="endDate" />
         <div *ngIf="reportForm.get('endDate')?.hasError('required') && reportForm.get('endDate')?.touched" class="error-message">
           La fecha de fin es requerida.
@@ -79,7 +79,7 @@
     <div *ngIf="stats; else noResults" class="report-results">
       <h3>Resultados del Reporte</h3>
       <div class="stats-overview">
-        <p><strong>Tipo de Reporte:</strong> {{ stats.reportType | titlecase }}</p>
+        <p><strong>Tipo de Reporte:</strong> {{ getReportTypeLabel(stats.reportType) }}</p>
         <p><strong>Período:</strong> {{ stats.startDate | date:'shortDate' }} - {{ stats.endDate | date:'shortDate' }}</p>
         <p><strong>Generado el:</strong> {{ stats.generatedDate | date:'medium' }}</p>
         <p *ngIf="stats.reportType === 'USER' && stats.userName"><strong>Usuario:</strong> {{ stats.userName }} (ID: {{ stats.userId }})</p>

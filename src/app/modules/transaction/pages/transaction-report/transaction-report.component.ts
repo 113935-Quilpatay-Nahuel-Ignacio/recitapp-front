@@ -88,6 +88,11 @@ export class TransactionReportComponent implements OnInit {
     });
   }
 
+  getReportTypeLabel(reportType: string): string {
+    const type = this.reportTypes.find(t => t.value === reportType);
+    return type ? type.label : reportType;
+  }
+
   generateReport(): void {
     if (this.reportForm.invalid) {
       this.errorMessage = 'Por favor completa todos los campos requeridos para el tipo de reporte seleccionado.';
