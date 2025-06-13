@@ -9,7 +9,7 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { BarcodeFormat } from '@zxing/library';
 
 export interface ValidationMode {
-  mode: 'qr-scan' | 'manual-qr' | 'identification-code';
+  mode: 'qr-scan' | 'identification-code';
   label: string;
   description: string;
 }
@@ -36,11 +36,6 @@ export class TicketValidationComponent implements OnDestroy {
       description: 'Escanear código QR con la cámara'
     },
     {
-      mode: 'manual-qr',
-      label: 'QR Manual',
-      description: 'Ingresar ID del ticket y código QR manualmente'
-    },
-    {
       mode: 'identification-code',
       label: 'Código de Identificación',
       description: 'Ingresar código de identificación del ticket'
@@ -64,7 +59,6 @@ export class TicketValidationComponent implements OnDestroy {
   tryHarder = false;
 
   // Forms
-  manualQrForm: FormGroup;
   identificationForm: FormGroup;
 
   // State
@@ -80,11 +74,6 @@ export class TicketValidationComponent implements OnDestroy {
   validationError: string | null = null;
 
   constructor() {
-    this.manualQrForm = this.fb.group({
-      ticketId: [null, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      qrCodeValue: ['', Validators.required] 
-    });
-
     this.identificationForm = this.fb.group({
       identificationCode: ['', [Validators.required, Validators.minLength(3)]]
     });
@@ -177,9 +166,8 @@ export class TicketValidationComponent implements OnDestroy {
       qrCode = parts[1];
     } else {
       // If we can't parse ticket ID from QR, we'll need to ask user for it
-      this.validationError = 'El código QR no contiene el ID del ticket. Por favor, use el modo manual.';
-      this.switchMode('manual-qr');
-      this.manualQrForm.patchValue({ qrCodeValue: qrCodeValue });
+      this.validationError = 'El código QR no contiene el ID del ticket. Por favor, use el modo de código de identificación.';
+      this.switchMode('identification-code');
       return;
     }
 
@@ -193,18 +181,7 @@ export class TicketValidationComponent implements OnDestroy {
     );
   }
 
-  onValidateManualQR(): void {
-    if (this.manualQrForm.invalid) {
-      this.validationError = 'Por favor, complete todos los campos requeridos.';
-      this.manualQrForm.markAllAsTouched();
-      return;
-    }
 
-    const { ticketId, qrCodeValue } = this.manualQrForm.value;
-    this.performValidation(() => 
-      this.ticketService.validateTicket(ticketId, qrCodeValue), 'manual-qr'
-    );
-  }
 
   onValidateIdentificationCode(): void {
     if (this.identificationForm.invalid) {
@@ -230,38 +207,13 @@ export class TicketValidationComponent implements OnDestroy {
     validationFn().pipe(
       switchMap(isValid => {
         if (isValid) {
-          // If we have ticket ID, fetch details
-          if (mode === 'manual-qr') {
-            const ticketId = this.manualQrForm.value.ticketId;
-            return this.ticketService.getTicketById(ticketId).pipe(
-              tap(ticketDetails => {
-                this.validationResult = {
-                  isValid: true,
-                  message: `✅ ACCESO AUTORIZADO - Asistente: ${ticketDetails.attendeeFirstName} ${ticketDetails.attendeeLastName}`,
-                  ticket: ticketDetails,
-                  mode: mode,
-                  timestamp: new Date()
-                };
-              }),
-              catchError(err => {
-                this.validationResult = {
-                  isValid: true,
-                  message: '✅ ACCESO AUTORIZADO (No se pudieron cargar los detalles completos)',
-                  mode: mode,
-                  timestamp: new Date()
-                };
-                return of(null);
-              })
-            );
-          } else {
-            this.validationResult = {
-              isValid: true,
-              message: '✅ ACCESO AUTORIZADO - Entrada validada exitosamente',
-              mode: mode,
-              timestamp: new Date()
-            };
-            return of(null);
-          }
+          this.validationResult = {
+            isValid: true,
+            message: '✅ ACCESO AUTORIZADO - Entrada validada exitosamente',
+            mode: mode,
+            timestamp: new Date()
+          };
+          return of(null);
         } else {
           this.validationResult = {
             isValid: false,
@@ -302,7 +254,6 @@ export class TicketValidationComponent implements OnDestroy {
     this.isLoading = false;
     
     // Reset forms
-    this.manualQrForm.reset();
     this.identificationForm.reset();
   }
 
