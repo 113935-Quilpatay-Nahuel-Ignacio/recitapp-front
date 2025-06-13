@@ -277,6 +277,110 @@ $recitapp-text-medium: #A1A1A1;
   margin-bottom: 0.75rem;
 }
 
+// Identification Form Layout
+.identification-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  
+  .input-section {
+    flex: 1;
+  }
+  
+  .button-section {
+    display: flex;
+    justify-content: center;
+    
+    .validation-button {
+      min-width: 200px;
+      max-width: 300px;
+      width: 100%;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 2rem;
+    
+    .input-section {
+      flex: 2;
+    }
+    
+    .button-section {
+      flex: 0 0 auto;
+      
+      .validation-button {
+        min-width: 180px;
+        max-width: 220px;
+        margin-bottom: 1.75rem; // Align with input field
+      }
+    }
+  }
+}
+
+// Manual QR Form Layout
+.manual-qr-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  
+  .inputs-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    
+    .input-group {
+      flex: 1;
+    }
+    
+    @media (min-width: 768px) {
+      flex-direction: row;
+      gap: 2rem;
+      
+      .input-group:first-child {
+        flex: 1;
+        min-width: 200px;
+      }
+      
+      .input-group:last-child {
+        flex: 2;
+      }
+    }
+  }
+  
+  .button-section {
+    display: flex;
+    justify-content: center;
+    
+    .validation-button {
+      min-width: 200px;
+      max-width: 300px;
+      width: 100%;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    
+    @media (min-width: 768px) {
+      justify-content: flex-end;
+      
+      .validation-button {
+        min-width: 180px;
+        max-width: 220px;
+        width: auto;
+      }
+    }
+  }
+}
+
 .form-control {
   background: $recitapp-dark;
   border: 2px solid rgba(34, 197, 94, 0.2);

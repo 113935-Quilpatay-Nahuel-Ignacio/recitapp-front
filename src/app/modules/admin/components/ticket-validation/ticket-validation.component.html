@@ -156,40 +156,42 @@
           <!-- Manual QR Mode -->
           <div *ngIf="currentMode === 'manual-qr'">
             <form [formGroup]="manualQrForm" (ngSubmit)="onValidateManualQR()">
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label for="ticketId" class="form-label">ID del Ticket</label>
-                  <input 
-                    type="number" 
-                    id="ticketId" 
-                    class="form-control" 
-                    formControlName="ticketId" 
-                    placeholder="Ej: 789" 
-                    [class.is-invalid]="manualQrForm.get('ticketId')?.invalid && manualQrForm.get('ticketId')?.touched">
-                  <div *ngIf="manualQrForm.get('ticketId')?.errors?.['required'] && manualQrForm.get('ticketId')?.touched" class="invalid-feedback">
-                    El ID del ticket es requerido.
+              <div class="manual-qr-form-container">
+                <div class="inputs-section">
+                  <div class="input-group">
+                    <label for="ticketId" class="form-label">ID del Ticket</label>
+                    <input 
+                      type="number" 
+                      id="ticketId" 
+                      class="form-control" 
+                      formControlName="ticketId" 
+                      placeholder="Ej: 789" 
+                      [class.is-invalid]="manualQrForm.get('ticketId')?.invalid && manualQrForm.get('ticketId')?.touched">
+                    <div *ngIf="manualQrForm.get('ticketId')?.errors?.['required'] && manualQrForm.get('ticketId')?.touched" class="invalid-feedback">
+                      El ID del ticket es requerido.
+                    </div>
+                    <div *ngIf="manualQrForm.get('ticketId')?.errors?.['pattern'] && manualQrForm.get('ticketId')?.touched" class="invalid-feedback">
+                      El ID debe ser numérico.
+                    </div>
                   </div>
-                  <div *ngIf="manualQrForm.get('ticketId')?.errors?.['pattern'] && manualQrForm.get('ticketId')?.touched" class="invalid-feedback">
-                    El ID debe ser numérico.
+                  <div class="input-group">
+                    <label for="qrCodeValue" class="form-label">Valor del Código QR</label>
+                    <input 
+                      type="text" 
+                      id="qrCodeValue" 
+                      class="form-control" 
+                      formControlName="qrCodeValue" 
+                      placeholder="Ingrese el contenido leído del QR"
+                      [class.is-invalid]="manualQrForm.get('qrCodeValue')?.invalid && manualQrForm.get('qrCodeValue')?.touched">
+                    <div *ngIf="manualQrForm.get('qrCodeValue')?.errors?.['required'] && manualQrForm.get('qrCodeValue')?.touched" class="invalid-feedback">
+                      El valor del QR es requerido.
+                    </div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <label for="qrCodeValue" class="form-label">Valor del Código QR</label>
-                  <input 
-                    type="text" 
-                    id="qrCodeValue" 
-                    class="form-control" 
-                    formControlName="qrCodeValue" 
-                    placeholder="Ingrese el contenido leído del QR"
-                    [class.is-invalid]="manualQrForm.get('qrCodeValue')?.invalid && manualQrForm.get('qrCodeValue')?.touched">
-                  <div *ngIf="manualQrForm.get('qrCodeValue')?.errors?.['required'] && manualQrForm.get('qrCodeValue')?.touched" class="invalid-feedback">
-                    El valor del QR es requerido.
-                  </div>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="button-section">
                   <button 
                     type="submit" 
-                    class="btn btn-primary w-100" 
+                    class="btn btn-primary validation-button" 
                     [disabled]="manualQrForm.invalid || isLoading">
                     <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
                     <i *ngIf="!isLoading" class="fas fa-check me-2"></i>
@@ -203,8 +205,8 @@
           <!-- Identification Code Mode -->
           <div *ngIf="currentMode === 'identification-code'">
             <form [formGroup]="identificationForm" (ngSubmit)="onValidateIdentificationCode()">
-              <div class="row g-3">
-                <div class="col-md-8">
+              <div class="identification-form-container">
+                <div class="input-section">
                   <label for="identificationCode" class="form-label">Código de Identificación</label>
                   <input 
                     type="text" 
@@ -223,10 +225,10 @@
                     El código debe tener al menos 3 caracteres.
                   </div>
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
+                <div class="button-section">
                   <button 
                     type="submit" 
-                    class="btn btn-success btn-lg w-100" 
+                    class="btn btn-success btn-lg validation-button" 
                     [disabled]="identificationForm.invalid || isLoading">
                     <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
                     <i *ngIf="!isLoading" class="fas fa-search me-2"></i>
