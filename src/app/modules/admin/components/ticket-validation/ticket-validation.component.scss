@@ -1,1 +1,592 @@
-/* Styles for TicketValidationComponent */ 
+/* Ticket Validation Component - Recitapp Theme */
+
+// Recitapp Color Palette
+$recitapp-dark: #1A1A1A;
+$recitapp-medium: #2D2D2D;
+$recitapp-green: #22C55E;
+$recitapp-light-gray: #F5F5F5;
+$recitapp-text-light: #E5E5E5;
+$recitapp-text-medium: #A1A1A1;
+
+.container-fluid {
+  background: $recitapp-dark;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.card {
+  background: $recitapp-medium;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  
+  .card-header {
+    background: linear-gradient(135deg, $recitapp-green, darken($recitapp-green, 10%)) !important;
+    border: none !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 2rem;
+    
+    h2 {
+      font-weight: 700;
+      color: white;
+      font-size: 2rem;
+      margin: 0;
+    }
+    
+    p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+      margin: 0.5rem 0 0 0;
+    }
+  }
+  
+  .card-body {
+    background: $recitapp-medium;
+    padding: 2.5rem;
+    border-radius: 0 0 16px 16px;
+  }
+}
+
+// Mode Selection Buttons
+.btn-group {
+  margin-bottom: 2rem;
+  
+  .btn {
+    background: transparent;
+    border: 2px solid $recitapp-green;
+    color: $recitapp-text-light;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 12px !important;
+    margin: 0 4px;
+    transition: all 0.3s ease;
+    
+    &:first-child {
+      margin-left: 0;
+    }
+    
+    &:last-child {
+      margin-right: 0;
+    }
+    
+    &.btn-primary {
+      background: $recitapp-green;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+      
+      &:hover {
+        background: darken($recitapp-green, 5%);
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+      }
+    }
+    
+    &.btn-outline-primary {
+      &:hover {
+        background: rgba(34, 197, 94, 0.1);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+      }
+    }
+    
+    i {
+      margin-right: 0.75rem;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Scanner Container
+.scanner-container {
+  .scanner-wrapper {
+    background: $recitapp-dark;
+    border: 2px solid rgba(34, 197, 94, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    
+    .scanner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      
+      h5 {
+        color: $recitapp-text-light;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin: 0;
+      }
+      
+      .scanner-controls {
+        display: flex;
+        gap: 0.75rem;
+        
+        .btn {
+          background: transparent;
+          border: 1px solid $recitapp-green;
+          color: $recitapp-text-light;
+          border-radius: 25px;
+          padding: 0.5rem 1rem;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+          
+          &:hover:not(:disabled) {
+            background: $recitapp-green;
+            color: white;
+            transform: translateY(-1px);
+          }
+          
+          &:disabled {
+            border-color: $recitapp-text-medium;
+            color: $recitapp-text-medium;
+          }
+          
+          &.active {
+            background: $recitapp-green;
+            color: white;
+          }
+        }
+      }
+    }
+    
+    .scanner-viewport {
+      background: black;
+      border-radius: 12px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      
+      &.scanning {
+        border-color: $recitapp-green;
+        box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+        animation: pulse-scanner 2s infinite;
+      }
+      
+      zxing-scanner {
+        width: 100%;
+        height: 300px;
+        
+        video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 8px;
+        }
+      }
+      
+      .scanner-message {
+        text-align: center;
+        color: $recitapp-text-medium;
+        padding: 3rem 2rem;
+        
+        i {
+          display: block;
+          margin: 0 auto 1.5rem;
+          opacity: 0.7;
+        }
+        
+        h5 {
+          color: $recitapp-text-light;
+          margin-bottom: 0.75rem;
+          font-weight: 500;
+        }
+        
+        p {
+          margin: 0;
+          font-size: 0.95rem;
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+  
+  .scanner-info {
+    background: $recitapp-dark;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    
+    h6 {
+      color: $recitapp-text-light;
+      font-weight: 600;
+      border-bottom: 2px solid $recitapp-green;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+    }
+    
+    ul {
+      li {
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+        color: $recitapp-text-light;
+        display: flex;
+        align-items: center;
+        
+        i {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          margin-right: 0.75rem;
+          
+          &.text-success {
+            background: $recitapp-green;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+          }
+          
+          &.text-danger {
+            background: #EF4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+          }
+          
+          &.text-warning {
+            background: #F59E0B;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+          }
+          
+          &.text-secondary {
+            background: $recitapp-text-medium;
+          }
+        }
+      }
+    }
+    
+    code {
+      background: rgba(34, 197, 94, 0.1);
+      color: $recitapp-green;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.85rem;
+      word-break: break-all;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+  }
+}
+
+// Form Styles
+.form-label {
+  color: $recitapp-text-light;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.form-control {
+  background: $recitapp-dark;
+  border: 2px solid rgba(34, 197, 94, 0.2);
+  color: $recitapp-text-light;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  
+  &::placeholder {
+    color: $recitapp-text-medium;
+  }
+  
+  &:focus {
+    background: $recitapp-dark;
+    border-color: $recitapp-green;
+    color: $recitapp-text-light;
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    transform: translateY(-1px);
+  }
+  
+  &.is-invalid {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+  }
+}
+
+.form-control-lg {
+  padding: 1.125rem 1.25rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
+.form-text {
+  color: $recitapp-text-medium;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.invalid-feedback {
+  color: #EF4444;
+  font-weight: 500;
+}
+
+// Button Styles
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.875rem 1.5rem;
+  transition: all 0.3s ease;
+  border: 2px solid;
+  
+  &.btn-primary {
+    background: $recitapp-green;
+    border-color: $recitapp-green;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background: darken($recitapp-green, 8%);
+      border-color: darken($recitapp-green, 8%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+    }
+    
+    &:disabled {
+      background: $recitapp-text-medium;
+      border-color: $recitapp-text-medium;
+      color: $recitapp-dark;
+    }
+  }
+  
+  &.btn-success {
+    background: $recitapp-green;
+    border-color: $recitapp-green;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background: darken($recitapp-green, 8%);
+      border-color: darken($recitapp-green, 8%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+    }
+  }
+  
+  &.btn-outline-primary {
+    background: transparent;
+    border-color: $recitapp-green;
+    color: $recitapp-green;
+    
+    &:hover {
+      background: $recitapp-green;
+      color: white;
+      transform: translateY(-1px);
+    }
+  }
+  
+  &.btn-outline-secondary {
+    background: transparent;
+    border-color: $recitapp-text-medium;
+    color: $recitapp-text-light;
+    
+    &:hover {
+      background: $recitapp-text-medium;
+      color: $recitapp-dark;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Alert Styles
+.alert {
+  border: none;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border-left: 4px solid;
+  
+  &.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border-left-color: $recitapp-green;
+    color: $recitapp-text-light;
+    
+    .alert-heading {
+      color: $recitapp-green;
+      
+      &::before {
+        content: '\f058';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: 0.75rem;
+      }
+    }
+  }
+  
+  &.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #EF4444;
+    color: $recitapp-text-light;
+    
+    .alert-heading {
+      color: #EF4444;
+      
+      &::before {
+        content: '\f057';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: 0.75rem;
+      }
+    }
+  }
+  
+  &.alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-left-color: #F59E0B;
+    color: $recitapp-text-light;
+    
+    &::before {
+      content: '\f071';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      margin-right: 0.75rem;
+      color: #F59E0B;
+    }
+  }
+  
+  .alert-heading {
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  
+  hr {
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: 1.5rem 0;
+  }
+  
+  .badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    
+    &.bg-success {
+      background: $recitapp-green !important;
+    }
+    
+    &.bg-primary {
+      background: #3B82F6 !important;
+    }
+    
+    &.bg-secondary {
+      background: $recitapp-text-medium !important;
+    }
+  }
+}
+
+.btn-close {
+  filter: invert(1);
+  opacity: 0.7;
+  
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem 0.5rem;
+  }
+  
+  .card {
+    .card-header {
+      padding: 1.5rem;
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+      
+      p {
+        font-size: 1rem;
+      }
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+  
+  .btn-group {
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .btn {
+      margin: 0 !important;
+      border-radius: 12px !important;
+    }
+  }
+  
+  .scanner-container {
+    .scanner-wrapper {
+      padding: 1.5rem;
+      
+      .scanner-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+        
+        .scanner-controls {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+      
+      .scanner-viewport {
+        min-height: 250px;
+      }
+    }
+    
+    .scanner-info {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+    }
+  }
+}
+
+// Animations
+@keyframes pulse-scanner {
+  0% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+  }
+}
+
+.alert.fade.show {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Selection styles
+::selection {
+  background: rgba(34, 197, 94, 0.3);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $recitapp-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $recitapp-green;
+  border-radius: 4px;
+  
+  &:hover {
+    background: darken($recitapp-green, 10%);
+  }
+} 

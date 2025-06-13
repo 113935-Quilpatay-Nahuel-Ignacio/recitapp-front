@@ -118,6 +118,11 @@ export class TicketService {
     return this.http.post<boolean>(`${this.apiUrl}/${ticketId}/validate`, null, { params });
   }
 
+  validateTicketByCode(identificationCode: string): Observable<boolean> {
+    const params = new HttpParams().set('identificationCode', identificationCode);
+    return this.http.post<boolean>(`${this.apiUrl}/validate-by-code`, null, { params });
+  }
+
   createPromotionalTicket(request: PromotionalTicketRequest): Observable<PromotionalTicketResponse> {
     return this.http.post<PromotionalTicketResponse>(`${this.adminApiUrl}/promotional`, request);
   }
