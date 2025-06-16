@@ -39,6 +39,7 @@ export class VenueDetailComponent implements OnInit {
   userId: number | null = null;
   isAdmin = false;
   currentTab: 'info' | 'events' | 'sections' | 'stats' = 'info';
+  imageError = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,6 +64,7 @@ export class VenueDetailComponent implements OnInit {
   loadVenueDetails(): void {
     this.loading.venue = true;
     this.error.venue = '';
+    this.imageError = false; // Reset image error flag
 
     this.venueService.getVenueById(this.venueId).subscribe({
       next: (venue) => {
@@ -305,5 +307,9 @@ export class VenueDetailComponent implements OnInit {
         this.modalService.error(this.error.venue, 'Error de Eliminación');
       },
     });
+  }
+
+  onImageError(event: any): void {
+    this.imageError = true;
   }
 }

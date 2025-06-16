@@ -69,9 +69,9 @@
 
                                 <!-- Imagen del recinto -->
                                 <div class="card-img-container">
-                                    <img *ngIf="venue.image" [src]="venue.image" class="card-img-top"
-                                        alt="{{ venue.name }}">
-                                    <div *ngIf="!venue.image" class="card-img-placeholder">
+                                    <img *ngIf="venue.image && !hasImageError(venue)" [src]="venue.image" class="card-img-top"
+                                        alt="{{ venue.name }}" (error)="onImageError(venue)">
+                                    <div *ngIf="!venue.image || hasImageError(venue)" class="card-img-placeholder">
                                         <i class="bi bi-building"></i>
                                     </div>
                                 </div>

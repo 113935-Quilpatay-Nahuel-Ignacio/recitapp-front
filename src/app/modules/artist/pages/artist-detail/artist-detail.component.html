@@ -92,9 +92,9 @@
                         <!-- Left column with image and key actions -->
                         <div class="col-md-4 mb-4">
                             <div class="text-center mb-4">
-                                <img *ngIf="artist.profileImage" [src]="artist.profileImage" class="img-fluid rounded shadow"
-                                    alt="{{ artist.name }}">
-                                <div *ngIf="!artist.profileImage"
+                                <img *ngIf="artist.profileImage && !imageError" [src]="artist.profileImage" class="img-fluid rounded shadow"
+                                    alt="{{ artist.name }}" (error)="onImageError($event)">
+                                <div *ngIf="!artist.profileImage || imageError"
                                     class="bg-secondary text-white d-flex align-items-center justify-content-center rounded shadow"
                                     style="height: 200px;">
                                     <span class="display-4">{{ artist.name.charAt(0) }}</span>

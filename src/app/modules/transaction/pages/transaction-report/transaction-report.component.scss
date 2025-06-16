@@ -38,6 +38,7 @@ form {
 /* Alineación específica para las fechas */
 .date-row {
   align-items: flex-start;
+  margin-top: 1.5rem; /* Add spacing from the select dropdown above */
 }
 
 .date-label {

@@ -108,9 +108,9 @@
                                 <div class="col-lg-5 mb-4">
                                     <!-- Venue image -->
                                     <div class="text-center mb-4">
-                                        <img *ngIf="venue.image" [src]="venue.image" class="img-fluid rounded shadow-sm"
-                                            alt="{{ venue.name }}">
-                                        <div *ngIf="!venue.image"
+                                        <img *ngIf="venue.image && !imageError" [src]="venue.image" class="img-fluid rounded shadow-sm"
+                                            alt="{{ venue.name }}" (error)="onImageError($event)">
+                                        <div *ngIf="!venue.image || imageError"
                                             class="venue-placeholder bg-light d-flex align-items-center justify-content-center rounded">
                                             <i class="bi bi-building display-1 text-muted"></i>
                                         </div>

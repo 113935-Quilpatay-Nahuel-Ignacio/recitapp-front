@@ -21,15 +21,15 @@
     <!-- Contenido del Detalle del Evento -->
     <div *ngIf="!isLoading && event" class="detail-card">
       <div class="row g-0">
-        <div class="col-md-5" *ngIf="event.flyerImage">
-          <img [src]="event.flyerImage" class="event-flyer-detail" [alt]="event.name">
+        <div class="col-md-5" *ngIf="event.flyerImage && !imageError">
+          <img [src]="event.flyerImage" class="event-flyer-detail" [alt]="event.name" (error)="onImageError($event)">
         </div>
-        <div class="col-md-5" *ngIf="!event.flyerImage">
+        <div class="col-md-5" *ngIf="!event.flyerImage || imageError">
           <div class="event-flyer-detail-placeholder">
-              <i class="bi bi-calendar-event"></i>
+              <span class="display-4">{{ event.name.charAt(0) }}</span>
           </div>
         </div>
-        <div [ngClass]="event.flyerImage ? 'col-md-7' : 'col-md-12'">
+        <div [ngClass]="(event.flyerImage && !imageError) ? 'col-md-7' : 'col-md-12'">
           <div class="detail-header">
               <div class="header-content">
                 <h1 class="detail-title">{{ event.name }}</h1>

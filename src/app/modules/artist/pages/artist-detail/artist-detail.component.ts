@@ -24,6 +24,7 @@ export class ArtistDetailComponent implements OnInit {
   userId: number | null = null;
   isAdmin = false; // Set to false for regular users - change to true when testing admin features
   defaultImage = 'assets/images/default-artist-avatar.svg'; // Default artist avatar
+  imageError = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,6 +48,7 @@ export class ArtistDetailComponent implements OnInit {
 
   loadArtistDetails(): void {
     this.loading = true;
+    this.imageError = false; // Reset image error flag
     this.artistService.getArtistDetail(this.artistId).subscribe({
       next: (artist) => {
         this.artist = artist;
@@ -140,6 +142,6 @@ export class ArtistDetailComponent implements OnInit {
   }
 
   onImageError(event: any): void {
-    event.target.src = this.defaultImage;
+    this.imageError = true;
   }
 }

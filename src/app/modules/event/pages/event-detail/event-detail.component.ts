@@ -29,6 +29,7 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   isAdmin = true; // Placeholder: Implementar lógica de roles/permisos real
   isVerifying = false; // Added for verification loading state
   verificationMessage = ''; // Added for verification feedback
+  imageError = false;
 
   // Use the StatusFormatter for better status handling
   eventStatuses = StatusFormatter.getEventStatuses();
@@ -71,6 +72,7 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.imageError = false; // Reset image error flag
     this.eventService.getEventById(this.eventId).subscribe({
       next: (eventData) => {
         this.event = eventData;
@@ -294,6 +296,10 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  onImageError(event: any): void {
+    this.imageError = true;
   }
 
   // TODO: Implementar lógica de navegación para ver detalles de Venue y Artist si es necesario

@@ -21,6 +21,7 @@ export class VenueListComponent implements OnInit {
   error = '';
   showInactive = false;
   isAdmin = true; // En una implementación real, esto vendría de un servicio de autenticación
+  imageErrors = new Map<number, boolean>(); // Track image errors by venue ID
 
   constructor(private venueService: VenueService) {}
 
@@ -75,5 +76,15 @@ export class VenueListComponent implements OnInit {
   formatCapacity(capacity: number | undefined): string {
     if (!capacity) return 'No especificada';
     return capacity.toLocaleString('es-AR');
+  }
+
+  onImageError(venue: Venue): void {
+    if (venue.id !== undefined) {
+      this.imageErrors.set(venue.id, true);
+    }
+  }
+
+  hasImageError(venue: Venue): boolean {
+    return venue.id !== undefined ? (this.imageErrors.get(venue.id) || false) : false;
   }
 }
