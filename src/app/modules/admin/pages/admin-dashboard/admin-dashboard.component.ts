@@ -50,6 +50,10 @@ export class AdminDashboardComponent implements OnInit {
   popularArtists: Artist[] = [];
   isLoading = false;
   error = '';
+  
+  // Track image errors
+  eventImageErrors = new Set<number>();
+  artistImageErrors = new Set<number>();
 
   constructor(
     private reservationAdminService: ReservationAdminService,
@@ -66,6 +70,10 @@ export class AdminDashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.isLoading = true;
     this.error = '';
+    
+    // Clear previous image errors
+    this.eventImageErrors.clear();
+    this.artistImageErrors.clear();
 
     // Load all dashboard data in parallel
     forkJoin({
@@ -160,5 +168,21 @@ export class AdminDashboardComponent implements OnInit {
       default:
         return status || 'Sin Estado';
     }
+  }
+
+  onEventImageError(event: EventDTO): void {
+    this.eventImageErrors.add(event.id);
+  }
+
+  onArtistImageError(artist: Artist): void {
+    this.artistImageErrors.add(artist.id);
+  }
+
+  hasEventImageError(eventId: number): boolean {
+    return this.eventImageErrors.has(eventId);
+  }
+
+  hasArtistImageError(artistId: number): boolean {
+    return this.artistImageErrors.has(artistId);
   }
 } 

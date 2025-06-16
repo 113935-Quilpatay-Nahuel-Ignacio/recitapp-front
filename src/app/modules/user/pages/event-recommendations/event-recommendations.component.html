@@ -1,0 +1,193 @@
+<div class="event-recommendations-container">
+  <div class="header">
+    <h1 class="title">
+      <i class="fas fa-magic"></i>
+      Recomendaciones de Eventos
+    </h1>
+    <p class="subtitle">Descubre eventos perfectos para ti basados en tus gustos y artistas favoritos</p>
+    <button 
+      class="refresh-btn" 
+      (click)="refresh()" 
+      [disabled]="isAnyLoading()"
+      [class.loading]="isAnyLoading()">
+      <i class="fas fa-sync-alt" [class.fa-spin]="isAnyLoading()"></i>
+      Actualizar
+    </button>
+  </div>
+
+  <!-- Recomendaciones Personalizadas -->
+  <section class="recommendations-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="fas fa-heart"></i>
+        Para Ti
+      </h2>
+      <span class="section-subtitle">Eventos seleccionados especialmente para tus gustos</span>
+    </div>
+
+    <div class="loading-error-container" *ngIf="loading.personalized || error.personalized">
+      <div class="loading" *ngIf="loading.personalized">
+        <i class="fas fa-spinner fa-spin"></i>
+        Cargando recomendaciones personalizadas...
+      </div>
+      <div class="error" *ngIf="error.personalized">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ error.personalized }}
+      </div>
+    </div>
+
+    <div class="events-grid" *ngIf="!loading.personalized && !error.personalized">
+      <div class="event-card" *ngFor="let event of personalizedRecommendations">
+        <div class="event-image" [style.background-image]="event.imageUrl ? 'url(' + event.imageUrl + ')' : 'none'">
+          <div class="event-status" [class]="'status-' + event.status.toLowerCase()">
+            {{ event.status }}
+          </div>
+          <div class="verified-badge" *ngIf="event.verified">
+            <i class="fas fa-check-circle"></i>
+            Verificado
+          </div>
+        </div>
+        <div class="event-content">
+          <h3 class="event-title">{{ event.name }}</h3>
+          <div class="event-artist">
+            <i class="fas fa-microphone"></i>
+            {{ event.primaryArtist.name }}
+            <span *ngIf="event.additionalArtists && event.additionalArtists.length > 0">
+              + {{ event.additionalArtists.length }} más
+            </span>
+          </div>
+          <div class="event-venue">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ event.venue.name }}
+          </div>
+          <div class="event-date">
+            <i class="fas fa-calendar"></i>
+            {{ formatDate(event.startDateTime) }}
+          </div>
+          <div class="event-price" *ngIf="getMinPrice(event) > 0">
+            <i class="fas fa-ticket-alt"></i>
+            Desde {{ formatPrice(getMinPrice(event)) }}
+          </div>
+          <div class="event-actions">
+            <a [routerLink]="['/events', event.id]" class="btn btn-primary">
+              <i class="fas fa-eye"></i>
+              Ver Detalles
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-events" *ngIf="personalizedRecommendations.length === 0">
+        <i class="fas fa-search"></i>
+        <p>No se encontraron recomendaciones personalizadas en este momento.</p>
+        <small>Intenta seguir más artistas o asistir a eventos para obtener mejores recomendaciones.</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Eventos de Artistas Seguidos -->
+  <section class="recommendations-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="fas fa-users"></i>
+        Artistas que Sigues
+      </h2>
+      <span class="section-subtitle">Próximos eventos de tus artistas favoritos</span>
+    </div>
+
+    <div class="loading-error-container" *ngIf="loading.followedArtists || error.followedArtists">
+      <div class="loading" *ngIf="loading.followedArtists">
+        <i class="fas fa-spinner fa-spin"></i>
+        Cargando eventos de artistas seguidos...
+      </div>
+      <div class="error" *ngIf="error.followedArtists">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ error.followedArtists }}
+      </div>
+    </div>
+
+    <div class="events-grid compact" *ngIf="!loading.followedArtists && !error.followedArtists">
+      <div class="event-card compact" *ngFor="let event of followedArtistsEvents">
+        <div class="event-image" [style.background-image]="event.imageUrl ? 'url(' + event.imageUrl + ')' : 'none'">
+          <div class="following-badge">
+            <i class="fas fa-heart"></i>
+          </div>
+        </div>
+        <div class="event-content">
+          <h4 class="event-title">{{ event.name }}</h4>
+          <div class="event-artist">{{ event.primaryArtist.name }}</div>
+          <div class="event-venue">{{ event.venue.name }}</div>
+          <div class="event-date">{{ formatDate(event.startDateTime) }}</div>
+          <a [routerLink]="['/events', event.id]" class="btn btn-sm btn-outline">Ver</a>
+        </div>
+      </div>
+      
+      <div class="no-events" *ngIf="followedArtistsEvents.length === 0">
+        <i class="fas fa-heart-broken"></i>
+        <p>No hay eventos próximos de artistas que sigues.</p>
+        <small>
+          <a routerLink="/artists">Explora artistas</a> y síguelos para ver sus próximos eventos aquí.
+        </small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Eventos Similares -->
+  <section class="recommendations-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="fas fa-bullseye"></i>
+        Eventos Similares
+      </h2>
+      <span class="section-subtitle">Basado en tu historial de asistencia</span>
+    </div>
+
+    <div class="loading-error-container" *ngIf="loading.similar || error.similar">
+      <div class="loading" *ngIf="loading.similar">
+        <i class="fas fa-spinner fa-spin"></i>
+        Cargando eventos similares...
+      </div>
+      <div class="error" *ngIf="error.similar">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ error.similar }}
+      </div>
+    </div>
+
+    <div class="events-grid compact" *ngIf="!loading.similar && !error.similar">
+      <div class="event-card compact" *ngFor="let event of similarEvents">
+        <div class="event-image" [style.background-image]="event.imageUrl ? 'url(' + event.imageUrl + ')' : 'none'">
+          <div class="similar-badge">
+            <i class="fas fa-star"></i>
+          </div>
+        </div>
+        <div class="event-content">
+          <h4 class="event-title">{{ event.name }}</h4>
+          <div class="event-artist">{{ event.primaryArtist.name }}</div>
+          <div class="event-venue">{{ event.venue.name }}</div>
+          <div class="event-date">{{ formatDate(event.startDateTime) }}</div>
+          <a [routerLink]="['/events', event.id]" class="btn btn-sm btn-outline">Ver</a>
+        </div>
+      </div>
+      
+      <div class="no-events" *ngIf="similarEvents.length === 0">
+        <i class="fas fa-compass"></i>
+        <p>No encontramos eventos similares a tu historial.</p>
+        <small>Asiste a más eventos para obtener mejores recomendaciones similares.</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Estado cuando no hay recomendaciones -->
+  <div class="empty-state" *ngIf="!isAnyLoading() && !hasAnyRecommendations()">
+    <div class="empty-icon">
+      <i class="fas fa-magic"></i>
+    </div>
+    <h3>¡Personaliza tu experiencia!</h3>
+    <p>Para obtener recomendaciones personalizadas:</p>
+    <ul>
+      <li><a routerLink="/artists">Sigue a tus artistas favoritos</a></li>
+      <li><a routerLink="/events">Compra tickets para eventos</a></li>
+      <li><a routerLink="/venues">Marca tus venues favoritos</a></li>
+    </ul>
+  </div>
+</div> 

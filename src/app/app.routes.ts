@@ -50,9 +50,22 @@ import { NotificationCenterComponent } from './modules/notification/pages/notifi
 import { NotificationPreferencesComponent } from './modules/notification/pages/notification-preferences/notification-preferences.component';
 import { NotificationSettingsPageComponent } from './modules/notification/pages/notification-settings-page/notification-settings-page.component';
 
+// New features - Recomendaciones, Calendario y Gestión de Entradas
+import { EventRecommendationsComponent } from './modules/user/pages/event-recommendations/event-recommendations.component';
+import { EventCalendarComponent } from './modules/event/pages/event-calendar/event-calendar.component';
+import { ExpiredTicketsManagementComponent } from './modules/ticket/pages/expired-tickets-management/expired-tickets-management.component';
+import { DashboardComponent } from './modules/dashboard/dashboard.component';
+
 export const routes: Routes = [
   // Default route
-  { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  
+  // Dashboard route
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent,
+    canActivate: [AuthGuard]
+  },
 
   // Auth routes (lazy loaded)
   {
@@ -87,6 +100,11 @@ export const routes: Routes = [
     component: UserFollowingComponent,
     canActivate: [AuthGuard]
   },
+  { 
+    path: 'user/recommendations', 
+    component: EventRecommendationsComponent,
+    canActivate: [AuthGuard]
+  },
 
   // Artist routes
   { path: 'artists', component: ArtistListComponent },
@@ -119,6 +137,11 @@ export const routes: Routes = [
 
   // Event routes
   { path: 'events', component: EventListComponent },
+  { 
+    path: 'events/calendar', 
+    component: EventCalendarComponent,
+    canActivate: [AuthGuard]
+  },
   { 
     path: 'events/new', 
     component: EventFormComponent,
@@ -212,6 +235,12 @@ export const routes: Routes = [
   { 
     path: 'admin/genres', 
     component: MusicGenreAdminComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['ADMIN'] }
+  },
+  { 
+    path: 'admin/expired-tickets', 
+    component: ExpiredTicketsManagementComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },

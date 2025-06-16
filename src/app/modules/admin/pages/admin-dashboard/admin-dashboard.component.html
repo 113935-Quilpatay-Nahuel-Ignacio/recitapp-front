@@ -261,12 +261,13 @@
                   <tr *ngFor="let event of recentEvents">
                     <td>
                       <div class="d-flex align-items-center">
-                        <img *ngIf="event.flyerImage" 
+                        <img *ngIf="event.flyerImage && !hasEventImageError(event.id)" 
                              [src]="event.flyerImage" 
                              class="rounded me-2" 
                              style="width: 40px; height: 40px; object-fit: cover;"
-                             [alt]="event.name">
-                        <div *ngIf="!event.flyerImage" 
+                             [alt]="event.name"
+                             (error)="onEventImageError(event)">
+                        <div *ngIf="!event.flyerImage || hasEventImageError(event.id)" 
                              class="bg-secondary rounded me-2 d-flex align-items-center justify-content-center"
                              style="width: 40px; height: 40px;">
                           <i class="bi bi-music-note text-white"></i>
@@ -315,12 +316,13 @@
                 <div class="rank-badge me-3">
                   {{ i + 1 }}
                 </div>
-                <img *ngIf="artist.profileImage" 
+                <img *ngIf="artist.profileImage && !hasArtistImageError(artist.id)" 
                      [src]="artist.profileImage" 
                      class="rounded-circle me-3" 
                      style="width: 50px; height: 50px; object-fit: cover;"
-                     [alt]="artist.name">
-                <div *ngIf="!artist.profileImage" 
+                     [alt]="artist.name"
+                     (error)="onArtistImageError(artist)">
+                <div *ngIf="!artist.profileImage || hasArtistImageError(artist.id)" 
                      class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center"
                      style="width: 50px; height: 50px;">
                   <i class="bi bi-person text-white"></i>
