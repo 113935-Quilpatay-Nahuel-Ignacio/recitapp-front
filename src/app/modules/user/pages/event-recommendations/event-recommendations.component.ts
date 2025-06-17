@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { UserRecommendationService, EventRecommendation } from '../../../../services/user-recommendation.service';
+import { UserRecommendationService, EventRecommendation, EnhancedEventRecommendation } from '../../../../services/user-recommendation.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
 
@@ -12,7 +12,7 @@ import { User } from '../../../../core/models/user.model';
   template: `
     <div class="recommendations-container">
       <div class="header">
-        <h1>🎯 Recomendaciones de Eventos</h1>
+        <h1>Recomendaciones de Eventos</h1>
         <p class="subtitle">Eventos personalizados basados en tus gustos musicales</p>
         <button (click)="refresh()" class="refresh-btn" [disabled]="isAnyLoading()">
           <span *ngIf="!isAnyLoading()">🔄</span>
@@ -40,19 +40,22 @@ import { User } from '../../../../core/models/user.model';
       <!-- Personalized Recommendations -->
       <div *ngIf="personalizedRecommendations.length > 0" class="recommendations-section">
         <div class="section-header">
-          <h2>✨ Recomendaciones Personalizadas</h2>
+          <h2>Recomendaciones Personalizadas</h2>
           <p class="section-description">Eventos seleccionados especialmente para ti</p>
         </div>
 
         <div class="events-grid">
           <div *ngFor="let event of personalizedRecommendations" class="event-card personalized">
             <div class="event-image">
-              <img [src]="event.imageUrl || '/assets/default-event.jpg'" 
-                   [alt]="event.name" 
-                   onerror="this.src='/assets/default-event.jpg'">
-              <div class="recommendation-badge">
-                <span class="score">{{ (event.recommendationScore * 100) | number:'1.0-0' }}% match</span>
+              <img *ngIf="event.flyerImage && !hasImageError(event.id)" 
+                   [src]="event.flyerImage" 
+                   [alt]="event.name"
+                   (error)="onImageError(event.id)">
+              <div *ngIf="!event.flyerImage || hasImageError(event.id)" 
+                   class="image-placeholder">
+                <i class="bi bi-calendar-event"></i>
               </div>
+
             </div>
             
             <div class="event-content">
@@ -66,30 +69,23 @@ import { User } from '../../../../core/models/user.model';
                 </div>
                 <div class="meta-item">
                   <span class="icon">🎤</span>
-                  <span>{{ event.mainArtist.name }}</span>
+                  <span>{{ event.mainArtistName || 'Varios Artistas' }}</span>
                 </div>
                 <div class="meta-item">
                   <span class="icon">📍</span>
-                  <span>{{ event.venue.name }}</span>
-                </div>
-                <div class="meta-item">
-                  <span class="icon">💰</span>
-                  <span>{{ formatPrice(event.ticketPrice) }}</span>
+                  <span>{{ event.venueName || 'Recinto por confirmar' }}</span>
                 </div>
               </div>
 
               <div class="recommendation-reason">
                 <span class="reason-label">Por qué te recomendamos esto:</span>
-                <span class="reason-text">{{ event.recommendationReason }}</span>
+                <span class="reason-text">{{ getRecommendationReason(event) }}</span>
               </div>
 
               <div class="event-actions">
                 <a [routerLink]="['/events', event.id]" class="btn btn-primary">
                   Ver Detalles
                 </a>
-                <button class="btn btn-secondary">
-                  ❤️ Me Interesa
-                </button>
               </div>
             </div>
           </div>
@@ -236,17 +232,21 @@ import { User } from '../../../../core/models/user.model';
       object-fit: cover;
     }
 
-    .recommendation-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 15px;
-      font-size: 0.8rem;
-      font-weight: bold;
+    .image-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #2D2D2D, #1A1A1A);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
+    .image-placeholder i {
+      font-size: 3rem;
+      color: #9CA3AF;
+    }
+
+
 
     .event-content {
       padding: 20px;
@@ -306,7 +306,7 @@ import { User } from '../../../../core/models/user.model';
 
     .event-actions {
       display: flex;
-      gap: 10px;
+      justify-content: center;
     }
 
     .btn {
@@ -363,7 +363,7 @@ import { User } from '../../../../core/models/user.model';
   `]
 })
 export class EventRecommendationsComponent implements OnInit {
-  personalizedRecommendations: EventRecommendation[] = [];
+  personalizedRecommendations: EnhancedEventRecommendation[] = [];
   currentUser: User | null = null;
 
   loading = {
@@ -377,6 +377,9 @@ export class EventRecommendationsComponent implements OnInit {
     followedArtists: '',
     similar: ''
   };
+
+  // Track image errors to prevent infinite loops
+  imageErrors = new Set<number>();
 
   constructor(
     private userRecommendationService: UserRecommendationService,
@@ -407,8 +410,11 @@ export class EventRecommendationsComponent implements OnInit {
 
     this.loading.personalized = true;
     this.error.personalized = '';
+    
+    // Clear previous image errors
+    this.imageErrors.clear();
 
-    this.userRecommendationService.getPersonalizedRecommendations(this.currentUser.id).subscribe({
+    this.userRecommendationService.getEnhancedPersonalizedRecommendations(this.currentUser.id).subscribe({
       next: (recommendations) => {
         this.personalizedRecommendations = recommendations;
         this.loading.personalized = false;
@@ -433,12 +439,7 @@ export class EventRecommendationsComponent implements OnInit {
     });
   }
 
-  formatPrice(price: number): string {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS'
-    }).format(price);
-  }
+
 
   refresh(): void {
     this.loadAllRecommendations();
@@ -450,5 +451,51 @@ export class EventRecommendationsComponent implements OnInit {
 
   isAnyLoading(): boolean {
     return this.loading.personalized;
+  }
+
+  onImageError(eventId: number): void {
+    this.imageErrors.add(eventId);
+  }
+
+  hasImageError(eventId: number): boolean {
+    return this.imageErrors.has(eventId);
+  }
+
+  getRecommendationReason(event: EnhancedEventRecommendation): string {
+    // Use the enhanced recommendation reason directly
+    if (event.recommendationReason) {
+      return event.recommendationReason;
+    }
+    
+    // Fallback logic based on recommendation type and data
+    switch (event.recommendationType) {
+      case 'FOLLOWED_ARTIST':
+        if (event.followedArtistNames.length > 0) {
+          return event.followedArtistNames.length === 1 
+            ? `Sigues al artista: ${event.followedArtistNames[0]}`
+            : `Sigues a los artistas: ${event.followedArtistNames.join(', ')}`;
+        }
+        return event.mainArtistName ? `Sigues al artista: ${event.mainArtistName}` : 'Artista que sigues';
+        
+      case 'FOLLOWED_VENUE':
+        if (event.followedVenueNames.length > 0) {
+          return event.followedVenueNames.length === 1 
+            ? `Sigues el recinto: ${event.followedVenueNames[0]}`
+            : `Sigues los recintos: ${event.followedVenueNames.join(', ')}`;
+        }
+        return event.venueName ? `Sigues el recinto: ${event.venueName}` : 'Recinto que sigues';
+        
+      case 'SIMILAR_GENRE':
+        if (event.matchingGenres.length > 0) {
+          return `Basado en tus gustos: ${event.matchingGenres.join(', ')}`;
+        }
+        return 'Basado en tus gustos musicales y eventos similares';
+        
+      case 'POPULAR':
+        return 'Evento popular recomendado para ti';
+        
+      default:
+        return 'Recomendado especialmente para ti';
+    }
   }
 } 

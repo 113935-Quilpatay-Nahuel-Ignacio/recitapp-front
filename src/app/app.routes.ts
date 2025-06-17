@@ -53,7 +53,7 @@ import { NotificationSettingsPageComponent } from './modules/notification/pages/
 // New features - Recomendaciones, Calendario y Gestión de Entradas
 import { EventRecommendationsComponent } from './modules/user/pages/event-recommendations/event-recommendations.component';
 import { EventCalendarComponent } from './modules/event/pages/event-calendar/event-calendar.component';
-import { ExpiredTicketsManagementComponent } from './modules/ticket/pages/expired-tickets-management/expired-tickets-management.component';
+import { ExpiredTicketsManagementComponent } from './modules/admin/pages/expired-tickets-management/expired-tickets-management.component';
 import { DashboardComponent } from './modules/dashboard/dashboard.component';
 
 export const routes: Routes = [

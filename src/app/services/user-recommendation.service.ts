@@ -26,6 +26,38 @@ export interface EventRecommendation {
   recommendationScore: number;
 }
 
+export interface EnhancedEventRecommendation {
+  id: number;
+  name: string;
+  description: string;
+  startDateTime: string;
+  endDateTime: string;
+  
+  // Información del recinto
+  venueId: number;
+  venueName: string;
+  venueAddress: string;
+  
+  // Información del artista principal
+  mainArtistId?: number;
+  mainArtistName?: string;
+  mainArtistImage?: string;
+  
+  // Información adicional del evento
+  statusName: string;
+  flyerImage?: string;
+  ticketPrice?: number;
+  availableTickets?: number;
+  
+  // Información de la recomendación
+  recommendationType: 'FOLLOWED_ARTIST' | 'FOLLOWED_VENUE' | 'SIMILAR_GENRE' | 'POPULAR';
+  recommendationScore: number;
+  followedArtistNames: string[];
+  followedVenueNames: string[];
+  matchingGenres: string[];
+  recommendationReason: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -44,5 +76,9 @@ export class UserRecommendationService {
 
   getPersonalizedRecommendations(userId: number): Observable<EventRecommendation[]> {
     return this.http.get<EventRecommendation[]>(`${this.apiUrl}/${userId}/recommendations/events`);
+  }
+
+  getEnhancedPersonalizedRecommendations(userId: number): Observable<EnhancedEventRecommendation[]> {
+    return this.http.get<EnhancedEventRecommendation[]>(`${this.apiUrl}/${userId}/recommendations/events/enhanced`);
   }
 } 
