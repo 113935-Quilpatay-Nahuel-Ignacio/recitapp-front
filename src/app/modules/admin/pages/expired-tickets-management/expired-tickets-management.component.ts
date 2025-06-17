@@ -88,6 +88,20 @@ import { User } from '../../../../core/models/user.model';
 
         </div>
 
+        <!-- No Tickets Message -->
+        <div *ngIf="previewData.length === 0 && !loadingPreview && !loading && !error" class="no-tickets-message">
+          <div class="no-tickets-content">
+            <div class="no-tickets-icon">🎉</div>
+            <h3>¡No hay tickets vencidos para procesar!</h3>
+            <p>Todos los tickets están en estado correcto o no hay eventos pasados con tickets vendidos.</p>
+            <div class="no-tickets-actions">
+              <button class="btn btn-secondary" (click)="loadPreview()">
+                🔄 Verificar nuevamente
+              </button>
+            </div>
+          </div>
+        </div>
+
                  <!-- Preview Section -->
          <div *ngIf="previewData.length > 0" class="preview-section">
            <h2>📋 Vista Previa de Tickets a Procesar</h2>
@@ -427,6 +441,60 @@ import { User } from '../../../../core/models/user.model';
     .btn-danger:hover:not(:disabled) {
       background: #DC2626;
       transform: translateY(-2px);
+    }
+
+    .no-tickets-message {
+      margin: 40px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .no-tickets-content {
+      background: #2D2D2D;
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      border: 2px solid #22C55E;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.1);
+    }
+
+    .no-tickets-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .no-tickets-content h3 {
+      color: #22C55E;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .no-tickets-content p {
+      color: #9CA3AF;
+      margin-bottom: 25px;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .no-tickets-actions {
+      display: flex;
+      justify-content: center;
     }
 
     .preview-section {
