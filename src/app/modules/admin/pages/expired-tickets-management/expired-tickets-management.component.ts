@@ -79,11 +79,13 @@ import { User } from '../../../../core/models/user.model';
           
           <button 
             class="btn btn-danger"
-            (click)="showConfirmModal = true"
+            (click)="onProcessButtonClick()"
             [disabled]="!previewData.length || processing">
             <span *ngIf="!processing">⚠️ Procesar Tickets Vencidos</span>
             <span *ngIf="processing">⏳ Procesando...</span>
           </button>
+          
+
         </div>
 
                  <!-- Preview Section -->
@@ -139,35 +141,109 @@ import { User } from '../../../../core/models/user.model';
             🔄 Actualizar Vista
           </button>
         </div>
+
+
       </div>
 
-      <!-- Confirmation Modal -->
-      <div *ngIf="showConfirmModal" class="modal-overlay" (click)="showConfirmModal = false">
-        <div class="modal" (click)="$event.stopPropagation()">
-          <div class="modal-header">
-            <h3>⚠️ Confirmar Procesamiento</h3>
-            <button class="close-btn" (click)="showConfirmModal = false">×</button>
-          </div>
+              <!-- Confirmation Modal -->
+        <div *ngIf="showConfirmModal" 
+             (click)="showConfirmModal = false" 
+             style="position: fixed !important; 
+                    top: 0 !important; 
+                    left: 0 !important; 
+                    width: 100vw !important; 
+                    height: 100vh !important; 
+                    background: rgba(26, 26, 26, 0.9) !important; 
+                    z-index: 999999 !important; 
+                    display: flex !important; 
+                    justify-content: center !important; 
+                    align-items: center !important;">
+         <div (click)="$event.stopPropagation()" 
+              style="position: fixed !important;
+                     top: 50% !important;
+                     left: 50% !important;
+                     transform: translate(-50%, -50%) !important;
+                     background: #2D2D2D !important; 
+                     color: white !important; 
+                     z-index: 9999999 !important; 
+                     width: 500px !important;
+                     max-width: 90vw !important;
+                     border-radius: 12px !important;
+                     box-shadow: 0 20px 40px rgba(0,0,0,0.8) !important;
+                     border: 2px solid #22C55E !important;">
+                     <div style="background: #1A1A1A !important; 
+                        color: white !important; 
+                        padding: 20px 24px !important; 
+                        border-bottom: 1px solid #22C55E !important;
+                        display: flex !important;
+                        justify-content: space-between !important;
+                        align-items: center !important;
+                        border-radius: 12px 12px 0 0 !important;">
+             <h3 style="color: #22C55E !important; margin: 0 !important; font-size: 20px !important; font-weight: 600 !important;">⚠️ Confirmar Procesamiento</h3>
+             <button (click)="showConfirmModal = false" 
+                     style="background: none !important; 
+                            border: none !important; 
+                            font-size: 28px !important; 
+                            color: #888 !important; 
+                            cursor: pointer !important;
+                            padding: 0 !important;
+                            width: 32px !important;
+                            height: 32px !important;
+                            transition: color 0.2s !important;"
+                     onmouseover="this.style.color='#22C55E'"
+                     onmouseout="this.style.color='#888'">×</button>
+           </div>
           
-          <div class="modal-body">
-            <p><strong>¿Estás seguro de que deseas procesar todos los tickets vencidos?</strong></p>
-                         <p>Esta acción:</p>
-             <ul>
-               <li>Cambiará el estado de {{ previewData.length }} tickets de VENDIDA a VENCIDA</li>
-               <li>Procesará tickets de múltiples eventos</li>
-               <li>Procesará un monto total de {{ formatPrice(getTotalTicketPrice()) }}</li>
-               <li><strong>No se puede deshacer</strong></li>
+                                           <div style="background: #2D2D2D !important; 
+                         color: white !important; 
+                         padding: 24px !important;
+                         line-height: 1.6 !important;">
+              <p style="color: white !important; margin-bottom: 18px !important; font-size: 16px !important;"><strong>¿Estás seguro de que deseas procesar todos los tickets vencidos?</strong></p>
+              <p style="color: #ccc !important; margin-bottom: 12px !important; font-size: 14px !important;">Esta acción:</p>
+               <ul style="color: #e5e5e5 !important; margin-left: 20px !important; font-size: 14px !important;">
+                <li style="margin-bottom: 8px !important;">Cambiará el estado de <span style="color: #22C55E !important; font-weight: 600 !important;">{{ previewData.length }} tickets</span> de VENDIDA a VENCIDA</li>
+                <li style="margin-bottom: 8px !important;">Procesará tickets de múltiples eventos</li>
+                <li style="margin-bottom: 8px !important;">Procesará un monto total de <span style="color: #22C55E !important; font-weight: 600 !important;">{{ formatPrice(getTotalTicketPrice()) }}</span></li>
+                <li style="margin-bottom: 8px !important; color: #ff6b6b !important;"><strong>⚠️ No se puede deshacer</strong></li>
              </ul>
-          </div>
+           </div>
           
-          <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="showConfirmModal = false">
-              ❌ Cancelar
-            </button>
-            <button class="btn btn-danger" (click)="processExpiredTickets()">
-              ✅ Confirmar Procesamiento
-            </button>
-          </div>
+                     <div style="background: #1A1A1A !important; 
+                        padding: 20px 24px !important; 
+                        border-top: 1px solid #22C55E !important;
+                        display: flex !important;
+                        justify-content: flex-end !important;
+                        gap: 12px !important;
+                        border-radius: 0 0 12px 12px !important;">
+             <button (click)="showConfirmModal = false" 
+                     style="background: #444 !important; 
+                            color: white !important;
+                            border: 1px solid #666 !important;
+                            padding: 12px 20px !important;
+                            border-radius: 6px !important;
+                            cursor: pointer !important;
+                            font-size: 14px !important;
+                            font-weight: 500 !important;
+                            transition: all 0.2s !important;"
+                     onmouseover="this.style.background='#555'; this.style.borderColor='#777'"
+                     onmouseout="this.style.background='#444'; this.style.borderColor='#666'">
+               ❌ Cancelar
+             </button>
+             <button (click)="processExpiredTickets()" 
+                     style="background: #22C55E !important; 
+                            color: white !important;
+                            border: 1px solid #22C55E !important;
+                            padding: 12px 20px !important;
+                            border-radius: 6px !important;
+                            cursor: pointer !important;
+                            font-size: 14px !important;
+                            font-weight: 600 !important;
+                            transition: all 0.2s !important;"
+                     onmouseover="this.style.background='#1ea54a'; this.style.borderColor='#1ea54a'"
+                     onmouseout="this.style.background='#22C55E'; this.style.borderColor='#22C55E'">
+               ✅ Confirmar Procesamiento
+             </button>
+           </div>
         </div>
       </div>
     </div>
@@ -464,13 +540,14 @@ import { User } from '../../../../core/models/user.model';
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background: rgba(0,0,0,0.8);
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 9999 !important;
+      backdrop-filter: blur(2px);
     }
 
     .modal {
@@ -479,6 +556,9 @@ import { User } from '../../../../core/models/user.model';
       max-width: 500px;
       width: 90%;
       border: 1px solid #374151;
+      position: relative;
+      z-index: 10000 !important;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
     }
 
     .modal-header {
@@ -588,33 +668,40 @@ export class ExpiredTicketsManagementComponent implements OnInit {
   ngOnInit(): void {
     // Verificar permisos de administrador
     this.authService.currentUser$.subscribe((user: User | null) => {
+      console.log('Current user:', user);
+      
       if (!user) {
         this.error = 'Debes iniciar sesión para acceder a esta funcionalidad';
         return;
       }
+      
+      console.log('User role:', user.role?.name);
       
       if (user.role.name !== 'ADMIN') {
         this.error = 'No tienes permisos para acceder a esta funcionalidad. Solo administradores pueden gestionar tickets vencidos.';
         return;
       }
       
+      console.log('User is admin, loading data...');
       this.loadData();
     });
   }
 
   loadData(): void {
+    console.log('Loading data...');
     this.loading = true;
     this.error = '';
     
     this.ticketAdminService.getExpiredTicketsSummary().subscribe({
       next: (summary: ExpiredTicketsSummary) => {
+        console.log('Summary loaded:', summary);
         this.summary = summary;
         this.loading = false;
       },
       error: (error: any) => {
-        this.error = 'Error al cargar las estadísticas de tickets vencidos';
-        this.loading = false;
         console.error('Error loading expired ticket stats:', error);
+        this.error = 'Error al cargar las estadísticas de tickets vencidos: ' + (error.message || error);
+        this.loading = false;
       }
     });
   }
@@ -627,6 +714,7 @@ export class ExpiredTicketsManagementComponent implements OnInit {
       next: (preview: ExpiredTicketPreview[]) => {
         this.previewData = preview;
         this.loadingPreview = false;
+        console.log('Preview data loaded:', preview);
       },
       error: (error: any) => {
         this.error = 'Error al cargar la vista previa de tickets vencidos';
@@ -636,13 +724,35 @@ export class ExpiredTicketsManagementComponent implements OnInit {
     });
   }
 
+  onProcessButtonClick(): void {
+    console.log('Process button clicked');
+    console.log('Preview data length:', this.previewData.length);
+    console.log('Processing state:', this.processing);
+    
+    if (this.previewData.length === 0) {
+      this.error = 'Primero debes cargar la vista previa de tickets para procesar';
+      return;
+    }
+    
+    this.showConfirmModal = true;
+    console.log('Modal should be shown:', this.showConfirmModal);
+  }
+
+  testModal(): void {
+    console.log('Test modal clicked');
+    this.showConfirmModal = true;
+    console.log('Modal state:', this.showConfirmModal);
+  }
+
   processExpiredTickets(): void {
+    console.log('Starting to process expired tickets');
     this.processing = true;
     this.showConfirmModal = false;
     this.error = '';
     
     this.ticketAdminService.markTicketsAsExpired().subscribe({
       next: (result: MarkExpiredResult) => {
+        console.log('Processing result:', result);
         if (result.success) {
           this.successMessage = result.message;
         } else {
@@ -656,9 +766,9 @@ export class ExpiredTicketsManagementComponent implements OnInit {
         this.loadData(); // Refresh stats
       },
       error: (error: any) => {
-        this.error = 'Error al procesar los tickets vencidos';
-        this.processing = false;
         console.error('Error processing expired tickets:', error);
+        this.error = 'Error al procesar los tickets vencidos: ' + (error.message || error);
+        this.processing = false;
       }
     });
   }
