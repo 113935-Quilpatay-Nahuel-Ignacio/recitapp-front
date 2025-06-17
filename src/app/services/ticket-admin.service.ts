@@ -12,14 +12,27 @@ export interface ExpiredTicketsSummary {
 
 export interface ExpiredTicketPreview {
   id: number;
+  eventId: number;
   eventName: string;
   eventDate: string;
+  venueName: string;
+  sectionName: string;
+  price: number;
+  status: string;
+  qrCode: string;
+  purchaseDate: string;
+  
+  // User information (purchaser)
+  userId: number;
   userName: string;
   userEmail: string;
-  ticketPrice: number;
-  sectionName: string;
-  purchaseDate: string;
-  status: string;
+  userFirstName: string;
+  userLastName: string;
+  
+  // Attendee information
+  attendeeFirstName: string;
+  attendeeLastName: string;
+  attendeeDni: string;
 }
 
 export interface ExpiredTicketsStatistics {

@@ -11,7 +11,7 @@ import { User } from '../../../../core/models/user.model';
   template: `
     <div class="expired-tickets-container">
       <div class="header">
-        <h1>🎫 Gestión de Tickets Vencidos</h1>
+        <h1>Gestión de Tickets Vencidos</h1>
         <p class="subtitle">Administra y procesa tickets de eventos pasados</p>
       </div>
 
@@ -114,7 +114,7 @@ import { User } from '../../../../core/models/user.model';
                  
                  <div class="preview-item">
                    <span class="label">💰 Precio:</span>
-                   <span class="value highlight">{{ formatPrice(preview.ticketPrice) }}</span>
+                   <span class="value highlight">{{ formatPrice(preview.price) }}</span>
                  </div>
                  
                  <div class="preview-item">
@@ -674,7 +674,7 @@ export class ExpiredTicketsManagementComponent implements OnInit {
   }
 
   getTotalTicketPrice(): number {
-    return this.previewData.reduce((total, preview) => total + preview.ticketPrice, 0);
+    return this.previewData.reduce((total, preview) => total + preview.price, 0);
   }
 
   formatPrice(price: number): string {
