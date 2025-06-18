@@ -50,8 +50,12 @@ export class LoginComponent implements OnInit {
       this.errorMessage = '';
 
       const { email, password } = this.loginForm.value;
+      
+      // Aplicar trim para evitar problemas con espacios en blanco
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
 
-      this.authService.login({ email, password }).subscribe({
+      this.authService.login({ email: trimmedEmail, password: trimmedPassword }).subscribe({
         next: () => {
           this.router.navigate([this.returnUrl]);
         },

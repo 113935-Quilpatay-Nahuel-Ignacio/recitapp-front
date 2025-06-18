@@ -35,7 +35,8 @@ export class ForgotPasswordComponent implements OnInit {
       this.errorMessage = '';
       this.successMessage = '';
 
-      const email = this.forgotPasswordForm.get('email')?.value;
+      // Aplicar trim para evitar problemas con espacios en blanco
+      const email = this.forgotPasswordForm.get('email')?.value?.trim();
 
       this.authService.forgotPassword(email).subscribe({
         next: () => {
@@ -58,7 +59,8 @@ export class ForgotPasswordComponent implements OnInit {
       this.isLoading = true;
       this.errorMessage = '';
 
-      const email = this.forgotPasswordForm.get('email')?.value;
+      // Aplicar trim para evitar problemas con espacios en blanco
+      const email = this.forgotPasswordForm.get('email')?.value?.trim();
 
       this.authService.forgotPassword(email).subscribe({
         next: () => {

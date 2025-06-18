@@ -139,15 +139,17 @@ export class RegisterComponent implements OnInit {
       this.successMessage = '';
 
       const formData = this.registerForm.value;
+      
+      // Aplicar trim para evitar problemas con espacios en blanco
       const userData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-        dni: formData.dni,
-        phone: formData.phone,
-        address: formData.address
+        firstName: formData.firstName?.trim(),
+        lastName: formData.lastName?.trim(),
+        email: formData.email?.trim(),
+        password: formData.password?.trim(),
+        confirmPassword: formData.confirmPassword?.trim(),
+        dni: formData.dni?.trim(),
+        phone: formData.phone?.trim(),
+        address: formData.address?.trim()
       };
 
       this.authService.register(userData).subscribe({

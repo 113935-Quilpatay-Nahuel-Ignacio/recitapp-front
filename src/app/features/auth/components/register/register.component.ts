@@ -131,12 +131,14 @@ export class RegisterComponent implements OnInit {
       this.successMessage = '';
 
       const formData = this.registerForm.value;
+      
+      // Aplicar trim para evitar problemas con espacios en blanco
       const userData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
+        firstName: formData.firstName?.trim(),
+        lastName: formData.lastName?.trim(),
+        email: formData.email?.trim(),
+        password: formData.password?.trim(),
+        confirmPassword: formData.confirmPassword?.trim(),
         dni: '' // Campo opcional por ahora
       };
 

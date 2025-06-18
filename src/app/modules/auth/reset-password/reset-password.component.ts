@@ -150,10 +150,12 @@ export class ResetPasswordComponent implements OnInit {
       this.successMessage = '';
 
       const formData = this.resetPasswordForm.value;
+      
+      // Aplicar trim para evitar problemas con espacios en blanco
       const resetData = {
         token: this.token,
-        newPassword: formData.newPassword,
-        confirmPassword: formData.confirmPassword
+        newPassword: formData.newPassword?.trim(),
+        confirmPassword: formData.confirmPassword?.trim()
       };
 
       this.authService.resetPassword(resetData).subscribe({
