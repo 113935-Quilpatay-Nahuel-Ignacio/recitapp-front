@@ -302,28 +302,7 @@ export class TicketPurchaseComponent implements OnInit {
     return this.totalAmount;
   }
 
-  // Debug method to check form validity
-  debugFormValidity(): void {
-    console.log('=== FORM VALIDATION DEBUG ===');
-    console.log('Purchase form valid:', this.purchaseForm.valid);
-    console.log('Purchase form errors:', this.purchaseForm.errors);
-    console.log('Attendee tickets count:', this.attendeeTickets.length);
-    
-    this.attendeeTickets.controls.forEach((control, index) => {
-      const formGroup = control as FormGroup;
-      console.log(`\nTicket ${index + 1}:`);
-      console.log('  Valid:', formGroup.valid);
-      console.log('  Values:', formGroup.value);
-      console.log('  Errors:', formGroup.errors);
-      
-      Object.keys(formGroup.controls).forEach(key => {
-        const fieldControl = formGroup.get(key);
-        if (fieldControl?.invalid) {
-          console.log(`  ${key} - Invalid:`, fieldControl.errors);
-        }
-      });
-    });
-  }
+
 
   private loadUserWalletBalance(): void {
     if (!this.currentUserId) {
@@ -370,19 +349,6 @@ export class TicketPurchaseComponent implements OnInit {
 
   onSubmit(): void {
     if (this.purchaseForm.invalid) {
-      // Debug: Log specific validation errors
-      console.log('Form is invalid. Checking specific errors...');
-      this.attendeeTickets.controls.forEach((control, index) => {
-        const formGroup = control as FormGroup;
-        console.log(`Ticket ${index + 1} errors:`, formGroup.errors);
-        Object.keys(formGroup.controls).forEach(key => {
-          const fieldControl = formGroup.get(key);
-          if (fieldControl?.invalid) {
-            console.log(`  - ${key}: ${fieldControl.errors ? JSON.stringify(fieldControl.errors) : 'invalid'}`);
-          }
-        });
-      });
-      
       this.error = 'Por favor complete todos los campos requeridos para cada entrada.';
       this.purchaseForm.markAllAsTouched();
       return;

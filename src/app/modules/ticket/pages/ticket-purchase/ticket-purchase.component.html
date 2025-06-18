@@ -232,15 +232,6 @@
             </div>
 
             <!-- Debug button (temporary) -->
-            <button 
-              type="button" 
-              class="btn btn-outline-info btn-sm me-2" 
-              *ngIf="!showPayerForm"
-              (click)="debugFormValidity()">
-              <i class="bi bi-bug me-1"></i>
-              Debug Form
-            </button>
-            
             <!-- Mostrar primero el botón para proceder al formulario del pagador -->
             <button 
               type="submit" 
@@ -250,7 +241,7 @@
               <i class="bi bi-person-fill me-2"></i>
               Continuar con Datos del Pagador
               <small class="d-block" *ngIf="purchaseForm.invalid">
-                (Formulario inválido - usar Debug para más info)
+                (Complete todos los campos requeridos)
               </small>
             </button>
           </div>
