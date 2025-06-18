@@ -143,6 +143,51 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     return StatusFormatter.getStatusInfo(status);
   }
 
+  getAlertClass(status: string | undefined): string {
+    switch (status) {
+      case 'PROXIMO':
+        return 'alert-warning';
+      case 'AGOTADO':
+        return 'alert-info';
+      case 'CANCELADO':
+        return 'alert-danger';
+      case 'FINALIZADO':
+        return 'alert-secondary';
+      default:
+        return 'alert-info';
+    }
+  }
+
+  getAlertIcon(status: string | undefined): string {
+    switch (status) {
+      case 'PROXIMO':
+        return 'bi-clock-history';
+      case 'AGOTADO':
+        return 'bi-exclamation-triangle';
+      case 'CANCELADO':
+        return 'bi-x-circle';
+      case 'FINALIZADO':
+        return 'bi-check-circle';
+      default:
+        return 'bi-info-circle';
+    }
+  }
+
+  getStatusMessage(status: string | undefined): string {
+    switch (status) {
+      case 'PROXIMO':
+        return 'Este evento está programado pero la venta de entradas aún no ha comenzado. Mantente atento para conocer cuándo estarán disponibles.';
+      case 'AGOTADO':
+        return 'Lo sentimos, todas las entradas para este evento han sido vendidas. Puedes seguir al artista para recibir notificaciones de futuros eventos.';
+      case 'CANCELADO':
+        return 'Este evento ha sido cancelado. Si ya compraste entradas, te contactaremos sobre el proceso de reembolso.';
+      case 'FINALIZADO':
+        return 'Este evento ya ha concluido. ¡Esperamos que hayas disfrutado del show!';
+      default:
+        return `La venta de entradas para este evento no está activa actualmente (Estado: ${this.formatStatusName(status)}).`;
+    }
+  }
+
   navigateToVenue(venueId: number | undefined): void {
     if (venueId) {
       this.router.navigate(['/venues', venueId]);

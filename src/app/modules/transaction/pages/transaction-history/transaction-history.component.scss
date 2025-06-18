@@ -1,126 +1,275 @@
 .transaction-history-container {
-  max-width: 1000px;
-  margin: 2rem auto;
   padding: 2rem;
-  border: 1px solid var(--dark-border);
-  border-radius: 8px;
-  background-color: var(--dark-card);
+  max-width: 1200px;
+  margin: 2rem auto;
+  border: 1px solid #404040;
+  border-radius: 12px;
+  background-color: #2D2D2D;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #22C55E;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .refresh-button {
+    margin-bottom: 1.5rem;
+    padding: 12px 24px;
+    background-color: #22C55E;
+    color: #1A1A1A;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    &:hover {
+      background-color: #16a34a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+  }
+
+  .error-message-banner {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .transactions-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #404040;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+    background-color: #1A1A1A;
+
+    thead {
+      background-color: #2D2D2D;
+
+      th {
+        padding: 15px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: #22C55E;
+        border: 1px solid #404040;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+      }
+    }
+
+    tbody {
+      tr {
+        transition: background-color 0.2s ease;
+
+        &:nth-child(even) {
+          background-color: rgba(45, 45, 45, 0.3);
+        }
+
+        &:hover {
+          background-color: rgba(34, 197, 94, 0.1);
+        }
+
+        td {
+          padding: 12px 16px;
+          border: 1px solid #404040;
+          vertical-align: middle;
+          color: #ffffff;
+
+          &:first-child {
+            font-weight: 600;
+            color: #22C55E;
+          }
+        }
+      }
+    }
+
+    .action-button {
+      padding: 8px 12px;
+      margin-right: 8px;
+      margin-bottom: 4px;
+      border: 1px solid #404040;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      background-color: #2D2D2D;
+      color: #ffffff;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+
+      &:hover {
+        border-color: #22C55E;
+        background-color: #22C55E;
+        color: #1A1A1A;
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      &:disabled:hover {
+        border-color: #404040;
+        background-color: #2D2D2D;
+        color: #ffffff;
+      }
+
+      &.cancel-button {
+        background-color: #f59e0b;
+        color: #1A1A1A;
+        border-color: #f59e0b;
+
+        &:hover {
+          background-color: #d97706;
+          border-color: #d97706;
+          box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+      }
+
+      &.refund-button {
+        background-color: #8b5cf6;
+        color: #ffffff;
+        border-color: #8b5cf6;
+
+        &:hover {
+          background-color: #7c3aed;
+          border-color: #7c3aed;
+          box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+        }
+      }
+    }
+  }
+
+  .loading-container, .empty-container {
+    text-align: center;
+    padding: 2rem 0;
+    color: #ffffff;
+
+    p {
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+      color: #ffffff;
+    }
+
+    .spinner {
+      width: 3rem;
+      height: 3rem;
+      border: 4px solid #404040;
+      border-top: 4px solid #22C55E;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+  }
+
+  // Status badges
+  .status-completada {
+    color: #22C55E;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(34, 197, 94, 0.1);
+    border: 1px solid #22C55E;
+  }
+
+  .status-iniciada,
+  .status-procesando {
+    color: #f59e0b;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid #f59e0b;
+  }
+
+  .status-cancelada,
+  .status-fallida {
+    color: #ef4444;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+  }
+
+  .status-reembolsada {
+    color: #8b5cf6;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(139, 92, 246, 0.1);
+    border: 1px solid #8b5cf6;
+  }
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: var(--dark-text);
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.refresh-button {
-  margin-bottom: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-green);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+// Responsive design
+@media (max-width: 768px) {
+  .transaction-history-container {
+    margin: 1rem;
+    padding: 1rem;
+
+    .transactions-table-wrapper {
+      border-radius: 0;
+    }
+
+    table {
+      font-size: 0.8rem;
+
+      thead th {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+      }
+
+      tbody td {
+        padding: 8px;
+      }
+
+      .action-button {
+        padding: 6px 12px;
+        font-size: 0.7rem;
+        margin-right: 4px;
+        margin-bottom: 4px;
+      }
+    }
+  }
 }
 
-.refresh-button:hover {
-  background-color: var(--primary-green-hover);
-}
+@media (max-width: 576px) {
+  .transaction-history-container {
+    .transactions-table-wrapper {
+      overflow-x: scroll;
+    }
 
-.error-message-banner {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-}
-
-.transactions-table-wrapper {
-  overflow-x: auto; /* For responsiveness on small screens */
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-th,
-td {
-  border: 1px solid var(--dark-border);
-  padding: 0.75rem;
-  text-align: left;
-  vertical-align: middle;
-  color: var(--dark-text);
-}
-
-th {
-  background-color: var(--dark-card-hover);
-  font-weight: bold;
-  color: var(--dark-text);
-}
-
-tr:nth-child(even) {
-  background-color: var(--dark-card);
-}
-
-tr:hover {
-  background-color: var(--dark-card-hover);
-}
-
-.status-completed {
-  color: green;
-  font-weight: bold;
-}
-
-.status-pending {
-  color: orange;
-  font-weight: bold;
-}
-
-.status-failed,
-.status-cancelled {
-  color: red;
-  font-weight: bold;
-}
-
-.status-refunded {
-  color: #555;
-  font-style: italic;
-}
-
-.action-button {
-  padding: 0.3rem 0.6rem;
-  margin-right: 0.3rem;
-  border: 1px solid var(--dark-border);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  background-color: var(--dark-card);
-  color: var(--dark-text);
-  transition: all 0.3s ease;
-}
-
-.action-button:hover {
-  border-color: var(--dark-text-muted);
-}
-
-.cancel-button {
-  background-color: #ffc107; /* Amber */
-  color: white;
-}
-
-.cancel-button:hover {
-  background-color: #e0a800;
-}
-
-.refund-button {
-  background-color: #17a2b8; /* Info blue */
-  color: white;
-}
-
-.refund-button:hover {
-  background-color: #117a8b;
+    table {
+      min-width: 600px;
+    }
+  }
 }

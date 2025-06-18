@@ -54,31 +54,16 @@ import { NotificationSettingsPageComponent } from './modules/notification/pages/
 import { EventRecommendationsComponent } from './modules/user/pages/event-recommendations/event-recommendations.component';
 import { EventCalendarComponent } from './modules/event/pages/event-calendar/event-calendar.component';
 import { ExpiredTicketsManagementComponent } from './modules/admin/pages/expired-tickets-management/expired-tickets-management.component';
-import { DashboardComponent } from './modules/dashboard/dashboard.component';
 
 export const routes: Routes = [
-  // Default route
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  
-  // Dashboard route
-  { 
-    path: 'dashboard', 
-    component: DashboardComponent,
-    canActivate: [AuthGuard]
-  },
+  // Default route - redirects to events
+  { path: '', redirectTo: '/events', pathMatch: 'full' },
 
   // Auth routes (lazy loaded)
   {
     path: 'auth',
     loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule)
   },
-
-  // Dashboard (protected) - TODO: Crear módulo dashboard
-  // {
-  //   path: 'dashboard',
-  //   canActivate: [AuthGuard],
-  //   loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
-  // },
 
   // User routes (legacy - mantener por compatibilidad)
   { path: 'register', redirectTo: '/auth/register' },

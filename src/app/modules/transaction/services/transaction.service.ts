@@ -78,6 +78,12 @@ export class TransactionService {
       .pipe(catchError(this.handleError));
   }
 
+  // Enhanced refund with MercadoPago integration and wallet fallback
+  registerEnhancedRefund(refundRequest: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/transactions/refund/enhanced`, refundRequest)
+      .pipe(catchError(this.handleError));
+  }
+
   // Corresponds to RAPP113935-103 / [GET] /payment-methods
   getAvailablePaymentMethods(includeInactive: boolean = false): Observable<PaymentMethodDTO[]> {
     let params = new HttpParams();

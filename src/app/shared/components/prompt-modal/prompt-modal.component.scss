@@ -1,15 +1,18 @@
 .prompt-modal {
-  background-color: #2c2c34;
+  background-color: #2D2D2D;
   color: #ffffff;
   min-width: 500px;
   max-width: 100%;
-  border-radius: 8px;
+  border-radius: 12px;
+  border: 1px solid #404040;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 
   .dialog-header {
     padding: 24px 24px 16px 24px;
     border-bottom: 1px solid #404040;
-    background-color: #3a3a42;
+    background-color: #1A1A1A;
     margin-bottom: 0;
+    border-radius: 12px 12px 0 0;
 
     .header-content {
       display: flex;
@@ -22,15 +25,15 @@
         height: 1.75rem;
 
         &.icon--info {
-          color: #2196F3;
+          color: #22C55E;
         }
       }
 
       h2 {
         margin: 0;
-        font-size: 1.25rem;
+        font-size: 1.4rem;
         font-weight: 600;
-        color: #ffffff;
+        color: #22C55E;
         font-family: 'Inter', sans-serif;
         letter-spacing: 0.025em;
       }
@@ -39,16 +42,17 @@
 
   .dialog-content {
     padding: 24px;
-    background-color: #2c2c34;
+    background-color: #2D2D2D;
     max-height: 60vh;
     overflow-y: auto;
 
     .main-message {
       margin-bottom: 20px;
-      padding: 16px;
-      background-color: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      background-color: #1A1A1A;
       border-radius: 8px;
-      border-left: 4px solid #2196F3;
+      border-left: 4px solid #22C55E;
+      border: 1px solid #404040;
 
       .message {
         margin: 0;
@@ -70,20 +74,20 @@
 
     // Custom scrollbar
     &::-webkit-scrollbar {
-      width: 6px;
+      width: 8px;
     }
 
     &::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
+      background: #1A1A1A;
+      border-radius: 4px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(33, 150, 243, 0.6);
-      border-radius: 3px;
+      background: #22C55E;
+      border-radius: 4px;
 
       &:hover {
-        background: rgba(33, 150, 243, 0.8);
+        background: #16a34a;
       }
     }
   }
@@ -91,10 +95,11 @@
   .dialog-actions {
     padding: 20px 24px 24px 24px;
     border-top: 1px solid #404040;
-    background-color: #3a3a42;
+    background-color: #1A1A1A;
     display: flex;
     justify-content: flex-end;
     gap: 20px;
+    border-radius: 0 0 12px 12px;
 
     button {
       display: flex;
@@ -106,7 +111,7 @@
       font-family: 'Inter', sans-serif;
       font-weight: 600;
       text-transform: none;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       letter-spacing: 0.025em;
 
       mat-icon {
@@ -118,33 +123,34 @@
       &.cancel-btn {
         color: #ffffff;
         background: transparent;
-        border: 2px solid #888888;
+        border: 2px solid #404040;
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.15);
-          border-color: #aaaaaa;
-          color: #ffffff;
-          transform: translateY(-1px);
+          background-color: #2D2D2D;
+          border-color: #22C55E;
+          color: #22C55E;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
         }
       }
 
       &.confirm-btn {
         &.mat-primary {
-          background-color: #4CAF50;
-          color: white;
-          border: 2px solid #4CAF50;
+          background-color: #22C55E;
+          color: #1A1A1A;
+          border: 2px solid #22C55E;
 
           &:hover:not(:disabled) {
-            background-color: #45a049;
-            border-color: #45a049;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            background-color: #16a34a;
+            border-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
           }
 
           &:disabled {
-            background-color: #666666;
-            border-color: #666666;
-            color: #b0b0b0;
+            background-color: #404040;
+            border-color: #404040;
+            color: #666666;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -153,7 +159,7 @@
       }
 
       // Smooth transitions
-      transition: all 0.2s ease-in-out;
+      transition: all 0.3s ease-in-out;
     }
 
     @media (max-width: 600px) {
@@ -177,7 +183,7 @@
       max-height: 50vh;
       
       .main-message {
-        padding: 12px;
+        padding: 16px;
         margin-bottom: 16px;
         
         .message {
@@ -193,45 +199,62 @@
   .prompt-modal {
     .mat-mdc-form-field {
       .mat-mdc-form-field-outline {
-        color: #666666;
+        color: #404040;
       }
 
       &.mat-focused .mat-mdc-form-field-outline-thick {
-        color: #4CAF50;
+        color: #22C55E;
       }
 
-      .mat-mdc-floating-label {
-        color: #b0b0b0;
+      .mat-mdc-form-field-outline-thick .mat-mdc-form-field-outline-start,
+      .mat-mdc-form-field-outline-thick .mat-mdc-form-field-outline-end,
+      .mat-mdc-form-field-outline-thick .mat-mdc-form-field-outline-notch {
+        border-color: #22C55E;
+        border-width: 2px;
       }
 
-      &.mat-focused .mat-mdc-floating-label {
-        color: #4CAF50;
-      }
-
-      input, textarea {
+      .mdc-text-field--outlined .mdc-floating-label {
         color: #ffffff;
-        caret-color: #4CAF50;
       }
 
-      // Error styling
-      &.mat-form-field-invalid {
-        .mat-mdc-form-field-outline-thick {
-          color: #f44336;
-        }
+      &.mat-focused .mdc-floating-label {
+        color: #22C55E !important;
+      }
 
-        .mat-mdc-floating-label {
-          color: #f44336;
-        }
+      .mdc-text-field--outlined .mdc-text-field__input {
+        color: #ffffff;
+        background-color: #1A1A1A;
+      }
+
+      .mdc-text-field--outlined .mdc-text-field__input::placeholder {
+        color: #666666;
       }
 
       .mat-mdc-form-field-error {
-        color: #f44336;
+        color: #ef4444;
         font-size: 0.875rem;
-        margin-top: 4px;
       }
 
-      .mat-mdc-form-field-hint {
-        color: #888888;
+      .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-text-field__input {
+        background-color: #1A1A1A;
+      }
+
+      .mdc-text-field--outlined .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: #404040;
+        }
+      }
+
+      &:hover:not(.mat-focused):not(.mat-form-field-disabled) {
+        .mdc-notched-outline {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: #22C55E;
+          }
+        }
       }
     }
   }

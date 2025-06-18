@@ -12,11 +12,13 @@
         <p class="mt-2">Cargando detalles del evento...</p>
       </div>
 
-      <div *ngIf="error" class="error-message">
+      <div *ngIf="error" class="alert alert-warning">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error }}
-        <button type="button" class="btn" (click)="ngOnInit()">
-          <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
-        </button>
+        <div class="mt-2" *ngIf="!error.includes('Serás redirigido')">
+          <button type="button" class="btn btn-outline-primary" (click)="ngOnInit()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+          </button>
+        </div>
       </div>
 
       <ng-container *ngIf="!isLoading && !error">

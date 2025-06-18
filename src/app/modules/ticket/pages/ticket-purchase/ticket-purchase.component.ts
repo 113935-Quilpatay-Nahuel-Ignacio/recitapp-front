@@ -121,6 +121,16 @@ export class TicketPurchaseComponent implements OnInit {
     this.isLoading = true;
     this.event$ = this.eventService.getEventById(this.eventId).pipe(
       rxjsMap((dto: EventDTO): Event => {
+        // Verificar si el evento está disponible para compra
+        if (dto.statusName !== 'EN_VENTA') {
+          const statusMessage = this.getStatusMessage(dto.statusName);
+          this.error = statusMessage;
+          // Redirigir de vuelta al detalle del evento
+          setTimeout(() => {
+            this.router.navigate(['/events', this.eventId]);
+          }, 3000);
+        }
+
         let isoStartDateTime: string | undefined = undefined;
         if (dto.startDateTime) {
           isoStartDateTime = typeof dto.startDateTime === 'string' ? 
@@ -132,6 +142,7 @@ export class TicketPurchaseComponent implements OnInit {
           description: dto.description,
           startDateTime: isoStartDateTime,
           location: dto.venueName,
+          statusName: dto.statusName
         };
       }),
       tap(() => this.isLoading = false),
@@ -373,5 +384,20 @@ export class TicketPurchaseComponent implements OnInit {
   goBackToPayer(): void {
     this.showPaymentForm = false;
     this.paymentData = null;
+  }
+
+  private getStatusMessage(status: string | undefined): string {
+    switch (status) {
+      case 'PROXIMO':
+        return 'Este evento está programado pero la venta de entradas aún no ha comenzado. Serás redirigido al detalle del evento.';
+      case 'AGOTADO':
+        return 'Lo sentimos, todas las entradas para este evento han sido vendidas. Serás redirigido al detalle del evento.';
+      case 'CANCELADO':
+        return 'Este evento ha sido cancelado. Si ya compraste entradas, te contactaremos sobre el proceso de reembolso. Serás redirigido al detalle del evento.';
+      case 'FINALIZADO':
+        return 'Este evento ya ha concluido. No es posible comprar entradas. Serás redirigido al detalle del evento.';
+      default:
+        return `La venta de entradas para este evento no está activa actualmente. Serás redirigido al detalle del evento.`;
+    }
   }
 }

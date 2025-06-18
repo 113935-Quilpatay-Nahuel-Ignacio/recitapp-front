@@ -4,4 +4,5 @@ export interface Event {
   description?: string;
   startDateTime?: string;
   location?: string;
+  statusName?: string;
 } 
