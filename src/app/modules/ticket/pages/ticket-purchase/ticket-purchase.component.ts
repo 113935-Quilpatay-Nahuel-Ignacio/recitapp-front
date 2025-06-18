@@ -15,6 +15,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { PaymentService, PaymentRequest, TicketItem, PayerInfo, PaymentResponse } from '../../../payment/services/payment.service';
 import { MercadoPagoBricksComponent, PaymentData } from '../../../payment/components/mercadopago-bricks/mercadopago-bricks.component';
 import { SessionService } from '../../../../core/services/session.service';
+import { TransactionService } from '../../../transaction/services/transaction.service';
 
 // import { TicketTypeService } from '../../services/ticket-type.service'; // OLD
 // import { TicketType } from '../../models/ticket-type.model'; // OLD
@@ -37,11 +38,23 @@ export class TicketPurchaseComponent implements OnInit {
   eventId!: number;
   showPayerForm = false;
   showPaymentForm = false;
+  showWalletOption = false;
   paymentData: PaymentData | null = null;
   currentUserId: number | null = null;
+  
+  // Wallet properties
+  userWalletBalance = 0;
+  walletDiscountApplied = 0;
+  amountAfterWallet = 0;
+  useWalletPayment = false;
+  isLoadingWallet = false;
+  
+  // Cached total to avoid multiple calculations
+  totalAmount = 0;
 
   // Payment method ID - En producción esto vendría de la respuesta de MercadoPago
   MERCADOPAGO_PAYMENT_METHOD_ID = 5; // ID para "MERCADOPAGO" en la tabla payment_methods
+  WALLET_PAYMENT_METHOD_ID = 4; // ID para "BILLETERA_VIRTUAL" en la tabla payment_methods
 
   constructor(
     private route: ActivatedRoute,
@@ -53,6 +66,7 @@ export class TicketPurchaseComponent implements OnInit {
     private modalService: ModalService,
     private paymentService: PaymentService,
     public sessionService: SessionService, // Hacer público para uso en template
+    private transactionService: TransactionService,
   ) {
     // Form structure needs a major rethink to match TicketPurchaseRequestDTO
     // For now, let's initialize it simply. We will build it dynamically.
@@ -98,6 +112,8 @@ export class TicketPurchaseComponent implements OnInit {
     this.eventId = +eventIdParam;
     this.loadEventDetails();
     this.loadSectionOffers(); // Renamed method
+    this.loadUserWalletBalance(); // Load wallet balance
+    this.calculateTotal(); // Initialize total calculation
   }
 
   private prefillPayerForm(): void {
@@ -204,7 +220,9 @@ export class TicketPurchaseComponent implements OnInit {
       }));
     }
     // Trigger form update for total calculation, etc.
-    this.purchaseForm.updateValueAndValidity(); 
+    this.purchaseForm.updateValueAndValidity();
+    this.calculateTotal();
+    this.updateWalletCalculations();
   }
 
   // New method to handle specific ticket type selection
@@ -251,7 +269,8 @@ export class TicketPurchaseComponent implements OnInit {
     this.error = null;
     
     // Trigger form update for total calculation, etc.
-    this.purchaseForm.updateValueAndValidity(); 
+    this.purchaseForm.updateValueAndValidity();
+    this.updateWalletCalculations(); // Update wallet calculations after adding tickets 
   }
 
   // Get maximum quantity for selected ticket type
@@ -267,6 +286,7 @@ export class TicketPurchaseComponent implements OnInit {
   removeTicket(index: number): void {
     this.attendeeTickets.removeAt(index);
     this.purchaseForm.updateValueAndValidity();
+    this.updateWalletCalculations(); // Update wallet calculations after removing ticket
   }
 
   calculateTotal(): number {
@@ -274,11 +294,95 @@ export class TicketPurchaseComponent implements OnInit {
     this.attendeeTickets.controls.forEach(control => {
       total += control.get('price')?.value || 0;
     });
+    this.totalAmount = total;
     return total;
+  }
+  
+  getTotal(): number {
+    return this.totalAmount;
+  }
+
+  // Debug method to check form validity
+  debugFormValidity(): void {
+    console.log('=== FORM VALIDATION DEBUG ===');
+    console.log('Purchase form valid:', this.purchaseForm.valid);
+    console.log('Purchase form errors:', this.purchaseForm.errors);
+    console.log('Attendee tickets count:', this.attendeeTickets.length);
+    
+    this.attendeeTickets.controls.forEach((control, index) => {
+      const formGroup = control as FormGroup;
+      console.log(`\nTicket ${index + 1}:`);
+      console.log('  Valid:', formGroup.valid);
+      console.log('  Values:', formGroup.value);
+      console.log('  Errors:', formGroup.errors);
+      
+      Object.keys(formGroup.controls).forEach(key => {
+        const fieldControl = formGroup.get(key);
+        if (fieldControl?.invalid) {
+          console.log(`  ${key} - Invalid:`, fieldControl.errors);
+        }
+      });
+    });
+  }
+
+  private loadUserWalletBalance(): void {
+    if (!this.currentUserId) {
+      return;
+    }
+    
+    this.isLoadingWallet = true;
+    this.transactionService.getUserWalletBalance(this.currentUserId)
+      .pipe(
+        finalize(() => this.isLoadingWallet = false),
+        catchError(err => {
+          console.error('Error loading wallet balance:', err);
+          this.userWalletBalance = 0;
+          return EMPTY;
+        })
+      )
+      .subscribe(balance => {
+        this.userWalletBalance = balance;
+        this.calculateTotal(); // Initialize total calculation
+        this.updateWalletCalculations();
+      });
+  }
+
+  private updateWalletCalculations(): void {
+    const totalAmount = this.calculateTotal();
+    
+    if (this.userWalletBalance >= totalAmount && totalAmount > 0) {
+      // Wallet can cover the entire purchase
+      this.walletDiscountApplied = totalAmount;
+      this.amountAfterWallet = 0;
+      this.showWalletOption = true;
+    } else if (this.userWalletBalance > 0 && totalAmount > 0) {
+      // Wallet can cover part of the purchase
+      this.walletDiscountApplied = this.userWalletBalance;
+      this.amountAfterWallet = totalAmount - this.userWalletBalance;
+      this.showWalletOption = true;
+    } else {
+      // No wallet balance available
+      this.walletDiscountApplied = 0;
+      this.amountAfterWallet = totalAmount;
+      this.showWalletOption = false;
+    }
   }
 
   onSubmit(): void {
     if (this.purchaseForm.invalid) {
+      // Debug: Log specific validation errors
+      console.log('Form is invalid. Checking specific errors...');
+      this.attendeeTickets.controls.forEach((control, index) => {
+        const formGroup = control as FormGroup;
+        console.log(`Ticket ${index + 1} errors:`, formGroup.errors);
+        Object.keys(formGroup.controls).forEach(key => {
+          const fieldControl = formGroup.get(key);
+          if (fieldControl?.invalid) {
+            console.log(`  - ${key}: ${fieldControl.errors ? JSON.stringify(fieldControl.errors) : 'invalid'}`);
+          }
+        });
+      });
+      
       this.error = 'Por favor complete todos los campos requeridos para cada entrada.';
       this.purchaseForm.markAllAsTouched();
       return;
@@ -384,6 +488,73 @@ export class TicketPurchaseComponent implements OnInit {
   goBackToPayer(): void {
     this.showPaymentForm = false;
     this.paymentData = null;
+  }
+
+  processWalletPayment(): void {
+    if (this.payerForm.invalid) {
+      this.error = 'Por favor complete todos los datos del pagador.';
+      this.payerForm.markAllAsTouched();
+      return;
+    }
+
+    if (this.amountAfterWallet !== 0) {
+      this.error = 'El saldo de billetera virtual no es suficiente para cubrir la compra completa.';
+      return;
+    }
+
+    const tickets: TicketItem[] = this.attendeeTickets.value.map((ticketFormValue: any) => ({
+      sectionId: ticketFormValue.sectionId,
+      ticketPriceId: ticketFormValue.ticketPriceId,
+      ticketType: ticketFormValue.ticketType,
+      attendeeFirstName: ticketFormValue.attendeeFirstName,
+      attendeeLastName: ticketFormValue.attendeeLastName,
+      attendeeDni: ticketFormValue.attendeeDni,
+      price: ticketFormValue.price,
+      quantity: 1
+    }));
+
+    const payerInfo: PayerInfo = {
+      email: this.payerForm.value.email,
+      firstName: this.payerForm.value.firstName,
+      lastName: this.payerForm.value.lastName,
+      phone: this.payerForm.value.phone,
+      documentType: this.payerForm.value.documentType,
+      documentNumber: this.payerForm.value.documentNumber
+    };
+
+    const paymentRequest: PaymentRequest = {
+      eventId: this.eventId,
+      userId: this.currentUserId!,
+      tickets: tickets,
+      totalAmount: this.calculateTotal(),
+      payer: payerInfo
+    };
+
+    this.isLoading = true;
+    this.error = null;
+
+    this.paymentService.processWalletPayment(paymentRequest)
+      .pipe(
+        finalize(() => (this.isLoading = false)),
+        catchError(err => {
+          console.error('Error processing wallet payment:', err);
+          this.error = 'Error al procesar el pago con billetera virtual. Por favor intente nuevamente.';
+          return EMPTY;
+        })
+      )
+             .subscribe((response: PaymentResponse) => {
+         this.modalService.success(
+           'Compra realizada exitosamente con billetera virtual', 
+           'Compra Exitosa'
+         ).subscribe(() => {
+           this.router.navigate(['/payment/success'], {
+             queryParams: {
+               transaction_id: response.transactionId,
+               status: 'COMPLETED'
+             }
+           });
+         });
+       });
   }
 
   private getStatusMessage(status: string | undefined): string {

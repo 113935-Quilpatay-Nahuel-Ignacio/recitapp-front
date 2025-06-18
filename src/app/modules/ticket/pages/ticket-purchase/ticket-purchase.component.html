@@ -228,9 +228,19 @@
             </div>
             
             <div class="total-amount">
-              {{ calculateTotal() | currency:'ARS':'symbol':'1.2-2' }}
+              {{ getTotal() | currency:'ARS':'symbol':'1.2-2' }}
             </div>
 
+            <!-- Debug button (temporary) -->
+            <button 
+              type="button" 
+              class="btn btn-outline-info btn-sm me-2" 
+              *ngIf="!showPayerForm"
+              (click)="debugFormValidity()">
+              <i class="bi bi-bug me-1"></i>
+              Debug Form
+            </button>
+            
             <!-- Mostrar primero el botón para proceder al formulario del pagador -->
             <button 
               type="submit" 
@@ -239,6 +249,9 @@
               [disabled]="purchaseForm.invalid || isLoading || attendeeTickets.controls.length === 0">
               <i class="bi bi-person-fill me-2"></i>
               Continuar con Datos del Pagador
+              <small class="d-block" *ngIf="purchaseForm.invalid">
+                (Formulario inválido - usar Debug para más info)
+              </small>
             </button>
           </div>
         </form>
@@ -325,9 +338,37 @@
               </div>
             </div>
             
+            <!-- Información de billetera virtual -->
+            <div *ngIf="showWalletOption" class="wallet-info mb-3">
+              <div class="card border-success">
+                <div class="card-body">
+                  <h6 class="card-title text-success">
+                    <i class="bi bi-wallet2 me-2"></i>Billetera Virtual Disponible
+                  </h6>
+                  <p class="card-text mb-2">
+                    <strong>Saldo disponible:</strong> {{ userWalletBalance | currency:'ARS':'symbol':'1.2-2' }}
+                  </p>
+                  <p class="card-text mb-2" *ngIf="walletDiscountApplied > 0">
+                    <strong>Descuento aplicado:</strong> {{ walletDiscountApplied | currency:'ARS':'symbol':'1.2-2' }}
+                  </p>
+                  <p class="card-text mb-0" *ngIf="amountAfterWallet > 0">
+                    <strong>Restante a pagar:</strong> {{ amountAfterWallet | currency:'ARS':'symbol':'1.2-2' }}
+                  </p>
+                  <p class="card-text mb-0 text-success" *ngIf="amountAfterWallet === 0">
+                    <strong><i class="bi bi-check-circle me-1"></i>Compra completamente cubierta por billetera virtual</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             <div class="alert alert-info">
               <i class="bi bi-info-circle me-2"></i>
-              <strong>Total a pagar:</strong> {{ calculateTotal() | currency:'ARS':'symbol':'1.2-2' }}
+              <strong>Total a pagar:</strong> {{ getTotal() | currency:'ARS':'symbol':'1.2-2' }}
+              <div *ngIf="showWalletOption && amountAfterWallet !== getTotal()" class="mt-1">
+                <small class="text-muted">
+                  (Incluye descuento automático de billetera virtual)
+                </small>
+              </div>
             </div>
             
             <div class="d-flex gap-2">
@@ -339,14 +380,30 @@
                 Volver a Entradas
               </button>
               
-              <button 
-                type="submit" 
-                class="btn btn-success btn-lg" 
-                [disabled]="payerForm.invalid || isLoading">
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                <i *ngIf="!isLoading" class="bi bi-credit-card me-2"></i>
-                {{ isLoading ? 'Creando Pago...' : 'Pagar con MercadoPago' }}
-              </button>
+              <!-- Opciones de pago -->
+              <div class="payment-options">
+                <!-- Pago completo con billetera virtual -->
+                <button 
+                  *ngIf="amountAfterWallet === 0"
+                  type="button" 
+                  class="btn btn-success btn-lg me-2" 
+                  [disabled]="payerForm.invalid || isLoading"
+                  (click)="processWalletPayment()">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <i *ngIf="!isLoading" class="bi bi-wallet2 me-2"></i>
+                  {{ isLoading ? 'Procesando...' : 'Pagar con Billetera Virtual' }}
+                </button>
+                
+                <!-- Pago con MercadoPago (con o sin descuento de billetera) -->
+                <button 
+                  type="submit" 
+                  class="btn btn-success btn-lg" 
+                  [disabled]="payerForm.invalid || isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <i *ngIf="!isLoading" class="bi bi-credit-card me-2"></i>
+                  {{ isLoading ? 'Creando Pago...' : (amountAfterWallet > 0 && showWalletOption ? 'Completar pago con MercadoPago' : 'Pagar con MercadoPago') }}
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -361,7 +418,7 @@
                 <h6 class="card-title">Resumen de tu compra</h6>
                 <div class="d-flex justify-content-between align-items-center">
                   <span>{{ attendeeTickets.controls.length }} entrada(s)</span>
-                  <strong class="text-success fs-5">{{ calculateTotal() | currency:'ARS':'symbol':'1.2-2' }}</strong>
+                  <strong class="text-success fs-5">{{ getTotal() | currency:'ARS':'symbol':'1.2-2' }}</strong>
                 </div>
               </div>
             </div>

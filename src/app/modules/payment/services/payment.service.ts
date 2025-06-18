@@ -46,6 +46,11 @@ export interface PaymentResponse {
   
   // Configuración para Bricks
   bricksConfig: BricksConfiguration;
+  
+  // Wallet information
+  walletDiscountApplied?: number;
+  amountAfterWallet?: number;
+  walletMessage?: string;
 }
 
 export interface BricksConfiguration {
@@ -84,5 +89,9 @@ export class PaymentService {
 
   getPublicKey(): Observable<string> {
     return this.http.get<string>(`${this.apiUrl}/public-key`);
+  }
+
+  processWalletPayment(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
+    return this.http.post<PaymentResponse>(`${this.apiUrl}/wallet-purchase`, paymentRequest);
   }
 } 
