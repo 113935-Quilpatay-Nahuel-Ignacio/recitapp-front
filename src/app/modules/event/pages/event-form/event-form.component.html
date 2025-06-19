@@ -55,14 +55,19 @@
                     class="form-control"
                     rows="4"
                     placeholder="Describe el evento, artistas, género musical, etc."
+                    [ngClass]="{ 'is-invalid': f['description'].touched && f['description'].errors }"
                   ></textarea>
+                  <div *ngIf="f['description'].touched && f['description'].errors?.['required']" class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    La descripción del evento es requerida
+                  </div>
                   <small class="form-text text-muted">
                     Información que ayude a los usuarios a conocer más sobre el evento
                   </small>
                 </div>
 
                 <!-- Imagen del Evento -->
-                <div class="col-12">
+                <div class="col-md-6">
                   <label for="flyerImage" class="form-label">URL de la Imagen del Evento (Flyer)</label>
                   
                   <input
@@ -89,6 +94,39 @@
                       />
                       <div class="preview-overlay">
                         <small class="text-light">Vista previa de la imagen</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Imagen de Secciones del Evento -->
+                <div class="col-md-6">
+                  <label for="sectionsImage" class="form-label">URL de la Imagen de Secciones</label>
+                  
+                  <input
+                    type="url"
+                    id="sectionsImage"
+                    formControlName="sectionsImage"
+                    class="form-control mb-2"
+                    placeholder="https://ejemplo.com/secciones-recinto.jpg"
+                  />
+                  <small class="form-text text-muted d-block mb-2">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Imagen que muestre las secciones del recinto para guiar a los compradores
+                  </small>
+
+                  <!-- Vista previa de imagen de secciones -->
+                  <div *ngIf="f['sectionsImage'].value" class="image-preview mt-3">
+                    <div class="preview-container">
+                      <img 
+                        [src]="f['sectionsImage'].value" 
+                        class="preview-image"
+                        alt="Vista previa de secciones"
+                        (error)="onImageError($event)"
+                        (load)="onImageLoad($event)"
+                      />
+                      <div class="preview-overlay">
+                        <small class="text-light">Vista previa de secciones</small>
                       </div>
                     </div>
                   </div>
@@ -314,12 +352,27 @@
                           </div>
                           <div *ngIf="ticketPrice.get('availableQuantity')?.touched && ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']" 
                                class="invalid-feedback">
-                            La cantidad excede la capacidad. Máximo permitido: {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.max }} entradas
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            La cantidad excede la capacidad total. Máximo permitido: {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.max }} entradas
                             ({{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.totalSeatsNeeded }} asientos necesarios de {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.sectionCapacity }} disponibles)
+                          </div>
+                          <div *ngIf="ticketPrice.get('availableQuantity')?.touched && ticketPrice.get('availableQuantity')?.errors?.['exceedsSectionCapacity']" 
+                               class="invalid-feedback">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Capacidad insuficiente en esta sección. Máximo permitido: {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsSectionCapacity']?.max }} entradas<br>
+                            <small>Asientos ocupados por otras entradas: {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsSectionCapacity']?.occupiedSeats }} | 
+                            Asientos disponibles: {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsSectionCapacity']?.availableSeats }}</small>
                           </div>
                           <small class="form-text text-muted" *ngIf="ticketPrice.get('sectionId')?.value">
                             Capacidad de la sección: {{ getSectionCapacity(ticketPrice.get('sectionId')?.value) }} asientos<br>
-                            Máximo de entradas {{ ticketPrice.get('ticketType')?.value }}: {{ getMaxQuantityForSection(i) }}
+                            Máximo de entradas para tipo 
+                            <span [ngSwitch]="ticketPrice.get('ticketType')?.value">
+                              <span *ngSwitchCase="'PROMOTIONAL_2X1'">Promocional 2x1</span>
+                              <span *ngSwitchCase="'GIFT'">de Regalo</span>
+                              <span *ngSwitchCase="'GENERAL'">General</span>
+                              <span *ngSwitchCase="'VIP'">VIP</span>
+                              <span *ngSwitchDefault>{{ ticketPrice.get('ticketType')?.value }}</span>
+                            </span>: {{ getMaxQuantityForSection(i) }}
                             <span *ngIf="ticketPrice.get('seatsPerTicket')?.value > 1">
                               ({{ ticketPrice.get('seatsPerTicket')?.value }} asientos × entrada)
                             </span>

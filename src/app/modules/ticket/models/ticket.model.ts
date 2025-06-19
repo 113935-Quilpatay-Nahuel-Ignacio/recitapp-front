@@ -14,4 +14,7 @@ export interface Ticket {
   status: string;
   purchaseDate: string; // ISO date string
   eventId: number;
+  isGift?: boolean; // If it's a gift ticket
+  promotionName?: string; // Name of the promotion if any
+  promotionDescription?: string; // Description of the promotion
 } 

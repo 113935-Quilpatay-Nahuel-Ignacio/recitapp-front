@@ -37,7 +37,7 @@ export class EventListComponent implements OnInit {
 
   // Paginación del lado del cliente
   currentPage = 1;
-  itemsPerPage = 10; // Configurable
+  itemsPerPage = 9; // Layout 3x3
 
   // Admin and Cleanup related properties
   isAdmin = true; // Placeholder for real role management

@@ -4,28 +4,11 @@
             <div class="d-flex justify-content-between align-items-center mb-4 page-header-custom">
                 <h1 class="mb-0">Artistas</h1>
                 
-                <!-- Admin dropdown -->
-                <div class="dropdown" *ngIf="isAdmin">
-                    <button class="btn btn-outline-primary dropdown-toggle" type="button" 
-                            id="adminDropdown" simpleDropdown aria-expanded="false">
-                        <i class="bi bi-gear me-1"></i>
-                        <span class="d-none d-md-inline">Administrar</span>
+                <!-- Admin only button -->
+                <div *ngIf="isAdmin">
+                    <button class="btn btn-primary" routerLink="/artists/new">
+                        <i class="bi bi-plus-lg me-2"></i>Registrar Nuevo Artista
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                        <li>
-                            <a class="dropdown-item" routerLink="/artists/new">
-                                <i class="bi bi-plus-circle me-2"></i>Nuevo Artista
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item" routerLink="/admin/genres">
-                                <i class="bi bi-music-note-list me-2"></i>Gestionar Géneros
-                            </a>
-                        </li>
-                    </ul>
                 </div>
             </div>
 
@@ -74,12 +57,7 @@
                 </div>
             </div>
 
-            <!-- Add new artist button (admin only) - Solo mostrar si no hay dropdown admin -->
-            <div class="d-flex justify-content-end mb-4" *ngIf="!isAdmin">
-                <button class="btn btn-primary" routerLink="/artists/new">
-                    <i class="bi bi-plus-lg me-2"></i>Nuevo Artista
-                </button>
-            </div>
+
         </div>
     </div>
 

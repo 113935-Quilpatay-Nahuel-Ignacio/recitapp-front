@@ -5,4 +5,5 @@ export interface Event {
   startDateTime?: string;
   location?: string;
   statusName?: string;
+  sectionsImage?: string;
 } 

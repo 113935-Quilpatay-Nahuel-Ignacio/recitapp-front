@@ -109,6 +109,7 @@ export class EventFormComponent implements OnInit {
       name: ['', Validators.required],
       description: ['', Validators.required],
       flyerImage: [''],
+      sectionsImage: [''],
       startDateTime: ['', Validators.required],
       endDateTime: [''],
       venueId: [null, Validators.required],
@@ -195,6 +196,7 @@ export class EventFormComponent implements OnInit {
           name: event.name,
           description: event.description,
           flyerImage: event.flyerImage,
+          sectionsImage: event.sectionsImage,
           startDateTime: formatForInput(event.startDateTime),
           endDateTime: formatForInput(event.endDateTime),
           venueId: event.venueId,
@@ -266,7 +268,7 @@ export class EventFormComponent implements OnInit {
       ticketPrices: this.ticketPrices.value.map((tp: any) => ({
         sectionId: tp.sectionId,
         ticketType: tp.ticketType,
-        price: tp.price,
+        price: tp.isGift ? null : tp.price, // null para entradas de regalo
         availableQuantity: tp.availableQuantity,
         isPromotional: tp.isPromotional || false,
         isGift: tp.isGift || false,
@@ -381,21 +383,74 @@ export class EventFormComponent implements OnInit {
     const availableQuantity = ticketPriceGroup.get('availableQuantity')?.value;
     const seatsPerTicket = ticketPriceGroup.get('seatsPerTicket')?.value || 1;
     
-    if (sectionId && availableQuantity) {
+    if (sectionId && availableQuantity !== null && availableQuantity !== undefined) {
       const sectionCapacity = this.getSectionCapacity(sectionId);
-      const totalSeatsNeeded = availableQuantity * seatsPerTicket;
+      const currentSeatsNeeded = availableQuantity * seatsPerTicket;
       
-      if (totalSeatsNeeded > sectionCapacity) {
+      // Calcular asientos ya ocupados por otros tipos de entradas en la misma sección
+      let occupiedSeats = 0;
+      this.ticketPrices.controls.forEach((control, i) => {
+        if (i !== index && control.get('sectionId')?.value === sectionId) {
+          const qty = control.get('availableQuantity')?.value || 0;
+          const seats = control.get('seatsPerTicket')?.value || 1;
+          occupiedSeats += qty * seats;
+        }
+      });
+      
+      const availableSeats = sectionCapacity - occupiedSeats;
+      const maxAllowedQuantity = Math.floor(availableSeats / seatsPerTicket);
+      
+      // Limpiar errores previos
+      const currentErrors = ticketPriceGroup.get('availableQuantity')?.errors;
+      if (currentErrors) {
+        delete currentErrors['exceedsCapacity'];
+        delete currentErrors['exceedsSectionCapacity'];
+        if (Object.keys(currentErrors).length === 0) {
+          ticketPriceGroup.get('availableQuantity')?.setErrors(null);
+        } else {
+          ticketPriceGroup.get('availableQuantity')?.setErrors(currentErrors);
+        }
+      }
+      
+      // Validar si excede la capacidad individual
+      if (currentSeatsNeeded > sectionCapacity) {
         ticketPriceGroup.get('availableQuantity')?.setErrors({ 
           exceedsCapacity: { 
             max: Math.floor(sectionCapacity / seatsPerTicket), 
             actual: availableQuantity,
             seatsPerTicket: seatsPerTicket,
-            totalSeatsNeeded: totalSeatsNeeded,
+            totalSeatsNeeded: currentSeatsNeeded,
             sectionCapacity: sectionCapacity
           } 
         });
       }
+      // Validar si excede la capacidad disponible considerando otras entradas
+      else if (availableQuantity > maxAllowedQuantity) {
+        ticketPriceGroup.get('availableQuantity')?.setErrors({ 
+          exceedsSectionCapacity: { 
+            max: maxAllowedQuantity, 
+            actual: availableQuantity,
+            seatsPerTicket: seatsPerTicket,
+            occupiedSeats: occupiedSeats,
+            availableSeats: availableSeats,
+            sectionCapacity: sectionCapacity
+          } 
+        });
+      }
+    }
+    
+    // Revalidar otros controles de la misma sección
+    this.revalidateOtherSectionTickets(index);
+  }
+
+  private revalidateOtherSectionTickets(excludeIndex: number): void {
+    const currentSectionId = this.ticketPrices.at(excludeIndex).get('sectionId')?.value;
+    if (currentSectionId) {
+      this.ticketPrices.controls.forEach((control, i) => {
+        if (i !== excludeIndex && control.get('sectionId')?.value === currentSectionId) {
+          this.validateTicketQuantity(i);
+        }
+      });
     }
   }
 

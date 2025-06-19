@@ -147,6 +147,29 @@
               </div>
             </div>
 
+            <!-- Imagen de Secciones -->
+            <div class="sections-section" *ngIf="event.sectionsImage">
+              <h3 class="section-title">
+                <i class="bi bi-diagram-3 me-2"></i>Mapa de Secciones
+              </h3>
+              <div class="section-content">
+                <div class="sections-image-container" *ngIf="event.sectionsImage && !sectionsImageError">
+                  <img 
+                    [src]="event.sectionsImage" 
+                    class="sections-image"
+                    [alt]="'Mapa de secciones - ' + event.name"
+                    (error)="onSectionsImageError($event)">
+                </div>
+                <div class="sections-image-placeholder" *ngIf="!event.sectionsImage || sectionsImageError">
+                  <div class="placeholder-content">
+                    <i class="bi bi-diagram-3 placeholder-icon"></i>
+                    <span class="placeholder-text">{{ event.name.charAt(0) }}</span>
+                    <small class="placeholder-subtitle">Mapa de Secciones</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Estadísticas de Tickets -->
             <div *ngIf="stats || isLoadingStats" class="stats-section">
               <h3 class="section-title">

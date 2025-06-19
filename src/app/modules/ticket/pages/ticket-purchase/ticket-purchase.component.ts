@@ -52,6 +52,10 @@ export class TicketPurchaseComponent implements OnInit {
   // Cached total to avoid multiple calculations
   totalAmount = 0;
 
+  // Processing counter for tickets
+  processedTicketsCount = 0;
+  totalTicketsToProcess = 0;
+
   // Payment method ID - En producción esto vendría de la respuesta de MercadoPago
   MERCADOPAGO_PAYMENT_METHOD_ID = 5; // ID para "MERCADOPAGO" en la tabla payment_methods
   WALLET_PAYMENT_METHOD_ID = 4; // ID para "BILLETERA_VIRTUAL" en la tabla payment_methods
@@ -158,7 +162,8 @@ export class TicketPurchaseComponent implements OnInit {
           description: dto.description,
           startDateTime: isoStartDateTime,
           location: dto.venueName,
-          statusName: dto.statusName
+          statusName: dto.statusName,
+          sectionsImage: dto.sectionsImage
         };
       }),
       tap(() => this.isLoading = false),
@@ -226,6 +231,15 @@ export class TicketPurchaseComponent implements OnInit {
   }
 
   // New method to handle specific ticket type selection
+  updateProcessingCounter(): void {
+    this.totalTicketsToProcess = this.attendeeTickets.length;
+    this.processedTicketsCount = this.attendeeTickets.controls.filter(control => 
+      control.get('attendeeFirstName')?.valid && 
+      control.get('attendeeLastName')?.valid && 
+      control.get('attendeeDni')?.valid
+    ).length;
+  }
+
   addTicketForSectionAndType(section: EventSectionOffer, ticketTypeSelect: HTMLSelectElement, quantity: number = 1): void {
     const selectedTicketPriceId = ticketTypeSelect.value;
     if (!selectedTicketPriceId) {
@@ -245,7 +259,7 @@ export class TicketPurchaseComponent implements OnInit {
     }
 
     for (let i = 0; i < quantity; i++) {
-      this.attendeeTickets.push(this.fb.group({
+      const ticketFormGroup = this.fb.group({
         sectionId: [section.sectionId, Validators.required],
         sectionName: [section.sectionName], // For display in form if needed
         ticketPriceId: [selectedTicketPrice.ticketPriceId, Validators.required],
@@ -255,7 +269,14 @@ export class TicketPurchaseComponent implements OnInit {
         attendeeLastName: ['', Validators.required],
         attendeeDni: ['', Validators.required],
         // promotionId: [null] // If promotions are handled
-      }));
+      });
+      
+      // Add value change listener to update counter when form fields change
+      ticketFormGroup.valueChanges.subscribe(() => {
+        this.updateProcessingCounter();
+      });
+      
+      this.attendeeTickets.push(ticketFormGroup);
     }
     
     // Clear the form after adding
@@ -270,7 +291,8 @@ export class TicketPurchaseComponent implements OnInit {
     
     // Trigger form update for total calculation, etc.
     this.purchaseForm.updateValueAndValidity();
-    this.updateWalletCalculations(); // Update wallet calculations after adding tickets 
+    this.updateWalletCalculations(); // Update wallet calculations after adding tickets
+    this.updateProcessingCounter(); // Update processing counter 
   }
 
   // Get maximum quantity for selected ticket type
@@ -287,6 +309,7 @@ export class TicketPurchaseComponent implements OnInit {
     this.attendeeTickets.removeAt(index);
     this.purchaseForm.updateValueAndValidity();
     this.updateWalletCalculations(); // Update wallet calculations after removing ticket
+    this.updateProcessingCounter(); // Update processing counter
   }
 
   calculateTotal(): number {
@@ -365,9 +388,23 @@ export class TicketPurchaseComponent implements OnInit {
   }
 
   proceedToPayment(): void {
+    // Debug logging to understand the issue
+    console.log('=== PROCEED TO PAYMENT DEBUG ===');
+    console.log('AttendeeTickets controls count:', this.attendeeTickets.length);
+    console.log('AttendeeTickets value:', this.attendeeTickets.value);
+    console.log('PayerForm valid:', this.payerForm.valid);
+    console.log('PayerForm value:', this.payerForm.value);
+    
     if (this.payerForm.invalid) {
       this.error = 'Por favor complete todos los datos del pagador.';
       this.payerForm.markAllAsTouched();
+      return;
+    }
+
+    // Additional validation to prevent empty tickets array
+    if (this.attendeeTickets.length === 0) {
+      this.error = 'No hay entradas en el carrito. Por favor agregue al menos una entrada antes de proceder al pago.';
+      this.showPayerForm = false; // Return to ticket selection
       return;
     }
 
@@ -382,6 +419,16 @@ export class TicketPurchaseComponent implements OnInit {
       quantity: 1 // Cada ticket es individual
     }));
 
+    // Final validation to ensure tickets are properly formed
+    if (tickets.length === 0) {
+      console.error('ERROR: Tickets array is empty after mapping from attendeeTickets.value');
+      this.error = 'Error interno: No se pudieron procesar las entradas. Por favor intente nuevamente.';
+      this.showPayerForm = false;
+      return;
+    }
+
+    console.log('✅ Tickets to send:', tickets);
+
     const payerInfo: PayerInfo = {
       email: this.payerForm.value.email,
       firstName: this.payerForm.value.firstName,
@@ -391,13 +438,24 @@ export class TicketPurchaseComponent implements OnInit {
       documentNumber: this.payerForm.value.documentNumber
     };
 
+    // Use amount after wallet discount for payment processing
+    const effectiveAmount = this.amountAfterWallet;
+    
     const paymentRequest: PaymentRequest = {
       eventId: this.eventId,
       userId: this.currentUserId!,
       tickets: tickets,
-      totalAmount: this.calculateTotal(),
+      totalAmount: effectiveAmount, // Use amount after wallet discount
       payer: payerInfo
     };
+
+    console.log('🚀 Final payment request:', paymentRequest);
+    console.log('📊 Payment amounts:', {
+      originalTotal: this.calculateTotal(),
+      walletDiscount: this.walletDiscountApplied,
+      effectiveAmount: effectiveAmount,
+      amountAfterWallet: this.amountAfterWallet
+    });
 
     this.isLoading = true;
     this.error = null;
@@ -412,7 +470,27 @@ export class TicketPurchaseComponent implements OnInit {
         })
       )
       .subscribe(response => {
-        // Configurar datos para Checkout Bricks
+        console.log('🎯 Payment response received:', response);
+        
+        // Si el estado es COMPLETED, significa que solo había entradas gratuitas
+        if (response.status === 'COMPLETED') {
+          console.log('✅ Gift tickets processed successfully, redirecting to success page');
+          this.modalService.success(
+            'Entradas de regalo procesadas exitosamente', 
+            'Compra Exitosa'
+          ).subscribe(() => {
+            this.router.navigate(['/payment/success'], {
+              queryParams: {
+                transaction_id: response.preferenceId?.replace('GIFT_', ''),
+                status: 'COMPLETED',
+                type: 'gift'
+              }
+            });
+          });
+          return;
+        }
+        
+        // Para pagos que requieren MercadoPago
         this.paymentData = {
           totalAmount: response.totalAmount,
           publicKey: response.publicKey,
@@ -468,6 +546,13 @@ export class TicketPurchaseComponent implements OnInit {
       return;
     }
 
+    // Additional validation to prevent empty tickets array
+    if (this.attendeeTickets.length === 0) {
+      this.error = 'No hay entradas en el carrito. Por favor agregue al menos una entrada antes de proceder al pago.';
+      this.showPayerForm = false; // Return to ticket selection
+      return;
+    }
+
     const tickets: TicketItem[] = this.attendeeTickets.value.map((ticketFormValue: any) => ({
       sectionId: ticketFormValue.sectionId,
       ticketPriceId: ticketFormValue.ticketPriceId,
@@ -488,11 +573,12 @@ export class TicketPurchaseComponent implements OnInit {
       documentNumber: this.payerForm.value.documentNumber
     };
 
+    // For wallet payment, use original total since wallet will handle the discount
     const paymentRequest: PaymentRequest = {
       eventId: this.eventId,
       userId: this.currentUserId!,
       tickets: tickets,
-      totalAmount: this.calculateTotal(),
+      totalAmount: this.calculateTotal(), // Use original total for wallet payment
       payer: payerInfo
     };
 
@@ -521,6 +607,126 @@ export class TicketPurchaseComponent implements OnInit {
            });
          });
        });
+  }
+
+  formatTicketType(ticketType: string): string {
+    switch (ticketType) {
+      case 'PROMOTIONAL_2X1':
+        return 'Promocional 2x1';
+      case 'GIFT':
+        return 'Entrada de Regalo';
+      case 'GENERAL':
+        return 'General';
+      case 'VIP':
+        return 'VIP';
+      default:
+        return ticketType;
+    }
+  }
+
+  isGiftTicket(ticketType: string): boolean {
+    return ticketType === 'GIFT';
+  }
+
+  getFormErrors(): string[] {
+    const errors: string[] = [];
+    
+    this.attendeeTickets.controls.forEach((control, index) => {
+      const firstName = control.get('attendeeFirstName');
+      const lastName = control.get('attendeeLastName');
+      const dni = control.get('attendeeDni');
+      
+      // Solo verificar errores en campos que estén vacíos o inválidos
+      if (firstName?.invalid) {
+        if (!firstName.value || firstName.value.trim() === '') {
+          errors.push(`Entrada ${index + 1}: Nombre es requerido`);
+        }
+      }
+      if (lastName?.invalid) {
+        if (!lastName.value || lastName.value.trim() === '') {
+          errors.push(`Entrada ${index + 1}: Apellido es requerido`);
+        }
+      }
+      if (dni?.invalid) {
+        if (!dni.value || dni.value.trim() === '') {
+          errors.push(`Entrada ${index + 1}: DNI es requerido`);
+        }
+      }
+    });
+    
+    return errors;
+  }
+
+  hasFormErrors(): boolean {
+    return this.getFormErrors().length > 0;
+  }
+
+  isFormValidForContinue(): boolean {
+    // Verificar que todos los campos requeridos estén completados
+    const isValid = this.attendeeTickets.controls.every((control, index) => {
+      const firstName = control.get('attendeeFirstName');
+      const lastName = control.get('attendeeLastName');
+      const dni = control.get('attendeeDni');
+      
+      const hasFirstName = firstName?.value?.trim();
+      const hasLastName = lastName?.value?.trim();
+      const hasDni = dni?.value?.trim();
+      
+      // Debug log para identificar problemas
+      if (!hasFirstName || !hasLastName || !hasDni) {
+        console.log(`Entrada ${index + 1} incompleta:`, {
+          firstName: hasFirstName,
+          lastName: hasLastName,
+          dni: hasDni,
+          firstNameValue: firstName?.value,
+          lastNameValue: lastName?.value,
+          dniValue: dni?.value
+        });
+      }
+      
+      return hasFirstName && hasLastName && hasDni;
+    });
+    
+    console.log('Form validation result:', isValid, 'Total tickets:', this.attendeeTickets.controls.length);
+    return isValid && this.attendeeTickets.controls.length > 0;
+  }
+
+  markAllFieldsAsTouched(): void {
+    this.attendeeTickets.controls.forEach((control) => {
+      control.get('attendeeFirstName')?.markAsTouched();
+      control.get('attendeeLastName')?.markAsTouched();
+      control.get('attendeeDni')?.markAsTouched();
+    });
+  }
+
+  onContinueToPayerForm(): void {
+    console.log('=== CONTINUE TO PAYER FORM DEBUG ===');
+    console.log('AttendeeTickets count:', this.attendeeTickets.length);
+    console.log('AttendeeTickets value:', this.attendeeTickets.value);
+    
+    // Verificar que hay tickets en el carrito
+    if (this.attendeeTickets.length === 0) {
+      this.error = 'Debe agregar al menos una entrada al carrito antes de continuar.';
+      return;
+    }
+    
+    // Marcar todos los campos como touched para mostrar errores
+    this.markAllFieldsAsTouched();
+    
+    // Usar la nueva validación específica
+    if (this.isFormValidForContinue() && this.attendeeTickets.controls.length > 0) {
+      this.error = null; // Clear any previous errors
+      this.showPayerForm = true;
+      console.log('✅ Proceeding to payer form');
+    } else {
+      this.error = 'Por favor complete todos los datos requeridos para cada entrada (nombre, apellido y DNI).';
+      console.log('❌ Validation failed, staying on tickets form');
+    }
+  }
+
+  onSectionsImageError(event: any): void {
+    // Hide the image if it fails to load
+    event.target.style.display = 'none';
   }
 
   private getStatusMessage(status: string | undefined): string {

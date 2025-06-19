@@ -30,6 +30,7 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   isVerifying = false; // Added for verification loading state
   verificationMessage = ''; // Added for verification feedback
   imageError = false;
+  sectionsImageError = false;
 
   // Use the StatusFormatter for better status handling
   eventStatuses = StatusFormatter.getEventStatuses();
@@ -73,6 +74,7 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.imageError = false; // Reset image error flag
+    this.sectionsImageError = false; // Reset sections image error flag
     this.eventService.getEventById(this.eventId).subscribe({
       next: (eventData) => {
         this.event = eventData;
@@ -345,6 +347,10 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
 
   onImageError(event: any): void {
     this.imageError = true;
+  }
+
+  onSectionsImageError(event: any): void {
+    this.sectionsImageError = true;
   }
 
   // TODO: Implementar lógica de navegación para ver detalles de Venue y Artist si es necesario

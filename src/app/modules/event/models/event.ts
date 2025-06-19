@@ -12,6 +12,7 @@ export interface EventDTO {
   mainArtistName?: string;
   statusName: string;
   flyerImage?: string;
+  sectionsImage?: string;
   verified?: boolean;
   moderatorId?: number;
   registrarId?: number;
@@ -30,6 +31,8 @@ export interface EventCreateDTO {
   endDateTime?: string;   // Mantener como string para envío
   venueId: number;
   mainArtistId?: number;
+  flyerImage?: string;
+  sectionsImage?: string;
   // Considerar si se necesita categoryId o similar
   salesStartDate?: string; // Expects YYYY-MM-DDTHH:mm:ss
   salesEndDate?: string;   // Expects YYYY-MM-DDTHH:mm:ss

@@ -282,10 +282,19 @@ export class TicketDetailComponent implements OnInit {
   }
 
   formatPrice(price: number): string {
+    if (price === 0) {
+      return 'Gratis';
+    }
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
     }).format(price);
+  }
+
+  isPromotional2x1(ticket: Ticket | null): boolean {
+    if (!ticket) return false;
+    return ticket.promotionName?.toLowerCase().includes('2x1') || 
+           ticket.promotionDescription?.toLowerCase().includes('2x1') || false;
   }
 
   isValidQrCode(qrCode: string): boolean {

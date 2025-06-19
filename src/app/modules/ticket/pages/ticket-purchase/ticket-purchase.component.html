@@ -23,10 +23,26 @@
 
       <ng-container *ngIf="!isLoading && !error">
         <div *ngIf="event$ | async as event" class="event-details">
-          <h2><i class="bi bi-calendar-event me-2"></i>{{ event.name }}</h2>
-          <p *ngIf="event.description"><i class="bi bi-file-text me-2"></i>{{ event.description }}</p>
-          <p *ngIf="event.startDateTime"><i class="bi bi-clock me-2"></i>{{ event.startDateTime | date: 'fullDate':'':'es-AR' }} a las {{ event.startDateTime | date: 'HH:mm':'':'es-AR' }} hs.</p>
-          <p *ngIf="event.location"><i class="bi bi-geo-alt me-2"></i>{{ event.location }}</p>
+          <div class="row">
+            <div class="col-md-8">
+              <h2><i class="bi bi-calendar-event me-2"></i>{{ event.name }}</h2>
+              <p *ngIf="event.description"><i class="bi bi-file-text me-2"></i>{{ event.description }}</p>
+              <p *ngIf="event.startDateTime"><i class="bi bi-clock me-2"></i>{{ event.startDateTime | date: 'fullDate':'':'es-AR' }} a las {{ event.startDateTime | date: 'HH:mm':'':'es-AR' }} hs.</p>
+              <p *ngIf="event.location"><i class="bi bi-geo-alt me-2"></i>{{ event.location }}</p>
+            </div>
+            <div class="col-md-4" *ngIf="event.sectionsImage">
+              <div class="sections-image-container">
+                <h6 class="sections-image-title">
+                  <i class="bi bi-diagram-3 me-2"></i>Mapa de Secciones
+                </h6>
+                <img 
+                  [src]="event.sectionsImage" 
+                  class="sections-image"
+                  alt="Mapa de secciones del recinto"
+                  (error)="onSectionsImageError($event)">
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="filter-card">
@@ -76,8 +92,16 @@
                   <div class="price-options">
                     <div class="price-card" *ngFor="let ticketPrice of offer.ticketPrices">
                       <div class="price-info">
-                        <div class="ticket-type-name">{{ ticketPrice.ticketType }}</div>
-                        <div class="ticket-price">{{ ticketPrice.price | currency:offer.currency:'symbol':'1.2-2' }}</div>
+                        <div class="ticket-type-name">
+                          {{ formatTicketType(ticketPrice.ticketType) }}
+                          <span *ngIf="isGiftTicket(ticketPrice.ticketType)" class="badge bg-success ms-2">GRATIS</span>
+                        </div>
+                        <div class="ticket-price" *ngIf="!isGiftTicket(ticketPrice.ticketType)">
+                          {{ ticketPrice.price | currency:offer.currency:'symbol':'1.2-2' }}
+                        </div>
+                        <div class="ticket-price-gift" *ngIf="isGiftTicket(ticketPrice.ticketType)">
+                          <span class="gift-text">Sin costo</span>
+                        </div>
                       </div>
                       <div class="price-availability">
                         <span class="availability-count">{{ ticketPrice.availableQuantity }} disponibles</span>
@@ -100,7 +124,12 @@
                               [attr.data-price]="ticketPrice.price"
                               [attr.data-type]="ticketPrice.ticketType"
                               [attr.data-available]="ticketPrice.availableQuantity">
-                        {{ ticketPrice.ticketType }} - {{ ticketPrice.price | currency:offer.currency:'symbol':'1.2-2' }}
+                        <span *ngIf="!isGiftTicket(ticketPrice.ticketType)">
+                          {{ formatTicketType(ticketPrice.ticketType) }} - {{ ticketPrice.price | currency:offer.currency:'symbol':'1.2-2' }}
+                        </span>
+                        <span *ngIf="isGiftTicket(ticketPrice.ticketType)">
+                          {{ formatTicketType(ticketPrice.ticketType) }} - GRATIS
+                        </span>
                       </option>
                     </select>
                   </div>
@@ -154,6 +183,9 @@
             <h3>
               <i class="bi bi-cart me-2"></i>Tu Carrito ({{ attendeeTickets.controls.length }} 
               {{ attendeeTickets.controls.length === 1 ? 'Entrada' : 'Entradas' }})
+              <span class="badge bg-info ms-2" *ngIf="attendeeTickets.controls.length > 0">
+                {{ processedTicketsCount }}/{{ totalTicketsToProcess }} procesadas
+              </span>
             </h3>
             
             <div *ngFor="let ticketCtrl of attendeeTickets.controls; let i = index" [formGroupName]="i" class="attendee-ticket-item">
@@ -162,10 +194,13 @@
                   <i class="bi bi-ticket-detailed me-2"></i>
                   Entrada {{ i + 1 }} - {{ ticketCtrl.get('sectionName')?.value }}
                   <span *ngIf="ticketCtrl.get('ticketType')?.value" class="badge bg-info ms-2">
-                    {{ ticketCtrl.get('ticketType')?.value }}
+                    {{ formatTicketType(ticketCtrl.get('ticketType')?.value) }}
                   </span>
-                  <span class="badge bg-success ms-2">
+                  <span *ngIf="!isGiftTicket(ticketCtrl.get('ticketType')?.value)" class="badge bg-success ms-2">
                     {{ ticketCtrl.get('price')?.value | currency:'ARS':'symbol':'1.2-2' }}
+                  </span>
+                  <span *ngIf="isGiftTicket(ticketCtrl.get('ticketType')?.value)" class="badge bg-warning ms-2">
+                    GRATIS
                   </span>
                 </h5>
                 <button 
@@ -231,16 +266,33 @@
               {{ getTotal() | currency:'ARS':'symbol':'1.2-2' }}
             </div>
 
-            <!-- Debug button (temporary) -->
-            <!-- Mostrar primero el botón para proceder al formulario del pagador -->
+            <!-- Mostrar errores específicos del formulario -->
+            <div *ngIf="hasFormErrors() || (!isFormValidForContinue() && attendeeTickets.controls.length > 0)" class="alert alert-warning mb-3">
+              <h6 class="alert-heading">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Campos pendientes por completar:
+              </h6>
+              <ul class="mb-0" *ngIf="getFormErrors().length > 0">
+                <li *ngFor="let error of getFormErrors()">{{ error }}</li>
+              </ul>
+              <div *ngIf="getFormErrors().length === 0 && !isFormValidForContinue()">
+                <p class="mb-0">Por favor, complete todos los campos de nombre, apellido y DNI para cada entrada.</p>
+              </div>
+            </div>
+
+            <!-- Botón para proceder al formulario del pagador -->
             <button 
-              type="submit" 
+              type="button" 
               class="btn btn-primary btn-lg" 
               *ngIf="!showPayerForm"
-              [disabled]="purchaseForm.invalid || isLoading || attendeeTickets.controls.length === 0">
+              [disabled]="!isFormValidForContinue() || isLoading || attendeeTickets.controls.length === 0"
+              (click)="onContinueToPayerForm()">
               <i class="bi bi-person-fill me-2"></i>
               Continuar con Datos del Pagador
-              <small class="d-block" *ngIf="purchaseForm.invalid">
+              <small class="d-block" *ngIf="attendeeTickets.controls.length === 0">
+                (Agregue al menos una entrada al carrito)
+              </small>
+              <small class="d-block" *ngIf="!isFormValidForContinue() && !hasFormErrors() && attendeeTickets.controls.length > 0">
                 (Complete todos los campos requeridos)
               </small>
             </button>

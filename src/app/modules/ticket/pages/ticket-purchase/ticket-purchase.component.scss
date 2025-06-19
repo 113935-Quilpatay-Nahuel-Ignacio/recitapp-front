@@ -46,6 +46,39 @@
         margin-right: 0.5rem;
       }
     }
+
+    // Estilos para la imagen de secciones
+    .sections-image-container {
+      .sections-image-title {
+        color: var(--dark-text-primary);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        
+        i {
+          color: var(--primary-green);
+          margin-right: 0.5rem;
+        }
+      }
+      
+      .sections-image {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        border: 1px solid var(--dark-border);
+        background-color: var(--dark-card-hover);
+        transition: transform 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.05);
+          border-color: var(--primary-green);
+        }
+      }
+    }
   }
 
   // Enhanced sections grid styles
@@ -192,6 +225,18 @@
               color: var(--primary-green);
               font-weight: 700;
               font-size: 1.125rem;
+            }
+
+            .ticket-price-gift {
+              .gift-text {
+                color: #22c55e;
+                font-weight: 700;
+                font-size: 1rem;
+                background: rgba(34, 197, 94, 0.1);
+                padding: 0.25rem 0.75rem;
+                border-radius: 1rem;
+                border: 1px solid rgba(34, 197, 94, 0.3);
+              }
             }
           }
           

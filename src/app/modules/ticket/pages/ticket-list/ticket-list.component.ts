@@ -277,6 +277,9 @@ export class TicketListComponent implements OnInit {
   }
 
   formatPrice(price: number): string {
+    if (price === 0) {
+      return 'Gratis';
+    }
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
