@@ -184,13 +184,14 @@
                 <i class="bi bi-ticket-perforated me-2"></i>Precios de Tickets
               </h3>
               
-              <div class="alert alert-info mb-3">
-                <i class="bi bi-info-circle-fill me-2"></i>
-                <strong>Gestión de Precios por Sección:</strong>
+              <div class="alert promotional-alert mb-3">
+                <i class="bi bi-info-circle-fill me-2 alert-icon"></i>
+                <strong>Gestión de Entradas Promocionales:</strong>
                 <ul class="mb-0 mt-2">
-                  <li>Selecciona las secciones del recinto que estarán disponibles para este evento.</li>
-                  <li>Define el precio y la cantidad de tickets disponibles para cada sección.</li>
-                  <li>La cantidad no puede exceder la capacidad de la sección.</li>
+                  <li><strong>General/VIP:</strong> Entradas normales con precio completo (1 asiento por entrada)</li>
+                  <li><strong>Promocional 2x1:</strong> Paga 1 entrada, obtén 2 asientos en la misma sección</li>
+                  <li><strong>Entrada de Regalo:</strong> Sin costo, asignación directa con QR generado automáticamente</li>
+                  <li>La capacidad se calcula considerando los asientos por entrada según el tipo</li>
                 </ul>
               </div>
 
@@ -199,7 +200,7 @@
                 <div *ngFor="let ticketPrice of ticketPrices.controls; let i = index" 
                      [formGroupName]="i" 
                      class="ticket-price-item mb-3">
-                  <div class="card">
+                  <div class="card ticket-price-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                       <h6 class="mb-0">
                         <i class="bi bi-ticket me-2"></i>Precio {{ i + 1 }}
@@ -234,11 +235,17 @@
                         <!-- Tipo de Ticket -->
                         <div class="col-md-6">
                           <label class="form-label">Tipo de Ticket</label>
-                          <input type="text" 
-                                 formControlName="ticketType" 
-                                 class="form-control"
-                                 placeholder="Ej: General, VIP, Preferencial"
-                                 [ngClass]="{ 'is-invalid': ticketPrice.get('ticketType')?.touched && ticketPrice.get('ticketType')?.errors }">
+                          <select formControlName="ticketType" 
+                                  class="form-select ticket-type-select"
+                                  (change)="onTicketTypeChange(i)"
+                                  [ngClass]="{ 'is-invalid': ticketPrice.get('ticketType')?.touched && ticketPrice.get('ticketType')?.errors }">
+                            <option *ngFor="let option of ticketTypeOptions" [ngValue]="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                          <small class="form-text text-muted" *ngIf="ticketPrice.get('ticketType')?.value">
+                            {{ getTicketTypeDescription(ticketPrice.get('ticketType')?.value) }}
+                          </small>
                           <div *ngIf="ticketPrice.get('ticketType')?.touched && ticketPrice.get('ticketType')?.errors?.['required']" 
                                class="invalid-feedback">
                             El tipo de ticket es requerido
@@ -247,14 +254,29 @@
 
                         <!-- Precio -->
                         <div class="col-md-6">
-                          <label class="form-label">Precio ($)</label>
+                          <label class="form-label">
+                            Precio ($)
+                            <span *ngIf="ticketPrice.get('isGift')?.value" class="badge promotional-badge bg-success ms-2">
+                              GRATUITO
+                            </span>
+                            <span *ngIf="ticketPrice.get('isPromotional')?.value" class="badge promotional-badge bg-warning ms-2">
+                              PROMOCIONAL
+                            </span>
+                          </label>
                           <input type="number" 
                                  formControlName="price" 
                                  class="form-control"
                                  min="0"
                                  step="0.01"
                                  placeholder="0.00"
-                                 [ngClass]="{ 'is-invalid': ticketPrice.get('price')?.touched && ticketPrice.get('price')?.errors }">
+                                 [readonly]="ticketPrice.get('isGift')?.value"
+                                 [ngClass]="{ 
+                                   'is-invalid': ticketPrice.get('price')?.touched && ticketPrice.get('price')?.errors,
+                                   'gift-price-field': ticketPrice.get('isGift')?.value
+                                 }">
+                          <small class="form-text text-muted" *ngIf="ticketPrice.get('isGift')?.value">
+                            Las entradas de regalo tienen precio $0 automáticamente
+                          </small>
                           <div *ngIf="ticketPrice.get('price')?.touched && ticketPrice.get('price')?.errors?.['required']" 
                                class="invalid-feedback">
                             El precio es requerido
@@ -267,13 +289,20 @@
 
                         <!-- Cantidad Disponible -->
                         <div class="col-md-6">
-                          <label class="form-label">Cantidad Disponible</label>
+                          <label class="form-label">
+                            Cantidad Disponible de Entradas
+                                                         <span *ngIf="ticketPrice.get('seatsPerTicket')?.value > 1" class="badge promotional-badge bg-info ms-2">
+                               {{ ticketPrice.get('seatsPerTicket')?.value }} asientos por entrada
+                             </span>
+                          </label>
                           <input type="number" 
                                  formControlName="availableQuantity" 
                                  class="form-control"
                                  min="1"
                                  placeholder="0"
+                                 [max]="getMaxQuantityForSection(i)"
                                  (blur)="validateTicketQuantity(i)"
+                                 (input)="validateTicketQuantity(i)"
                                  [ngClass]="{ 'is-invalid': ticketPrice.get('availableQuantity')?.touched && ticketPrice.get('availableQuantity')?.errors }">
                           <div *ngIf="ticketPrice.get('availableQuantity')?.touched && ticketPrice.get('availableQuantity')?.errors?.['required']" 
                                class="invalid-feedback">
@@ -285,10 +314,15 @@
                           </div>
                           <div *ngIf="ticketPrice.get('availableQuantity')?.touched && ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']" 
                                class="invalid-feedback">
-                            La cantidad no puede exceder la capacidad de la sección ({{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.max }})
+                            La cantidad excede la capacidad. Máximo permitido: {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.max }} entradas
+                            ({{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.totalSeatsNeeded }} asientos necesarios de {{ ticketPrice.get('availableQuantity')?.errors?.['exceedsCapacity']?.sectionCapacity }} disponibles)
                           </div>
                           <small class="form-text text-muted" *ngIf="ticketPrice.get('sectionId')?.value">
-                            Capacidad máxima: {{ getSectionCapacity(ticketPrice.get('sectionId')?.value) }}
+                            Capacidad de la sección: {{ getSectionCapacity(ticketPrice.get('sectionId')?.value) }} asientos<br>
+                            Máximo de entradas {{ ticketPrice.get('ticketType')?.value }}: {{ getMaxQuantityForSection(i) }}
+                            <span *ngIf="ticketPrice.get('seatsPerTicket')?.value > 1">
+                              ({{ ticketPrice.get('seatsPerTicket')?.value }} asientos × entrada)
+                            </span>
                           </small>
                         </div>
                       </div>
@@ -300,7 +334,7 @@
               <!-- Botón para agregar precio -->
               <div class="text-center">
                 <button type="button" 
-                        class="btn btn-outline-primary" 
+                        class="btn promotional-btn btn-outline-primary" 
                         (click)="addTicketPrice()"
                         [disabled]="selectedVenueSections.length === 0">
                   <i class="bi bi-plus-circle me-2"></i>Agregar Precio de Sección

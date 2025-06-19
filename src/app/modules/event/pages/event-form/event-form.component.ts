@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms'; // Para ngModel
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { EventCreateDTO, EventDTO } from '../../models/event';
-import { TicketPriceDTO } from '../../models/ticket-price';
+import { TicketPriceDTO, TicketTypeOption, PromotionalType } from '../../models/ticket-price';
 import { Venue, VenueSection } from '../../../venue/models/venue'; // Asegúrate que la ruta sea correcta
 import { VenueService } from '../../../venue/services/venue.service'; // Asegúrate que la ruta sea correcta
 import { Artist } from '../../../artist/models/artist'; // Asegúrate que la ruta sea correcta
@@ -35,6 +35,42 @@ export class EventFormComponent implements OnInit {
   isEditMode = false; // Para futura funcionalidad de edición
   eventId: number | null = null; // Para futura funcionalidad de edición
   private isLoadingForEdit = false; // Flag to prevent clearing during edit loading
+  
+  // Opciones para tipos de entradas
+  ticketTypeOptions: TicketTypeOption[] = [
+    {
+      label: 'General',
+      value: 'GENERAL',
+      isPromotional: false,
+      isGift: false,
+      seatsPerTicket: 1,
+      description: 'Entrada normal con precio completo'
+    },
+    {
+      label: 'VIP',
+      value: 'VIP',
+      isPromotional: false,
+      isGift: false,
+      seatsPerTicket: 1,
+      description: 'Entrada premium con beneficios adicionales'
+    },
+    {
+      label: 'Promocional 2x1',
+      value: 'PROMOTIONAL_2X1',
+      isPromotional: true,
+      isGift: false,
+      seatsPerTicket: 2,
+      description: 'Entrada promocional: paga 1, obtén 2 asientos'
+    },
+    {
+      label: 'Entrada de Regalo',
+      value: 'GIFT',
+      isPromotional: false,
+      isGift: true,
+      seatsPerTicket: 1,
+      description: 'Entrada gratuita sin costo'
+    }
+  ];
   
   constructor(
     private fb: FormBuilder,
@@ -176,8 +212,12 @@ export class EventFormComponent implements OnInit {
                 const ticketPriceGroup = this.fb.group({
                   sectionId: [ticketPrice.sectionId, Validators.required],
                   ticketType: [ticketPrice.ticketType, Validators.required],
-                  price: [ticketPrice.price, [Validators.required, Validators.min(0)]],
-                  availableQuantity: [ticketPrice.availableQuantity, [Validators.required, Validators.min(1)]]
+                  price: [{ value: ticketPrice.price, disabled: ticketPrice.isGift }, [Validators.required, Validators.min(0)]],
+                  availableQuantity: [ticketPrice.availableQuantity, [Validators.required, Validators.min(1)]],
+                  isPromotional: [ticketPrice.isPromotional || false],
+                  isGift: [ticketPrice.isGift || false],
+                  promotionalType: [ticketPrice.promotionalType || ''],
+                  seatsPerTicket: [ticketPrice.seatsPerTicket || 1, [Validators.required, Validators.min(1)]]
                 });
                 this.ticketPrices.push(ticketPriceGroup);
               });
@@ -227,7 +267,11 @@ export class EventFormComponent implements OnInit {
         sectionId: tp.sectionId,
         ticketType: tp.ticketType,
         price: tp.price,
-        availableQuantity: tp.availableQuantity
+        availableQuantity: tp.availableQuantity,
+        isPromotional: tp.isPromotional || false,
+        isGift: tp.isGift || false,
+        promotionalType: tp.promotionalType || '',
+        seatsPerTicket: tp.seatsPerTicket || 1
       }))
     };
 
@@ -299,9 +343,13 @@ export class EventFormComponent implements OnInit {
   addTicketPrice(): void {
     const ticketPriceGroup = this.fb.group({
       sectionId: [null, Validators.required],
-      ticketType: ['General', Validators.required],
+      ticketType: ['GENERAL', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
-      availableQuantity: [0, [Validators.required, Validators.min(1)]]
+      availableQuantity: [0, [Validators.required, Validators.min(1)]],
+      isPromotional: [false],
+      isGift: [false],
+      promotionalType: [''],
+      seatsPerTicket: [1, [Validators.required, Validators.min(1)]]
     });
 
     this.ticketPrices.push(ticketPriceGroup);
@@ -331,14 +379,68 @@ export class EventFormComponent implements OnInit {
     const ticketPriceGroup = this.ticketPrices.at(index);
     const sectionId = ticketPriceGroup.get('sectionId')?.value;
     const availableQuantity = ticketPriceGroup.get('availableQuantity')?.value;
+    const seatsPerTicket = ticketPriceGroup.get('seatsPerTicket')?.value || 1;
     
     if (sectionId && availableQuantity) {
       const sectionCapacity = this.getSectionCapacity(sectionId);
-      if (availableQuantity > sectionCapacity) {
+      const totalSeatsNeeded = availableQuantity * seatsPerTicket;
+      
+      if (totalSeatsNeeded > sectionCapacity) {
         ticketPriceGroup.get('availableQuantity')?.setErrors({ 
-          exceedsCapacity: { max: sectionCapacity, actual: availableQuantity } 
+          exceedsCapacity: { 
+            max: Math.floor(sectionCapacity / seatsPerTicket), 
+            actual: availableQuantity,
+            seatsPerTicket: seatsPerTicket,
+            totalSeatsNeeded: totalSeatsNeeded,
+            sectionCapacity: sectionCapacity
+          } 
         });
       }
     }
+  }
+
+  onTicketTypeChange(index: number): void {
+    const ticketPriceGroup = this.ticketPrices.at(index);
+    const ticketType = ticketPriceGroup.get('ticketType')?.value;
+    const ticketOption = this.ticketTypeOptions.find(opt => opt.value === ticketType);
+    
+    if (ticketOption) {
+      // Actualizar campos automáticamente según el tipo
+      ticketPriceGroup.patchValue({
+        isPromotional: ticketOption.isPromotional,
+        isGift: ticketOption.isGift,
+        promotionalType: ticketOption.isPromotional || ticketOption.isGift ? ticketOption.value : '',
+        seatsPerTicket: ticketOption.seatsPerTicket,
+        price: ticketOption.isGift ? 0 : ticketPriceGroup.get('price')?.value
+      });
+
+      // Si es de regalo, hacer el precio 0 y readonly
+      if (ticketOption.isGift) {
+        ticketPriceGroup.get('price')?.setValue(0);
+        ticketPriceGroup.get('price')?.disable();
+      } else {
+        ticketPriceGroup.get('price')?.enable();
+      }
+
+      // Revalidar cantidad
+      this.validateTicketQuantity(index);
+    }
+  }
+
+  getMaxQuantityForSection(index: number): number {
+    const ticketPriceGroup = this.ticketPrices.at(index);
+    const sectionId = ticketPriceGroup.get('sectionId')?.value;
+    const seatsPerTicket = ticketPriceGroup.get('seatsPerTicket')?.value || 1;
+    
+    if (sectionId) {
+      const sectionCapacity = this.getSectionCapacity(sectionId);
+      return Math.floor(sectionCapacity / seatsPerTicket);
+    }
+    return 0;
+  }
+
+  getTicketTypeDescription(ticketType: string): string {
+    const option = this.ticketTypeOptions.find(opt => opt.value === ticketType);
+    return option ? option.description : '';
   }
 }

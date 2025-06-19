@@ -1,4 +1,5 @@
 @import '../../../../shared/styles/global-component-styles';
+@import './promotional-styles.scss';
 
 .event-form {
   @include app-form-component;
