@@ -80,6 +80,13 @@ export class TicketListComponent implements OnInit {
         })
       )
       .subscribe(tickets => {
+        console.log('🎁 [DEBUG] Tickets loaded:', tickets);
+        console.log('🎁 [DEBUG] First few tickets with type info:', tickets.slice(0, 3).map(t => ({
+          id: t.id,
+          eventName: t.eventName,
+          ticketType: t.ticketType,
+          promotionName: t.promotionName
+        })));
         this.tickets = tickets;
         this.calculateStats();
         this.applyFilters();
@@ -276,14 +283,22 @@ export class TicketListComponent implements OnInit {
     });
   }
 
-  formatPrice(price: number): string {
-    if (price === 0) {
+  formatPrice(price: number | string | null): string {
+    // Handle null or undefined
+    if (price === null || price === undefined) {
+      return 'Gratis';
+    }
+    
+    // Convert to number if it's a string
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    
+    if (numPrice === 0 || isNaN(numPrice)) {
       return 'Gratis';
     }
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
-    }).format(price);
+    }).format(numPrice);
   }
 
   getStatusClass(status: string): string {
@@ -336,5 +351,37 @@ export class TicketListComponent implements OnInit {
   onQrImageError(event: any): void {
     console.warn('QR image failed to load:', event);
     // The *ngIf will handle showing the placeholder
+  }
+
+  isPromotional2x1(ticket: Ticket): boolean {
+    if (!ticket) {
+      console.log('🎁 [DEBUG] isPromotional2x1: ticket is null/undefined');
+      return false;
+    }
+    
+    console.log('🎁 [DEBUG] Checking ticket for 2x1:', {
+      id: ticket.id,
+      ticketType: ticket.ticketType,
+      promotionName: ticket.promotionName,
+      promotionDescription: ticket.promotionDescription
+    });
+    
+    // Check ticket type first (most reliable)
+    if (ticket.ticketType === 'PROMOTIONAL_2X1') {
+      console.log('🎁 [DEBUG] Found PROMOTIONAL_2X1 ticket!');
+      return true;
+    }
+    
+    // Fallback to promotion name/description
+    const hasPromo2x1 = ticket.promotionName?.toLowerCase().includes('2x1') ||
+           ticket.promotionDescription?.toLowerCase().includes('2x1') || false;
+    
+    if (hasPromo2x1) {
+      console.log('🎁 [DEBUG] Found 2x1 in promotion name/description!');
+    } else {
+      console.log('🎁 [DEBUG] No 2x1 detected in this ticket');
+    }
+    
+    return hasPromo2x1;
   }
 }

@@ -40,15 +40,26 @@
     position: relative;
     overflow: hidden;
     
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, transparent 30%, rgba(76, 175, 80, 0.1) 50%, transparent 70%);
-      animation: shimmer 2s infinite;
+    // Eliminar animación de shimmer para evitar destello
+    // &::before {
+    //   content: '';
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   right: 0;
+    //   bottom: 0;
+    //   background: linear-gradient(45deg, transparent 30%, rgba(76, 175, 80, 0.1) 50%, transparent 70%);
+    //   animation: shimmer 2s infinite;
+    // }
+    
+    span {
+      font-size: 5rem;
+      color: var(--primary-green);
+      opacity: 0.8;
+      font-weight: 700;
+      z-index: 1;
+      position: relative;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     
     i {

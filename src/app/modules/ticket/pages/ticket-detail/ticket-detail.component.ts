@@ -281,20 +281,54 @@ export class TicketDetailComponent implements OnInit {
     });
   }
 
-  formatPrice(price: number): string {
-    if (price === 0) {
+  formatPrice(price: number | string | null): string {
+    // Handle null or undefined
+    if (price === null || price === undefined) {
+      return 'Gratis';
+    }
+    
+    // Convert to number if it's a string
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    
+    if (numPrice === 0 || isNaN(numPrice)) {
       return 'Gratis';
     }
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
-    }).format(price);
+    }).format(numPrice);
   }
 
   isPromotional2x1(ticket: Ticket | null): boolean {
-    if (!ticket) return false;
-    return ticket.promotionName?.toLowerCase().includes('2x1') || 
+    if (!ticket) {
+      console.log('🎁 [DEBUG] isPromotional2x1 (detail): ticket is null');
+      return false;
+    }
+    
+    console.log('🎁 [DEBUG] Checking ticket detail for 2x1:', {
+      id: ticket.id,
+      ticketType: ticket.ticketType,
+      promotionName: ticket.promotionName,
+      promotionDescription: ticket.promotionDescription
+    });
+    
+    // Check ticket type first (most reliable)
+    if (ticket.ticketType === 'PROMOTIONAL_2X1') {
+      console.log('🎁 [DEBUG] Found PROMOTIONAL_2X1 ticket in detail!');
+      return true;
+    }
+    
+    // Fallback to promotion name/description
+    const hasPromo2x1 = ticket.promotionName?.toLowerCase().includes('2x1') || 
            ticket.promotionDescription?.toLowerCase().includes('2x1') || false;
+           
+    if (hasPromo2x1) {
+      console.log('🎁 [DEBUG] Found 2x1 in promotion name/description in detail!');
+    } else {
+      console.log('🎁 [DEBUG] No 2x1 detected in this ticket detail');
+    }
+    
+    return hasPromo2x1;
   }
 
   isValidQrCode(qrCode: string): boolean {

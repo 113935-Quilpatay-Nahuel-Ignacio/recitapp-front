@@ -180,13 +180,20 @@
 
         <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
           <div formArrayName="attendeeTickets" class="attendee-tickets" *ngIf="attendeeTickets.controls.length > 0">
-            <h3>
-              <i class="bi bi-cart me-2"></i>Tu Carrito ({{ attendeeTickets.controls.length }} 
-              {{ attendeeTickets.controls.length === 1 ? 'Entrada' : 'Entradas' }})
-              <span class="badge bg-info ms-2" *ngIf="attendeeTickets.controls.length > 0">
-                {{ processedTicketsCount }}/{{ totalTicketsToProcess }} procesadas
-              </span>
-            </h3>
+            <div class="cart-header-container d-flex justify-content-between align-items-center mb-3">
+              <h3 class="mb-0">
+                <i class="bi bi-cart me-2"></i>Tu Carrito ({{ attendeeTickets.controls.length }} 
+                {{ attendeeTickets.controls.length === 1 ? 'Entrada' : 'Entradas' }})
+              </h3>
+              <div class="processing-counter" *ngIf="attendeeTickets.controls.length > 0">
+                <span class="badge fs-6" 
+                      [class.bg-success]="processedTicketsCount === totalTicketsToProcess"
+                      [class.bg-warning]="processedTicketsCount < totalTicketsToProcess">
+                  <i class="bi bi-list-check me-1"></i>
+                  {{ processedTicketsCount }}/{{ totalTicketsToProcess }} completadas
+                </span>
+              </div>
+            </div>
             
             <div *ngFor="let ticketCtrl of attendeeTickets.controls; let i = index" [formGroupName]="i" class="attendee-ticket-item">
               <div class="ticket-header">

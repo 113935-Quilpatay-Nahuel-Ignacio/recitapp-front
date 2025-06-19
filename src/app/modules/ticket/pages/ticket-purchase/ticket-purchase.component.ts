@@ -224,20 +224,41 @@ export class TicketPurchaseComponent implements OnInit {
         // promotionId: [null] // If promotions are handled
       }));
     }
+    
+    // Add change listeners to update processing counter
+    this.attendeeTickets.controls.forEach((control, index) => {
+      ['attendeeFirstName', 'attendeeLastName', 'attendeeDni'].forEach(fieldName => {
+        const field = control.get(fieldName);
+        if (field) {
+          field.valueChanges.subscribe(() => {
+            this.updateProcessingCounter();
+          });
+        }
+      });
+    });
+    
     // Trigger form update for total calculation, etc.
     this.purchaseForm.updateValueAndValidity();
     this.calculateTotal();
     this.updateWalletCalculations();
+    this.updateProcessingCounter();
   }
 
   // New method to handle specific ticket type selection
   updateProcessingCounter(): void {
+    console.log('📊 [DEBUG] Updating processing counter...');
     this.totalTicketsToProcess = this.attendeeTickets.length;
     this.processedTicketsCount = this.attendeeTickets.controls.filter(control => 
       control.get('attendeeFirstName')?.valid && 
       control.get('attendeeLastName')?.valid && 
       control.get('attendeeDni')?.valid
     ).length;
+    
+    console.log('📊 [DEBUG] Processing counter updated:', {
+      total: this.totalTicketsToProcess,
+      processed: this.processedTicketsCount,
+      note: 'This tracks FORM COMPLETION before payment, NOT PDF generation after payment'
+    });
   }
 
   addTicketForSectionAndType(section: EventSectionOffer, ticketTypeSelect: HTMLSelectElement, quantity: number = 1): void {

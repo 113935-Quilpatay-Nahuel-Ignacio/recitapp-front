@@ -77,6 +77,9 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     this.sectionsImageError = false; // Reset sections image error flag
     this.eventService.getEventById(this.eventId).subscribe({
       next: (eventData) => {
+        console.log('🖼️ [DEBUG] Event loaded:', eventData);
+        console.log('🖼️ [DEBUG] Event flyerImage:', eventData.flyerImage);
+        console.log('🖼️ [DEBUG] imageError status:', this.imageError);
         this.event = eventData;
         this.isLoading = false;
         this.loadEventStatistics();
@@ -346,6 +349,8 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   }
 
   onImageError(event: any): void {
+    console.log('🖼️ [DEBUG] Event flyer image failed to load:', event);
+    console.log('🖼️ [DEBUG] Setting imageError to true, placeholder will show');
     this.imageError = true;
   }
 

@@ -201,6 +201,9 @@
                 
                 <div class="event-details">
                   <i class="bi bi-credit-card-fill"></i>{{ formatPrice(ticket.price) }}
+                  <span *ngIf="isPromotional2x1(ticket)" class="badge bg-warning text-dark ms-2">
+                    <i class="bi bi-gift me-1"></i>Promocional 2x1
+                  </span>
                 </div>
               </div>
             </div>
