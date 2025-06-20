@@ -14,10 +14,14 @@ export class LegalHomeComponent implements OnInit {
   currentDate: string = new Date().toLocaleDateString('es-AR');
   
   ngOnInit(): void {
-    window.scrollTo(0, 0);
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
   }
 
   goBack(): void {
-    window.history.back();
+    if (typeof window !== 'undefined') {
+      window.history.back();
+    }
   }
 } 

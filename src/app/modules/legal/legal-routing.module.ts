@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LegalHomeComponent } from './pages/legal-home/legal-home.component';
 import { TermsAndConditionsComponent } from './pages/terms-and-conditions/terms-and-conditions.component';
 import { FaqComponent } from './pages/faq/faq.component';
+import { TermsUtnComponent } from './pages/terms-utn/terms-utn.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,11 @@ const routes: Routes = [
     path: 'terms',
     component: TermsAndConditionsComponent,
     title: 'Términos y Condiciones - RecitApp'
+  },
+  {
+    path: 'terms/utn',
+    component: TermsUtnComponent,
+    title: 'Términos y Condiciones UTN - RecitApp'
   },
   {
     path: 'faq',
