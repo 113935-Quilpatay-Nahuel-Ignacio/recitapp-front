@@ -91,7 +91,7 @@ import { User } from '../../../../core/models/user.model';
         <!-- No Tickets Message -->
         <div *ngIf="previewData.length === 0 && !loadingPreview && !loading && !error" class="no-tickets-message">
           <div class="no-tickets-content">
-            <div class="no-tickets-icon"><i class="bi bi-emoji-smile"></i></div>
+            <div class="no-tickets-icon"><i class="bi bi-check-circle"></i></div>
             <h3>¡No hay tickets vencidos para procesar!</h3>
             <p>Todos los tickets están en estado correcto o no hay eventos pasados con tickets vendidos.</p>
             <div class="no-tickets-actions">
@@ -367,10 +367,14 @@ import { User } from '../../../../core/models/user.model';
     .stat-icon {
       font-size: 2.5rem;
       background: rgba(34, 197, 94, 0.1);
-      padding: 15px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
-      min-width: 70px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #22C55E;
+      flex-shrink: 0;
     }
 
     .stat-content h3 {
