@@ -165,12 +165,6 @@
                   <div class="ticket-id">
                     <i class="bi bi-hash"></i>{{ ticket.id }}
                   </div>
-                  <div class="ticket-status">
-                    <span class="badge bg-{{ getStatusClass(ticket.status) }}">
-                      <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
-                      {{ ticket.status }}
-                    </span>
-                  </div>
                 </div>
                 
                 <h5 class="event-name mb-2">{{ ticket.eventName }}</h5>
@@ -202,28 +196,32 @@
                 <div class="event-details">
                   <i class="bi bi-credit-card-fill"></i>{{ formatPrice(ticket.price) }}
                 </div>
-                
-                <!-- Promotional Badges -->
-                <div class="promotional-badges" *ngIf="isPromotional2x1(ticket) || ticket.isGift || ticket.promotionName">
-                  <span *ngIf="isPromotional2x1(ticket)" class="badge bg-warning">
-                    <i class="bi bi-gift"></i>
-                    Promocional 2x1
-                  </span>
-                  <span *ngIf="ticket.isGift && !isPromotional2x1(ticket)" class="badge bg-info">
-                    <i class="bi bi-heart"></i>
-                    Regalo
-                  </span>
-                  <span *ngIf="ticket.promotionName && !isPromotional2x1(ticket) && !ticket.isGift" class="badge bg-success">
-                    <i class="bi bi-tag"></i>
-                    {{ ticket.promotionName }}
-                  </span>
-                </div>
               </div>
             </div>
 
             <!-- Actions -->
             <div class="col-auto">
               <div class="ticket-actions">
+                <!-- Status Badge at the top -->
+                <div class="ticket-status-actions">
+                  <span class="badge bg-{{ getStatusClass(ticket.status) }} status-badge-list">
+                    <i class="{{ getStatusIcon(ticket.status) }} me-1"></i>
+                    {{ formatStatusName(ticket.status) }}
+                  </span>
+                </div>
+                
+                <!-- Promotional Badges above buttons -->
+                <div class="promotional-badges-actions" *ngIf="isPromotional2x1(ticket) || (ticket.promotionName && !ticket.isGift)">
+                  <span *ngIf="isPromotional2x1(ticket)" class="badge bg-warning">
+                    <i class="bi bi-gift"></i>
+                    Promocional 2x1
+                  </span>
+                  <span *ngIf="ticket.promotionName && !isPromotional2x1(ticket) && !ticket.isGift" class="badge bg-success">
+                    <i class="bi bi-tag"></i>
+                    {{ ticket.promotionName }}
+                  </span>
+                </div>
+                
                 <div class="d-grid gap-2" style="min-width: 120px;">
                   <button class="btn btn-primary btn-sm" 
                           (click)="viewTicketDetails(ticket)">

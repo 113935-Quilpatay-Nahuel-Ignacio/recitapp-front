@@ -10,6 +10,7 @@ import { environment } from '../../../../../environments/environment';
 import { Ticket } from '../../models/ticket.model';
 import { TicketService } from '../../services/ticket.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
 
 interface TicketStats {
   total: number;
@@ -371,5 +372,9 @@ export class TicketListComponent implements OnInit {
            promotionName.includes('dos por uno') ||
            promotionDescription.includes('2x1') || 
            promotionDescription.includes('dos por uno');
+  }
+
+  formatStatusName(status: string): string {
+    return StatusFormatter.formatStatusName(status);
   }
 }

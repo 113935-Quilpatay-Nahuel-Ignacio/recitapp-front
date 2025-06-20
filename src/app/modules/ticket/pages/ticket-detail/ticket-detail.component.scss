@@ -5,6 +5,33 @@
 }
 
 .page-header {
+  // Mejora en la alineación del header
+  .d-flex.justify-content-between.align-items-start {
+    align-items: center !important; // Cambiamos de start a center para mejor alineación
+    gap: 1rem;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 1rem;
+    }
+  }
+
+  .header-info {
+    min-width: 0; // Permite que el texto se reduzca si es necesario
+  }
+
+  .header-badge {
+    flex-shrink: 0; // Evita que la badge se reduzca
+    display: flex;
+    align-items: flex-start; // Alinea la badge con el texto del título
+    
+    @media (max-width: 768px) {
+      align-self: flex-end;
+      margin-top: -0.5rem; // Compensa el spacing en móviles
+    }
+  }
+
   .page-title {
     font-size: 2rem;
     font-weight: 600;
@@ -32,6 +59,31 @@
         color: var(--dark-text);
         font-weight: 500;
       }
+    }
+  }
+
+  // Status badge específico del header
+  .status-badge {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 50px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.375rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.3s ease !important;
+    white-space: nowrap !important;
+    
+    i {
+      font-size: 1rem !important;
+    }
+    
+    &:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
     }
   }
 }
