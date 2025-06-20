@@ -15,8 +15,8 @@ import { User } from '../../../../core/models/user.model';
         <h1>Recomendaciones de Eventos</h1>
         <p class="subtitle">Eventos personalizados basados en tus gustos musicales</p>
         <button (click)="refresh()" class="refresh-btn" [disabled]="isAnyLoading()">
-          <span *ngIf="!isAnyLoading()">🔄</span>
-          <span *ngIf="isAnyLoading()">⏳</span>
+          <i class="bi bi-arrow-clockwise me-2" *ngIf="!isAnyLoading()"></i>
+          <i class="bi bi-hourglass-split me-2" *ngIf="isAnyLoading()"></i>
           {{ isAnyLoading() ? 'Cargando...' : 'Actualizar' }}
         </button>
       </div>
@@ -30,7 +30,7 @@ import { User } from '../../../../core/models/user.model';
       <!-- No Recommendations State -->
       <div *ngIf="!isAnyLoading() && !hasAnyRecommendations()" class="no-recommendations">
         <div class="empty-state">
-          <div class="empty-icon">🎭</div>
+          <div class="empty-icon"><i class="bi bi-emoji-smile" style="font-size: 4rem;"></i></div>
           <h3>No hay recomendaciones disponibles</h3>
           <p>Sigue algunos artistas para recibir recomendaciones personalizadas</p>
           <a routerLink="/artists" class="btn btn-primary">Explorar Artistas</a>
@@ -64,15 +64,15 @@ import { User } from '../../../../core/models/user.model';
               
               <div class="event-meta">
                 <div class="meta-item">
-                  <span class="icon">📅</span>
+                  <span class="icon"><i class="bi bi-calendar"></i></span>
                   <span>{{ formatDate(event.startDateTime) }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="icon">🎤</span>
+                  <span class="icon"><i class="bi bi-mic"></i></span>
                   <span>{{ event.mainArtistName || 'Varios Artistas' }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="icon">📍</span>
+                  <span class="icon"><i class="bi bi-geo-alt"></i></span>
                   <span>{{ event.venueName || 'Recinto por confirmar' }}</span>
                 </div>
               </div>
@@ -94,7 +94,7 @@ import { User } from '../../../../core/models/user.model';
 
       <!-- Error Messages -->
       <div *ngIf="error.personalized" class="error-message">
-        <h3>❌ Error en Recomendaciones Personalizadas</h3>
+        <h3><i class="bi bi-exclamation-triangle me-2"></i>Error en Recomendaciones Personalizadas</h3>
         <p>{{ error.personalized }}</p>
       </div>
 

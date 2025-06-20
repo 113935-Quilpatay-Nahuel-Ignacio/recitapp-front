@@ -28,6 +28,8 @@ export class UserFollowingComponent implements OnInit {
     venues: '',
   };
   userId: number | null = null;
+  artistImageErrors: Set<number> = new Set(); // Para trackear errores de imágenes de artistas
+  venueImageErrors: Set<number> = new Set(); // Para trackear errores de imágenes de venues
 
   constructor(
     private userService: UserService,
@@ -142,5 +144,21 @@ export class UserFollowingComponent implements OnInit {
     this.router.navigate(['/venues', venueId]).catch(err => {
       console.error('Error navegando al recinto:', err);
     });
+  }
+
+  onArtistImageError(artistId: number): void {
+    this.artistImageErrors.add(artistId);
+  }
+
+  hasArtistImageError(artistId: number): boolean {
+    return this.artistImageErrors.has(artistId);
+  }
+
+  onVenueImageError(venueId: number): void {
+    this.venueImageErrors.add(venueId);
+  }
+
+  hasVenueImageError(venueId: number): boolean {
+    return this.venueImageErrors.has(venueId);
   }
 }

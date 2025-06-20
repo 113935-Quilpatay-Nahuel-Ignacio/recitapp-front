@@ -223,8 +223,11 @@
                                 class="row row-cols-1 row-cols-md-2 g-4">
                                 <div class="col" *ngFor="let event of upcomingEvents">
                                     <div class="card h-100 shadow-sm">
-                                        <div *ngIf="event.flyerImage" class="event-image-container">
-                                            <img [src]="event.flyerImage" class="card-img-top" [alt]="event.name">
+                                        <div *ngIf="event.flyerImage && !hasEventImageError(event.id)" class="event-image-container">
+                                            <img [src]="event.flyerImage" class="card-img-top" [alt]="event.name" (error)="onEventImageError(event.id)">
+                                        </div>
+                                        <div *ngIf="!event.flyerImage || hasEventImageError(event.id)" class="event-image-placeholder">
+                                            <i class="bi bi-calendar-event"></i>
                                         </div>
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-2">

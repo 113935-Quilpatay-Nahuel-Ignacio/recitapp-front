@@ -21,6 +21,7 @@ export class ArtistEventsComponent implements OnInit {
   loading = false;
   error = '';
   includePastEvents = false;
+  imageErrors: Set<number> = new Set();
 
   constructor(
     private route: ActivatedRoute,
@@ -126,5 +127,13 @@ export class ArtistEventsComponent implements OnInit {
 
   getStatusIcon(status: string): string {
     return StatusFormatter.getStatusIcon(status);
+  }
+
+  onImageError(eventId: number): void {
+    this.imageErrors.add(eventId);
+  }
+
+  hasImageError(eventId: number): boolean {
+    return this.imageErrors.has(eventId);
   }
 }

@@ -236,6 +236,20 @@
       }
     }
     
+    .event-image-placeholder {
+      position: relative;
+      height: 200px;
+      background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      i {
+        font-size: 3rem;
+        color: var(--dark-text-muted);
+      }
+    }
+    
     .card-body {
       padding: 1.5rem;
       flex-grow: 1;

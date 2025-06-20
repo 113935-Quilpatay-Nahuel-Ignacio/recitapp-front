@@ -23,10 +23,10 @@ import { User } from '../../../../core/models/user.model';
 
       <!-- Error State -->
       <div *ngIf="error && !loading" class="error-message">
-        <h3>❌ Error al cargar datos</h3>
+        <h3><i class="bi bi-exclamation-triangle me-2"></i>Error al cargar datos</h3>
         <p>{{ error }}</p>
         <button class="retry-btn" (click)="loadData()">
-          🔄 Reintentar
+          <i class="bi bi-arrow-clockwise me-2"></i>Reintentar
         </button>
       </div>
 
@@ -35,7 +35,7 @@ import { User } from '../../../../core/models/user.model';
                  <!-- Statistics Dashboard -->
          <div class="stats-dashboard">
            <div class="stat-card">
-             <div class="stat-icon">✅</div>
+             <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
              <div class="stat-content">
                <h3>{{ summary.VENDIDA || 0 }}</h3>
                <p>Tickets Vendidos</p>
@@ -43,7 +43,7 @@ import { User } from '../../../../core/models/user.model';
            </div>
            
            <div class="stat-card">
-             <div class="stat-icon">⏰</div>
+             <div class="stat-icon"><i class="bi bi-clock"></i></div>
              <div class="stat-content">
                <h3>{{ summary.VENCIDA || 0 }}</h3>
                <p>Tickets Vencidos</p>
@@ -51,7 +51,7 @@ import { User } from '../../../../core/models/user.model';
            </div>
            
            <div class="stat-card">
-             <div class="stat-icon">❌</div>
+             <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
              <div class="stat-content">
                <h3>{{ summary.CANCELADA || 0 }}</h3>
                <p>Tickets Cancelados</p>
@@ -59,7 +59,7 @@ import { User } from '../../../../core/models/user.model';
            </div>
            
            <div class="stat-card">
-             <div class="stat-icon">📝</div>
+             <div class="stat-icon"><i class="bi bi-file-text"></i></div>
              <div class="stat-content">
                <h3>{{ summary.RESERVADA || 0 }}</h3>
                <p>Tickets Reservados</p>
@@ -73,16 +73,16 @@ import { User } from '../../../../core/models/user.model';
             class="btn btn-primary"
             (click)="loadPreview()"
             [disabled]="loadingPreview">
-            <span *ngIf="!loadingPreview">👁️ Vista Previa</span>
-            <span *ngIf="loadingPreview">⏳ Cargando...</span>
+            <span *ngIf="!loadingPreview"><i class="bi bi-eye me-2"></i>Vista Previa</span>
+            <span *ngIf="loadingPreview"><i class="bi bi-hourglass-split me-2"></i>Cargando...</span>
           </button>
           
           <button 
             class="btn btn-danger"
             (click)="onProcessButtonClick()"
             [disabled]="!previewData.length || processing">
-            <span *ngIf="!processing">⚠️ Procesar Tickets Vencidos</span>
-            <span *ngIf="processing">⏳ Procesando...</span>
+            <span *ngIf="!processing"><i class="bi bi-exclamation-triangle me-2"></i>Procesar Tickets Vencidos</span>
+            <span *ngIf="processing"><i class="bi bi-hourglass-split me-2"></i>Procesando...</span>
           </button>
           
 
@@ -91,12 +91,12 @@ import { User } from '../../../../core/models/user.model';
         <!-- No Tickets Message -->
         <div *ngIf="previewData.length === 0 && !loadingPreview && !loading && !error" class="no-tickets-message">
           <div class="no-tickets-content">
-            <div class="no-tickets-icon">🎉</div>
+            <div class="no-tickets-icon"><i class="bi bi-emoji-smile"></i></div>
             <h3>¡No hay tickets vencidos para procesar!</h3>
             <p>Todos los tickets están en estado correcto o no hay eventos pasados con tickets vendidos.</p>
             <div class="no-tickets-actions">
               <button class="btn btn-secondary" (click)="loadPreview()">
-                🔄 Verificar nuevamente
+                <i class="bi bi-arrow-clockwise me-2"></i>Verificar nuevamente
               </button>
             </div>
           </div>
@@ -104,7 +104,7 @@ import { User } from '../../../../core/models/user.model';
 
                  <!-- Preview Section -->
          <div *ngIf="previewData.length > 0" class="preview-section">
-           <h2>📋 Vista Previa de Tickets a Procesar</h2>
+           <h2><i class="bi bi-clipboard me-2"></i>Vista Previa de Tickets a Procesar</h2>
            <div class="preview-grid">
              <div *ngFor="let preview of previewData" class="preview-card">
                <div class="preview-header">
@@ -114,32 +114,32 @@ import { User } from '../../../../core/models/user.model';
                
                <div class="preview-content">
                  <div class="preview-item">
-                   <span class="label">👤 Usuario:</span>
+                   <span class="label"><i class="bi bi-person me-1"></i> Usuario:</span>
                    <span class="value">{{ preview.userName }}</span>
                  </div>
                  
                  <div class="preview-item">
-                   <span class="label">📧 Email:</span>
+                   <span class="label"><i class="bi bi-envelope me-1"></i> Email:</span>
                    <span class="value">{{ preview.userEmail }}</span>
                  </div>
                  
                  <div class="preview-item">
-                   <span class="label">🎫 Sección:</span>
+                   <span class="label"><i class="bi bi-ticket-perforated me-1"></i> Sección:</span>
                    <span class="value">{{ preview.sectionName }}</span>
                  </div>
                  
                  <div class="preview-item">
-                   <span class="label">💰 Precio:</span>
+                   <span class="label"><i class="bi bi-currency-dollar me-1"></i> Precio:</span>
                    <span class="value highlight">{{ formatPrice(preview.price) }}</span>
                  </div>
                  
                  <div class="preview-item">
-                   <span class="label">📅 Compra:</span>
+                   <span class="label"><i class="bi bi-calendar me-1"></i> Compra:</span>
                    <span class="value">{{ formatDate(preview.purchaseDate) }}</span>
                  </div>
                  
                  <div class="preview-item">
-                   <span class="label">🏷️ Estado:</span>
+                   <span class="label"><i class="bi bi-tag me-1"></i> Estado:</span>
                    <span class="value status-{{ preview.status.toLowerCase() }}">{{ preview.status }}</span>
                  </div>
                </div>
@@ -149,10 +149,10 @@ import { User } from '../../../../core/models/user.model';
 
         <!-- Success Message -->
         <div *ngIf="successMessage" class="success-message">
-          <h3>✅ Procesamiento Exitoso</h3>
+          <h3><i class="bi bi-check-circle me-2"></i>Procesamiento Exitoso</h3>
           <p>{{ successMessage }}</p>
           <button class="btn btn-secondary" (click)="resetView()">
-            🔄 Actualizar Vista
+            <i class="bi bi-arrow-clockwise me-2"></i>Actualizar Vista
           </button>
         </div>
 
@@ -193,7 +193,7 @@ import { User } from '../../../../core/models/user.model';
                         justify-content: space-between !important;
                         align-items: center !important;
                         border-radius: 12px 12px 0 0 !important;">
-             <h3 style="color: #22C55E !important; margin: 0 !important; font-size: 20px !important; font-weight: 600 !important;">⚠️ Confirmar Procesamiento</h3>
+             <h3 style="color: #22C55E !important; margin: 0 !important; font-size: 20px !important; font-weight: 600 !important;"><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Procesamiento</h3>
              <button (click)="showConfirmModal = false" 
                      style="background: none !important; 
                             border: none !important; 

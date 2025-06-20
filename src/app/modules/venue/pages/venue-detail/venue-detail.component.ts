@@ -40,6 +40,7 @@ export class VenueDetailComponent implements OnInit {
   isAdmin = false;
   currentTab: 'info' | 'events' | 'sections' | 'stats' = 'info';
   imageError = false;
+  eventImageErrors: Set<number> = new Set(); // Para trackear errores de imágenes de eventos
 
   constructor(
     private route: ActivatedRoute,
@@ -311,5 +312,13 @@ export class VenueDetailComponent implements OnInit {
 
   onImageError(event: any): void {
     this.imageError = true;
+  }
+
+  onEventImageError(eventId: number): void {
+    this.eventImageErrors.add(eventId);
+  }
+
+  hasEventImageError(eventId: number): boolean {
+    return this.eventImageErrors.has(eventId);
   }
 }

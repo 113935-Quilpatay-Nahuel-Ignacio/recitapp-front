@@ -78,9 +78,13 @@
                         </div>
                     </div>
                     
-                    <div *ngIf="event.flyerImage" class="event-image-container">
-                        <img [src]="event.flyerImage" class="card-img" [alt]="event.name">
+                    <div *ngIf="event.flyerImage && !hasImageError(event.id)" class="event-image-container">
+                        <img [src]="event.flyerImage" class="card-img" [alt]="event.name" (error)="onImageError(event.id)">
                         <div class="image-overlay"></div>
+                    </div>
+                    
+                    <div *ngIf="!event.flyerImage || hasImageError(event.id)" class="event-image-placeholder">
+                        <i class="bi bi-calendar-event"></i>
                     </div>
                     
                     <div class="card-body">

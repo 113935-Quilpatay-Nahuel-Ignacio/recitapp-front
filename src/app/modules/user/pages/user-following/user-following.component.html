@@ -47,9 +47,9 @@
                         <div *ngIf="followedArtists.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                             <div class="col" *ngFor="let artist of followedArtists">
                                 <div class="card following-card h-100">
-                                    <img *ngIf="artist.artistImage" [src]="artist.artistImage" class="card-img-top"
-                                        alt="{{ artist.artistName }}">
-                                    <div *ngIf="!artist.artistImage" class="image-placeholder">
+                                    <img *ngIf="artist.artistImage && !hasArtistImageError(artist.artistId)" [src]="artist.artistImage" class="card-img-top"
+                                        alt="{{ artist.artistName }}" (error)="onArtistImageError(artist.artistId)">
+                                    <div *ngIf="!artist.artistImage || hasArtistImageError(artist.artistId)" class="image-placeholder">
                                         <i class="bi bi-music-note"></i>
                                     </div>
                                     <div class="card-body">
@@ -93,9 +93,9 @@
                         <div *ngIf="followedVenues.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                             <div class="col" *ngFor="let venue of followedVenues">
                                 <div class="card following-card h-100">
-                                    <img *ngIf="venue.venueImage" [src]="venue.venueImage" class="card-img-top"
-                                        alt="{{ venue.venueName }}">
-                                    <div *ngIf="!venue.venueImage" class="image-placeholder">
+                                    <img *ngIf="venue.venueImage && !hasVenueImageError(venue.venueId)" [src]="venue.venueImage" class="card-img-top"
+                                        alt="{{ venue.venueName }}" (error)="onVenueImageError(venue.venueId)">
+                                    <div *ngIf="!venue.venueImage || hasVenueImageError(venue.venueId)" class="image-placeholder">
                                         <i class="bi bi-building"></i>
                                     </div>
                                     <div class="card-body">
