@@ -37,6 +37,7 @@ export interface UserUpdate {
   lastName?: string;
   country?: string;
   city?: string;
+  profileImage?: string;
   password?: string;
   phone?: string;
   address?: string;

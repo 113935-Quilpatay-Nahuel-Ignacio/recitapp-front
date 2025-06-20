@@ -349,7 +349,12 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   }
 
   onImageError(event: any): void {
-    console.log('🖼️ [DEBUG] Event flyer image failed to load:', event);
+    const imgElement = event.target as HTMLImageElement;
+    console.log('🖼️ [DEBUG] Event flyer image failed to load:', {
+      src: imgElement?.src,
+      error: event,
+      eventName: this.event?.name
+    });
     console.log('🖼️ [DEBUG] Setting imageError to true, placeholder will show');
     this.imageError = true;
   }

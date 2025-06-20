@@ -68,68 +68,40 @@
 
                 <!-- Imagen del Evento -->
                 <div class="col-md-6">
-                  <label for="flyerImage" class="form-label">URL de la Imagen del Evento (Flyer)</label>
+                  <label class="form-label">Imagen del Evento (Flyer)</label>
                   
-                  <input
-                    type="url"
-                    id="flyerImage"
+                  <app-file-upload
                     formControlName="flyerImage"
-                    class="form-control mb-2"
-                    placeholder="https://ejemplo.com/imagen-evento.jpg"
-                  />
-                  <small class="form-text text-muted d-block mb-2">
+                    category="event-flyer"
+                    label="Imagen del evento"
+                    placeholder="Arrastra la imagen del evento aquí"
+                    (fileUploaded)="onFlyerImageUploaded($event)"
+                    (fileRemoved)="onFlyerImageRemoved()">
+                  </app-file-upload>
+                  
+                  <small class="form-text text-muted d-block mt-2">
                     <i class="bi bi-info-circle me-1"></i>
-                    URL de una imagen que represente al evento
+                    Imagen que represente al evento. Se recomienda una imagen atractiva de alta calidad.
                   </small>
-
-                  <!-- Vista previa de imagen -->
-                  <div *ngIf="f['flyerImage'].value" class="image-preview mt-3">
-                    <div class="preview-container">
-                      <img 
-                        [src]="f['flyerImage'].value" 
-                        class="preview-image"
-                        [alt]="f['name'].value || 'Vista previa del evento'"
-                        (error)="onImageError($event)"
-                        (load)="onImageLoad($event)"
-                      />
-                      <div class="preview-overlay">
-                        <small class="text-light">Vista previa de la imagen</small>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 <!-- Imagen de Secciones del Evento -->
                 <div class="col-md-6">
-                  <label for="sectionsImage" class="form-label">URL de la Imagen de Secciones</label>
+                  <label class="form-label">Imagen de Secciones del Recinto</label>
                   
-                  <input
-                    type="url"
-                    id="sectionsImage"
+                  <app-file-upload
                     formControlName="sectionsImage"
-                    class="form-control mb-2"
-                    placeholder="https://ejemplo.com/secciones-recinto.jpg"
-                  />
-                  <small class="form-text text-muted d-block mb-2">
+                    category="event-sections"
+                    label="Imagen de secciones"
+                    placeholder="Arrastra la imagen de secciones aquí"
+                    (fileUploaded)="onSectionsImageUploaded($event)"
+                    (fileRemoved)="onSectionsImageRemoved()">
+                  </app-file-upload>
+                  
+                  <small class="form-text text-muted d-block mt-2">
                     <i class="bi bi-info-circle me-1"></i>
-                    Imagen que muestre las secciones del recinto para guiar a los compradores
+                    Imagen que muestre las secciones del recinto para guiar a los compradores en su selección.
                   </small>
-
-                  <!-- Vista previa de imagen de secciones -->
-                  <div *ngIf="f['sectionsImage'].value" class="image-preview mt-3">
-                    <div class="preview-container">
-                      <img 
-                        [src]="f['sectionsImage'].value" 
-                        class="preview-image"
-                        alt="Vista previa de secciones"
-                        (error)="onImageError($event)"
-                        (load)="onImageLoad($event)"
-                      />
-                      <div class="preview-overlay">
-                        <small class="text-light">Vista previa de secciones</small>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

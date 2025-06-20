@@ -91,17 +91,22 @@
 
                                     <!-- Profile Image -->
                                     <div class="mb-4">
-                                        <label for="profileImage" class="form-label fw-semibold">
-                                            <i class="bi bi-image me-1 text-info"></i>URL de Imagen de Perfil
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-image me-1 text-info"></i>Imagen de Perfil
                                         </label>
-                                        <input type="url" 
-                                               formControlName="profileImage" 
-                                               class="form-control"
-                                               id="profileImage"
-                                               placeholder="https://ejemplo.com/imagen.jpg" />
-                                        <small class="form-text text-muted">
+                                        
+                                        <app-file-upload
+                                            formControlName="profileImage"
+                                            category="artist-profile"
+                                            label="Imagen de perfil del artista"
+                                            placeholder="Arrastra la nueva imagen de perfil aquí"
+                                            (fileUploaded)="onProfileImageUploaded($event)"
+                                            (fileRemoved)="onProfileImageRemoved()">
+                                        </app-file-upload>
+                                        
+                                        <small class="form-text text-muted d-block mt-2">
                                             <i class="bi bi-info-circle me-1"></i>
-                                            URL de una imagen que represente al artista
+                                            Imagen que represente al artista. Se recomienda una foto clara y de buena calidad.
                                         </small>
                         </div>
 

@@ -10,11 +10,12 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ArtistService } from '../../services/artist.service';
 import { Artist } from '../../models/artist';
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 
 @Component({
   selector: 'app-artist-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, FileUploadComponent],
   templateUrl: './artist-edit.component.html',
   styleUrls: ['./artist-edit.component.scss'],
 })
@@ -132,6 +133,17 @@ export class ArtistEditComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  // Métodos para manejar la subida de archivos
+  onProfileImageUploaded(fileUrl: string): void {
+    this.artistForm.patchValue({ profileImage: fileUrl });
+    console.log('Profile image uploaded:', fileUrl);
+  }
+
+  onProfileImageRemoved(): void {
+    this.artistForm.patchValue({ profileImage: null });
+    console.log('Profile image removed');
   }
 
   // URL validation method

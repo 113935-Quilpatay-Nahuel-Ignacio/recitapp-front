@@ -144,11 +144,25 @@
                   <i class="bi bi-currency-dollar text-warning me-2"></i>
                   <strong>Precio:</strong>
                   <span class="ms-1 fs-5 fw-bold text-success">{{ formatPrice(ticket.price) }}</span>
-                  <div *ngIf="isPromotional2x1(ticket)" class="mt-1">
-                    <span class="badge bg-info">
+                  <div *ngIf="isPromotional2x1(ticket) || ticket.isGift || ticket.promotionName" class="mt-2">
+                    <span *ngIf="isPromotional2x1(ticket)" class="badge bg-warning me-2">
                       <i class="bi bi-gift me-1"></i>
                       Promocional 2x1
                     </span>
+                    <span *ngIf="ticket.isGift && !isPromotional2x1(ticket)" class="badge bg-info me-2">
+                      <i class="bi bi-heart me-1"></i>
+                      Entrada de Regalo
+                    </span>
+                    <span *ngIf="ticket.promotionName && !isPromotional2x1(ticket) && !ticket.isGift" class="badge bg-success me-2">
+                      <i class="bi bi-tag me-1"></i>
+                      {{ ticket.promotionName }}
+                    </span>
+                  </div>
+                  <div *ngIf="ticket.promotionDescription && ticket.promotionDescription !== ticket.promotionName" class="mt-2">
+                    <small class="text-muted">
+                      <i class="bi bi-info-circle me-1"></i>
+                      {{ ticket.promotionDescription }}
+                    </small>
                   </div>
                 </div>
               </div>

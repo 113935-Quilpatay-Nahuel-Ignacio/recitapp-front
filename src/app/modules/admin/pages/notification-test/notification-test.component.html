@@ -371,10 +371,21 @@
                     <input matInput formControlName="actionUrl" placeholder="https://...">
                   </mat-form-field>
                 </div>
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Image URL</mat-label>
-                  <input matInput formControlName="imageUrl" placeholder="URL de imagen (opcional)">
-                </mat-form-field>
+                <div class="form-field full-width">
+                  <label class="form-label">Imagen de la Notificación</label>
+                  <app-file-upload
+                    formControlName="imageUrl"
+                    category="notification-image"
+                    label="Imagen de la notificación"
+                    placeholder="Arrastra una imagen para la notificación aquí"
+                    (fileUploaded)="onNotificationImageUploaded($event)"
+                    (fileRemoved)="onNotificationImageRemoved()">
+                  </app-file-upload>
+                  <small class="form-text text-muted d-block mt-2">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Imagen opcional que se mostrará en la notificación push (se recomienda 1200x630px).
+                  </small>
+                </div>
               </div>
 
               <!-- Campos para notificación de evento -->

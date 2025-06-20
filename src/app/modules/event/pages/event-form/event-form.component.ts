@@ -16,11 +16,12 @@ import { Venue, VenueSection } from '../../../venue/models/venue'; // Asegúrate
 import { VenueService } from '../../../venue/services/venue.service'; // Asegúrate que la ruta sea correcta
 import { Artist } from '../../../artist/models/artist'; // Asegúrate que la ruta sea correcta
 import { ArtistService } from '../../../artist/services/artist.service'; // Asegúrate que la ruta sea correcta
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 
 @Component({
   selector: 'app-event-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, FileUploadComponent],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss'],
 })
@@ -327,7 +328,28 @@ export class EventFormComponent implements OnInit {
     return this.eventForm.controls;
   }
 
-  // Métodos para manejar errores y carga de imágenes URL
+  // Métodos para manejar la subida de archivos
+  onFlyerImageUploaded(fileUrl: string): void {
+    this.eventForm.patchValue({ flyerImage: fileUrl });
+    console.log('Flyer image uploaded:', fileUrl);
+  }
+
+  onFlyerImageRemoved(): void {
+    this.eventForm.patchValue({ flyerImage: null });
+    console.log('Flyer image removed');
+  }
+
+  onSectionsImageUploaded(fileUrl: string): void {
+    this.eventForm.patchValue({ sectionsImage: fileUrl });
+    console.log('Sections image uploaded:', fileUrl);
+  }
+
+  onSectionsImageRemoved(): void {
+    this.eventForm.patchValue({ sectionsImage: null });
+    console.log('Sections image removed');
+  }
+
+  // Métodos para manejar errores y carga de imágenes URL (legacy - mantenido para compatibilidad)
   onImageError(event: any): void {
     // Si hay error cargando la imagen URL, ocultar la vista previa
     event.target.style.display = 'none';

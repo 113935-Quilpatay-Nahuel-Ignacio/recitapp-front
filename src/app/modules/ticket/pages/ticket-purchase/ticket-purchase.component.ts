@@ -750,6 +750,51 @@ export class TicketPurchaseComponent implements OnInit {
     event.target.style.display = 'none';
   }
 
+  openSectionsImageModal(imageUrl: string): void {
+    // Crear y mostrar modal con la imagen ampliada
+    const modalHtml = `
+      <div class="modal fade sections-image-modal" id="sectionsImageModal" tabindex="-1" aria-labelledby="sectionsImageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="sectionsImageModalLabel">
+                <i class="bi bi-diagram-3"></i>Mapa de Secciones del Recinto
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <img src="${imageUrl}" alt="Mapa de secciones del recinto" class="img-fluid">
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Eliminar modal existente si hay uno
+    const existingModal = document.getElementById('sectionsImageModal');
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    // Agregar modal al DOM
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Mostrar modal usando Bootstrap
+    const modalElement = document.getElementById('sectionsImageModal');
+    if (modalElement) {
+      // @ts-ignore - Bootstrap está disponible globalmente
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+
+      // Limpiar modal cuando se cierre
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        modalElement.remove();
+      });
+    }
+  }
+
   private getStatusMessage(status: string | undefined): string {
     switch (status) {
       case 'PROXIMO':

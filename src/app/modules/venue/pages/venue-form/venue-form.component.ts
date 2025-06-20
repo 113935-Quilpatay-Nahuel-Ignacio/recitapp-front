@@ -11,11 +11,12 @@ import {
 } from '@angular/forms';
 import { VenueService } from '../../services/venue.service';
 import { Venue, VenueSection } from '../../models/venue';
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 
 @Component({
   selector: 'app-venue-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FileUploadComponent],
   templateUrl: './venue-form.component.html',
   styleUrls: ['./venue-form.component.scss'],
 })
@@ -200,6 +201,19 @@ export class VenueFormComponent implements OnInit {
 
   onImageError(): void {
     this.imageLoadError = true;
+  }
+
+  // Métodos para manejar la subida de archivos
+  onVenueImageUploaded(fileUrl: string): void {
+    this.venueForm.patchValue({ image: fileUrl });
+    this.imageLoadError = false;
+    console.log('Venue image uploaded:', fileUrl);
+  }
+
+  onVenueImageRemoved(): void {
+    this.venueForm.patchValue({ image: null });
+    this.imageLoadError = false;
+    console.log('Venue image removed');
   }
 
   onImageUrlChange(): void {

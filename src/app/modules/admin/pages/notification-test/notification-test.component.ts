@@ -16,6 +16,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { NotificationService } from '../../../notification/services/notification.service';
 import { FirebaseService } from '../../../../services/firebase.service';
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 
 interface TestResult {
   success: boolean;
@@ -39,7 +40,8 @@ interface TestResult {
     MatProgressSpinnerModule,
     MatSelectModule,
     MatCheckboxModule,
-    MatListModule
+    MatListModule,
+    FileUploadComponent
   ],
   templateUrl: './notification-test.component.html',
   styleUrls: ['./notification-test.component.scss']
@@ -641,5 +643,16 @@ export class NotificationTestComponent implements OnInit {
     if (this.realTokens.length > 0) {
       this.testPush();
     }
+  }
+
+  // Métodos para manejar la subida de archivos de notificaciones
+  onNotificationImageUploaded(fileUrl: string): void {
+    this.pushForm.patchValue({ imageUrl: fileUrl });
+    console.log('Notification image uploaded:', fileUrl);
+  }
+
+  onNotificationImageRemoved(): void {
+    this.pushForm.patchValue({ imageUrl: null });
+    console.log('Notification image removed');
   }
 } 

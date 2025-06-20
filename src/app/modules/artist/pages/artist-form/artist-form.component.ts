@@ -14,11 +14,12 @@ import { ArtistService } from '../../services/artist.service';
 import { Artist } from '../../models/artist';
 import { MusicGenre } from '../../models/music-genre';
 import { GenreNameFormatterPipe } from '../../../../shared/pipes/genre-name-formatter.pipe';
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 
 @Component({
   selector: 'app-artist-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, HttpClientModule, GenreNameFormatterPipe],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, HttpClientModule, GenreNameFormatterPipe, FileUploadComponent],
   templateUrl: './artist-form.component.html',
   styleUrls: ['./artist-form.component.scss'],
 })
@@ -233,6 +234,19 @@ export class ArtistFormComponent implements OnInit {
   onImageLoad(event: any): void {
     // Si la imagen URL se carga correctamente, mostrarla
     event.target.style.display = 'block';
+  }
+
+  // Métodos para manejar la subida de archivos
+  onProfileImageUploaded(fileUrl: string): void {
+    this.artistForm.patchValue({ profileImage: fileUrl });
+    this.imagePreview = fileUrl;
+    console.log('Profile image uploaded:', fileUrl);
+  }
+
+  onProfileImageRemoved(): void {
+    this.artistForm.patchValue({ profileImage: null });
+    this.imagePreview = null;
+    console.log('Profile image removed');
   }
 
   validateUrl(control: any): { [key: string]: any } | null {

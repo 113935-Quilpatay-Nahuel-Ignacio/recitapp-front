@@ -34,12 +34,17 @@
               <div class="sections-image-container">
                 <h6 class="sections-image-title">
                   <i class="bi bi-diagram-3 me-2"></i>Mapa de Secciones
+                  <small class="text-muted ms-2">(Clic para ampliar)</small>
                 </h6>
                 <img 
                   [src]="event.sectionsImage" 
                   class="sections-image"
                   alt="Mapa de secciones del recinto"
-                  (error)="onSectionsImageError($event)">
+                  (error)="onSectionsImageError($event)"
+                  (click)="openSectionsImageModal(event.sectionsImage)"
+                  data-bs-toggle="tooltip" 
+                  data-bs-placement="top" 
+                  title="Haz clic para ver en tamaño completo">
               </div>
             </div>
           </div>

@@ -355,33 +355,21 @@ export class TicketListComponent implements OnInit {
 
   isPromotional2x1(ticket: Ticket): boolean {
     if (!ticket) {
-      console.log('🎁 [DEBUG] isPromotional2x1: ticket is null/undefined');
       return false;
     }
     
-    console.log('🎁 [DEBUG] Checking ticket for 2x1:', {
-      id: ticket.id,
-      ticketType: ticket.ticketType,
-      promotionName: ticket.promotionName,
-      promotionDescription: ticket.promotionDescription
-    });
-    
-    // Check ticket type first (most reliable)
+    // Check ticket type first (most reliable method from backend)
     if (ticket.ticketType === 'PROMOTIONAL_2X1') {
-      console.log('🎁 [DEBUG] Found PROMOTIONAL_2X1 ticket!');
       return true;
     }
     
-    // Fallback to promotion name/description
-    const hasPromo2x1 = ticket.promotionName?.toLowerCase().includes('2x1') ||
-           ticket.promotionDescription?.toLowerCase().includes('2x1') || false;
+    // Fallback to promotion name/description (case insensitive)
+    const promotionName = ticket.promotionName?.toLowerCase() || '';
+    const promotionDescription = ticket.promotionDescription?.toLowerCase() || '';
     
-    if (hasPromo2x1) {
-      console.log('🎁 [DEBUG] Found 2x1 in promotion name/description!');
-    } else {
-      console.log('🎁 [DEBUG] No 2x1 detected in this ticket');
-    }
-    
-    return hasPromo2x1;
+    return promotionName.includes('2x1') || 
+           promotionName.includes('dos por uno') ||
+           promotionDescription.includes('2x1') || 
+           promotionDescription.includes('dos por uno');
   }
 }

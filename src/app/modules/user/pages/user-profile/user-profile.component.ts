@@ -13,11 +13,12 @@ import { User, UserUpdate } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../../../../core/services/session.service';
 import { ModalService } from '../../../../shared/services/modal.service';
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, FileUploadComponent],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
@@ -73,6 +74,7 @@ export class UserProfileComponent implements OnInit {
         ],
         country: [''],
         city: [''],
+        profileImage: [''],
         password: ['', [Validators.minLength(6)]],
         confirmPassword: [''],
       },
@@ -114,6 +116,7 @@ export class UserProfileComponent implements OnInit {
           lastName: user.lastName,
           country: user.country,
           city: user.city,
+          profileImage: user.profileImage,
         });
 
         this.loading = false;
@@ -150,6 +153,7 @@ export class UserProfileComponent implements OnInit {
       lastName: this.profileForm.value.lastName,
       country: this.profileForm.value.country,
       city: this.profileForm.value.city,
+      profileImage: this.profileForm.value.profileImage,
       password: this.profileForm.value.password || undefined,
     };
 
@@ -192,6 +196,17 @@ export class UserProfileComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  // Métodos para manejar la subida de archivos de perfil
+  onProfileImageUploaded(fileUrl: string): void {
+    this.profileForm.patchValue({ profileImage: fileUrl });
+    console.log('User profile image uploaded:', fileUrl);
+  }
+
+  onProfileImageRemoved(): void {
+    this.profileForm.patchValue({ profileImage: null });
+    console.log('User profile image removed');
   }
 
   deleteAccount(): void {
