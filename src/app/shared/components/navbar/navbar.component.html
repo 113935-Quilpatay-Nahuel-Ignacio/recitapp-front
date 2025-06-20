@@ -149,6 +149,31 @@
                     </ul>
                 </li>
 
+                <!-- Legal and Help Links -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="helpDropdown" role="button"
+                        simpleDropdown aria-expanded="false">
+                        <i class="fas fa-question-circle me-1"></i>
+                        <span class="d-none d-lg-inline">Ayuda</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="helpDropdown">
+                        <li><h6 class="dropdown-header">Centro de Ayuda</h6></li>
+                        <li><a class="dropdown-item" routerLink="/legal/faq">
+                            <i class="fas fa-question-circle me-2"></i>Preguntas Frecuentes
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/legal/terms">
+                            <i class="fas fa-file-contract me-2"></i>Términos y Condiciones
+                        </a></li>
+                        <li><a class="dropdown-item" routerLink="/legal">
+                            <i class="fas fa-info-circle me-2"></i>Centro Legal
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="mailto:soporte&#64;recitapp.com">
+                            <i class="fas fa-envelope me-2"></i>Contactar Soporte
+                        </a></li>
+                    </ul>
+                </li>
+
                 <!-- Authentication Links - Only for non-authenticated users -->
                 <li class="nav-item" *ngIf="!isAuthenticated">
                     <a class="nav-link" routerLink="/auth/login" routerLinkActive="active">

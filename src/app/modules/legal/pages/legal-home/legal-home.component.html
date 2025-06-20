@@ -1,0 +1,159 @@
+<div class="legal-home-container">
+  <!-- Header -->
+  <div class="legal-header">
+    <div class="d-flex align-items-center mb-4">
+      <button class="btn btn-outline-secondary me-3" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Volver
+      </button>
+      <div>
+        <h1 class="mb-1"><i class="bi bi-file-earmark-text me-2"></i>Centro Legal</h1>
+        <p class="text-muted mb-0">RecitApp - Información Legal y Ayuda</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Cards -->
+  <div class="legal-cards">
+    <div class="row">
+      
+      <!-- Terms and Conditions Card -->
+      <div class="col-md-6 mb-4">
+        <div class="card legal-card h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="card-icon">
+              <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <h3 class="card-title">Términos y Condiciones</h3>
+            <p class="card-text flex-grow-1">
+              Conoce los términos legales que rigen el uso de RecitApp, incluyendo políticas de compra, 
+              reembolsos, billetera virtual y responsabilidades de usuarios.
+            </p>
+            <div class="card-features">
+              <span class="feature-tag"><i class="bi bi-check-circle me-1"></i>Políticas de compra</span>
+              <span class="feature-tag"><i class="bi bi-check-circle me-1"></i>Sistema de reembolsos</span>
+              <span class="feature-tag"><i class="bi bi-check-circle me-1"></i>Billetera virtual</span>
+              <span class="feature-tag"><i class="bi bi-check-circle me-1"></i>Derechos y obligaciones</span>
+            </div>
+            <div class="mt-auto">
+              <a routerLink="/legal/terms" class="btn btn-primary w-100">
+                <i class="bi bi-file-text me-2"></i>Leer Términos y Condiciones
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Card -->
+      <div class="col-md-6 mb-4">
+        <div class="card legal-card h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="card-icon faq-icon">
+              <i class="bi bi-question-circle"></i>
+            </div>
+            <h3 class="card-title">Preguntas Frecuentes (FAQ)</h3>
+            <p class="card-text flex-grow-1">
+              Encuentra respuestas rápidas a las preguntas más comunes sobre RecitApp, 
+              desde compras hasta soporte técnico.
+            </p>
+            <div class="card-features">
+              <span class="feature-tag"><i class="bi bi-search me-1"></i>Búsqueda inteligente</span>
+              <span class="feature-tag"><i class="bi bi-list me-1"></i>Categorías organizadas</span>
+              <span class="feature-tag"><i class="bi bi-lightning me-1"></i>Acceso rápido</span>
+              <span class="feature-tag"><i class="bi bi-headset me-1"></i>Contacto directo</span>
+            </div>
+            <div class="mt-auto">
+              <a routerLink="/legal/faq" class="btn btn-success w-100">
+                <i class="bi bi-question-circle me-2"></i>Ver Preguntas Frecuentes
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Quick Access Section -->
+  <div class="quick-access-section">
+    <h3><i class="bi bi-lightning me-2"></i>Acceso Rápido</h3>
+    <div class="row">
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="quick-access-item" routerLink="/legal/faq" fragment="información-general">
+          <i class="bi bi-info-circle"></i>
+          <span>¿Qué es RecitApp?</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="quick-access-item" routerLink="/legal/faq" fragment="compra-de-entradas">
+          <i class="bi bi-ticket-perforated"></i>
+          <span>Comprar Entradas</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="quick-access-item" routerLink="/legal/faq" fragment="pagos-y-billetera-virtual">
+          <i class="bi bi-wallet2"></i>
+          <span>Métodos de Pago</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="quick-access-item" routerLink="/legal/faq" fragment="soporte-y-contacto">
+          <i class="bi bi-headset"></i>
+          <span>Contactar Soporte</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Support -->
+  <div class="support-banner">
+    <div class="alert alert-info">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h5 class="mb-2">
+            <i class="bi bi-headset me-2"></i>¿Necesitas ayuda personalizada?
+          </h5>
+          <p class="mb-0">
+            Nuestro equipo de soporte está disponible para resolver cualquier consulta específica 
+            que no encuentres en esta sección.
+          </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+                     <a href="mailto:soporte&#64;recitapp.com" class="btn btn-outline-info">
+            <i class="bi bi-envelope me-2"></i>Contactar Soporte
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Info -->
+  <div class="legal-footer">
+    <div class="row">
+      <div class="col-md-6">
+        <h6>Información de Contacto</h6>
+        <ul class="list-unstyled">
+                     <li><i class="bi bi-envelope me-2"></i>soporte&#64;recitapp.com</li>
+          <li><i class="bi bi-telephone me-2"></i>+54 11 1234-5678</li>
+          <li><i class="bi bi-clock me-2"></i>Lun-Vie 9:00 a 18:00 hs</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6>Tiempo de Respuesta</h6>
+        <ul class="list-unstyled">
+          <li><i class="bi bi-chat me-2"></i>Consultas generales: 48 hs</li>
+          <li><i class="bi bi-credit-card me-2"></i>Problemas de pago: 24 hs</li>
+          <li><i class="bi bi-exclamation-triangle me-2"></i>Emergencias: Inmediato</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="text-center mt-4 pt-3 border-top">
+      <p class="text-muted mb-0">
+        <small>
+          <em>Última actualización: {{ currentDate }}</em>
+        </small>
+      </p>
+    </div>
+  </div>
+
+</div> 

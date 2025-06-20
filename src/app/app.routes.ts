@@ -238,6 +238,12 @@ export const routes: Routes = [
     data: { roles: ['ADMIN'] }
   },
 
+  // Legal routes (public access)
+  {
+    path: 'legal',
+    loadChildren: () => import('./modules/legal/legal.module').then(m => m.LegalModule)
+  },
+
   // Unauthorized page - TODO: Crear componente unauthorized
   // {
   //   path: 'unauthorized',
