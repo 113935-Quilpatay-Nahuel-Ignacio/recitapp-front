@@ -21,6 +21,17 @@ interface BackendTicketDTO {
   attendeeDni: string;
   qrCode: string;
   purchaseDate: string; // LocalDateTime serialized as string
+  // User information (purchaser)
+  userId: number;
+  userName: string;
+  userEmail: string;
+  userFirstName: string;
+  userLastName: string;
+  // Promotional information
+  isGift: boolean;
+  promotionName: string;
+  promotionDescription: string;
+  ticketType: string; // "PROMOTIONAL_2X1", "GENERAL", "GIFT"
 }
 
 export interface AttendeeUpdateRequest {
@@ -156,7 +167,16 @@ export class TicketService {
       qrCode: backendTicket.qrCode,
       status: backendTicket.status,
       purchaseDate: backendTicket.purchaseDate,
-      eventId: backendTicket.eventId
+      eventId: backendTicket.eventId,
+      userId: backendTicket.userId,
+      userName: backendTicket.userName,
+      userEmail: backendTicket.userEmail,
+      userFirstName: backendTicket.userFirstName,
+      userLastName: backendTicket.userLastName,
+      isGift: backendTicket.isGift,
+      promotionName: backendTicket.promotionName,
+      promotionDescription: backendTicket.promotionDescription,
+      ticketType: backendTicket.ticketType
     };
   }
 }
