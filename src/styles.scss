@@ -709,6 +709,14 @@ footer {
   }
 }
 
+// Spinner blanco en botones primarios
+.btn-primary .spinner-border {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-top-color: white !important;
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
 // Shadow effects for dark theme
 .shadow-sm {
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3) !important;

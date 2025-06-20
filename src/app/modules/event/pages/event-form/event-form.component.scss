@@ -336,6 +336,14 @@
           opacity: 0.6;
           cursor: not-allowed;
         }
+        
+        // Spinner blanco en botón primario
+        .spinner-border {
+          border-color: rgba(255, 255, 255, 0.3);
+          border-top-color: white;
+          width: 1rem;
+          height: 1rem;
+        }
       }
       
       &.btn-secondary {

@@ -936,6 +936,14 @@
     }
   }
 
+  // Spinner blanco en botones primarios
+  .btn-primary .spinner-border {
+    border-color: rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    width: 1rem;
+    height: 1rem;
+  }
+
   .text-muted {
     color: var(--dark-text-muted) !important;
   }
