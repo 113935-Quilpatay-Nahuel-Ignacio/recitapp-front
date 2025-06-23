@@ -39,6 +39,7 @@ export class TicketPurchaseComponent implements OnInit {
   showPayerForm = false;
   showPaymentForm = false;
   showWalletOption = false;
+  showWalletOnlyOption = false;
   paymentData: PaymentData | null = null;
   currentUserId: number | null = null;
   
@@ -47,7 +48,7 @@ export class TicketPurchaseComponent implements OnInit {
   walletDiscountApplied = 0;
   amountAfterWallet = 0;
   useWalletPayment = false;
-  isLoadingWallet = false;
+  useMercadoPagoWalletOnly = false;
   
   // Cached total to avoid multiple calculations
   totalAmount = 0;
@@ -353,10 +354,10 @@ export class TicketPurchaseComponent implements OnInit {
       return;
     }
     
-    this.isLoadingWallet = true;
+    this.isLoading = true;
     this.transactionService.getUserWalletBalance(this.currentUserId)
       .pipe(
-        finalize(() => this.isLoadingWallet = false),
+        finalize(() => this.isLoading = false),
         catchError(err => {
           console.error('Error loading wallet balance:', err);
           this.userWalletBalance = 0;
@@ -455,8 +456,10 @@ export class TicketPurchaseComponent implements OnInit {
       firstName: this.payerForm.value.firstName,
       lastName: this.payerForm.value.lastName,
       phone: this.payerForm.value.phone,
-      documentType: this.payerForm.value.documentType,
-      documentNumber: this.payerForm.value.documentNumber
+      identification: {
+        type: this.payerForm.value.documentType,
+        number: this.payerForm.value.documentNumber
+      }
     };
 
     // Use amount after wallet discount for payment processing
@@ -590,8 +593,10 @@ export class TicketPurchaseComponent implements OnInit {
       firstName: this.payerForm.value.firstName,
       lastName: this.payerForm.value.lastName,
       phone: this.payerForm.value.phone,
-      documentType: this.payerForm.value.documentType,
-      documentNumber: this.payerForm.value.documentNumber
+      identification: {
+        type: this.payerForm.value.documentType,
+        number: this.payerForm.value.documentNumber
+      }
     };
 
     // For wallet payment, use original total since wallet will handle the discount
@@ -620,12 +625,12 @@ export class TicketPurchaseComponent implements OnInit {
            'Compra realizada exitosamente con billetera virtual', 
            'Compra Exitosa'
          ).subscribe(() => {
-           this.router.navigate(['/payment/success'], {
-             queryParams: {
-               transaction_id: response.transactionId,
-               status: 'COMPLETED'
-             }
-           });
+                    this.router.navigate(['/payment/success'], {
+           queryParams: {
+             payment_id: response.preferenceId,
+             status: 'COMPLETED'
+           }
+         });
          });
        });
   }
@@ -808,5 +813,80 @@ export class TicketPurchaseComponent implements OnInit {
       default:
         return `La venta de entradas para este evento no está activa actualmente. Serás redirigido al detalle del evento.`;
     }
+  }
+
+  processMercadoPagoWalletOnlyPayment(): void {
+    if (this.payerForm.invalid) {
+      this.error = 'Por favor complete todos los datos del pagador.';
+      this.payerForm.markAllAsTouched();
+      return;
+    }
+
+    // Additional validation to prevent empty tickets array
+    if (this.attendeeTickets.length === 0) {
+      this.error = 'No hay entradas en el carrito. Por favor agregue al menos una entrada antes de proceder al pago.';
+      this.showPayerForm = false;
+      return;
+    }
+
+    const tickets: TicketItem[] = this.attendeeTickets.value.map((ticketFormValue: any) => ({
+      sectionId: ticketFormValue.sectionId,
+      ticketPriceId: ticketFormValue.ticketPriceId,
+      ticketType: ticketFormValue.ticketType,
+      attendeeFirstName: ticketFormValue.attendeeFirstName,
+      attendeeLastName: ticketFormValue.attendeeLastName,
+      attendeeDni: ticketFormValue.attendeeDni,
+      price: ticketFormValue.price,
+      quantity: 1
+    }));
+
+    console.log('✅ Tickets to send for wallet-only payment:', tickets);
+
+    const payerInfo: PayerInfo = {
+      email: this.payerForm.value.email,
+      firstName: this.payerForm.value.firstName,
+      lastName: this.payerForm.value.lastName,
+      phone: this.payerForm.value.phone,
+      identification: {
+        type: this.payerForm.value.documentType,
+        number: this.payerForm.value.documentNumber
+      }
+    };
+
+    const paymentRequest: PaymentRequest = {
+      eventId: this.eventId,
+      userId: this.currentUserId!,
+      tickets: tickets,
+      totalAmount: this.calculateTotal(),
+      payer: payerInfo
+    };
+
+    console.log('🚀 Wallet-only payment request:', paymentRequest);
+
+    this.isLoading = true;
+    this.error = null;
+
+    this.paymentService.createPaymentPreferenceWalletOnly(paymentRequest)
+      .pipe(
+        finalize(() => (this.isLoading = false)),
+        catchError(err => {
+          console.error('Error creating wallet-only payment preference:', err);
+          this.error = 'Error al crear la preferencia de pago solo con MercadoPago. Por favor intente nuevamente.';
+          return EMPTY;
+        })
+      )
+      .subscribe(response => {
+        console.log('🎯 Wallet-only payment response received:', response);
+        
+        // Para pagos que requieren MercadoPago Wallet Only
+        this.paymentData = {
+          totalAmount: response.totalAmount,
+          publicKey: response.publicKey,
+          preferenceId: response.preferenceId,
+          bricksConfig: response.bricksConfig,
+          paymentRequest: paymentRequest
+        };
+        this.showPaymentForm = true;
+      });
   }
 }

@@ -6,51 +6,53 @@ import { environment } from '../../../../environments/environment';
 export interface PaymentRequest {
   eventId: number;
   userId: number;
-  tickets: TicketItem[];
   totalAmount: number;
+  tickets: TicketItem[];
   payer: PayerInfo;
 }
 
 export interface TicketItem {
-  sectionId: number;
   ticketPriceId: number;
+  sectionId: number;
   ticketType: string;
-  attendeeFirstName: string;
-  attendeeLastName: string;
-  attendeeDni: string;
   price: number;
   quantity: number;
+  attendeeFirstName?: string;
+  attendeeLastName?: string;
+  attendeeDni?: string;
 }
 
 export interface PayerInfo {
-  email: string;
   firstName: string;
   lastName: string;
+  email: string;
   phone?: string;
-  documentType?: string;
-  documentNumber?: string;
+  identification?: {
+    type: string;
+    number: string;
+  };
 }
 
 export interface PaymentResponse {
-  // Campos para Checkout Pro (compatibilidad)
   preferenceId: string;
   initPoint: string;
   sandboxInitPoint: string;
-  
-  // Campos para Checkout Bricks
   publicKey: string;
   totalAmount: number;
   status: string;
-  transactionId?: number;
   qrCodeData?: string;
-  
-  // Configuración para Bricks
+  paymentMethodInfo?: PaymentMethodInfo;
   bricksConfig: BricksConfiguration;
-  
-  // Wallet information
   walletDiscountApplied?: number;
   amountAfterWallet?: number;
   walletMessage?: string;
+}
+
+export interface PaymentMethodInfo {
+  paymentMethodId: string;
+  paymentTypeId: string;
+  paymentMethodName: string;
+  issuerName: string;
 }
 
 export interface BricksConfiguration {
@@ -77,6 +79,10 @@ export class PaymentService {
 
   createPaymentPreference(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
     return this.http.post<PaymentResponse>(`${this.apiUrl}/create-preference`, paymentRequest);
+  }
+
+  createPaymentPreferenceWalletOnly(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
+    return this.http.post<PaymentResponse>(`${this.apiUrl}/create-preference-wallet-only`, paymentRequest);
   }
 
   processPayment(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
