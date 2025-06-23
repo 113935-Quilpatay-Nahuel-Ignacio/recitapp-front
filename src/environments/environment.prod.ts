@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://recitapp-api-production.up.railway.app/api',
+  apiUrl: 'https://recitapp-api-production-da8a.up.railway.app/api',
   firebase: {
     apiKey: "AIzaSyCzqGYrhYcYWsTG0SA6kzaXNxT6HxJbNHM",
     authDomain: "recitapp-niquilpatay.firebaseapp.com",
