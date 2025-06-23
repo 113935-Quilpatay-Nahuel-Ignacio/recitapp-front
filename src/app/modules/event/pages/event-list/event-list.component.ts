@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormsModule,
@@ -52,13 +52,18 @@ export class EventListComponent implements OnInit {
     private venueService: VenueService,
     private artistService: ArtistService,
     private datePipe: DatePipe,
-    private modalService: ModalService
+    private modalService: ModalService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
     this.initFilterForm();
-    this.loadFilterData();
-    this.loadEvents(); // Carga inicial de todos los eventos (o según filtros por defecto)
+    
+    // Only load data if running in browser (not during server-side rendering)
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadFilterData();
+      this.loadEvents(); // Carga inicial de todos los eventos (o según filtros por defecto)
+    }
   }
 
   private initFilterForm(): void {

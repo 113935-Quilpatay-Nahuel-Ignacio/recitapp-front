@@ -1,6 +1,6 @@
 // src/app/modules/artist/pages/artist-form/artist-form.component.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import {
   ReactiveFormsModule,
@@ -49,31 +49,36 @@ export class ArtistFormComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private artistService: ArtistService
+    private artistService: ArtistService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
     this.initForm();
-    this.loadGenres();
+    
+    // Only load data if running in browser (not during server-side rendering)
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadGenres();
 
-    // Check if we're in edit mode or create mode
-    this.route.paramMap.subscribe((params) => {
-      const id = params.get('id');
-      if (id && id !== 'new') {
-        this.artistId = +id;
-        this.isEditMode = true;
-        this.loadArtist(this.artistId);
-      } else {
-        // We're in create mode
-        this.isEditMode = false;
-        this.artistId = null;
-        // Initialize form with default values for creation
-        this.artistForm.patchValue({
-          active: true,
-          genreIds: []
-        });
-      }
-    });
+      // Check if we're in edit mode or create mode
+      this.route.paramMap.subscribe((params) => {
+        const id = params.get('id');
+        if (id && id !== 'new') {
+          this.artistId = +id;
+          this.isEditMode = true;
+          this.loadArtist(this.artistId);
+        } else {
+          // We're in create mode
+          this.isEditMode = false;
+          this.artistId = null;
+          // Initialize form with default values for creation
+          this.artistForm.patchValue({
+            active: true,
+            genreIds: []
+          });
+        }
+      });
+    }
   }
 
   initForm(): void {

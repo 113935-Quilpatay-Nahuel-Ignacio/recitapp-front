@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ArtistService } from '../../services/artist.service';
@@ -42,16 +42,20 @@ export class ArtistListComponent implements OnInit {
   constructor(
     private artistService: ArtistService, 
     private router: Router,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
-    // Check if user is admin
-    const currentUser = this.sessionService.getCurrentUser();
-    this.isAdmin = currentUser?.role?.name === 'ADMIN';
-    
-    this.loadGenres();
-    this.loadArtists();
+    // Only load data if running in browser (not during server-side rendering)
+    if (isPlatformBrowser(this.platformId)) {
+      // Check if user is admin
+      const currentUser = this.sessionService.getCurrentUser();
+      this.isAdmin = currentUser?.role?.name === 'ADMIN';
+      
+      this.loadGenres();
+      this.loadArtists();
+    }
   }
 
   loadGenres(): void {

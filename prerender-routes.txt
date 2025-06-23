@@ -1,0 +1,7 @@
+/
+/auth/login
+/auth/register
+/auth/forgot-password
+/legal/faq
+/legal/privacy-policy
+/legal/terms-and-conditions 

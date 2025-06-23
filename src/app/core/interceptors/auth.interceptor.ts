@@ -1,6 +1,7 @@
 import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { throwError, BehaviorSubject, Observable } from 'rxjs';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { throwError, BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 
@@ -9,6 +10,7 @@ let refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const platformId = inject(PLATFORM_ID);
 
   // Lista de URLs que no necesitan autenticación
   const publicUrls = [
@@ -25,25 +27,33 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Verificar si la URL es pública
   const isPublicUrl = publicUrls.some(publicUrl => req.url.includes(publicUrl));
 
-  // Log para debugging
-  console.log('=== AUTH INTERCEPTOR ===');
-  console.log('URL:', req.url);
-  console.log('Method:', req.method);
-  console.log('Is Public URL:', isPublicUrl);
+  // Log para debugging only in browser
+  if (isPlatformBrowser(platformId)) {
+    console.log('=== AUTH INTERCEPTOR ===');
+    console.log('URL:', req.url);
+    console.log('Method:', req.method);
+    console.log('Is Public URL:', isPublicUrl);
+  }
 
   // No agregar token a las rutas públicas
   if (isPublicUrl) {
-    console.log('Skipping authentication for public URL');
+    if (isPlatformBrowser(platformId)) {
+      console.log('Skipping authentication for public URL');
+    }
     return next(req);
   }
 
   // Agregar token si está disponible
   const token = authService.getToken();
   if (token) {
-    console.log('Adding Authorization header');
+    if (isPlatformBrowser(platformId)) {
+      console.log('Adding Authorization header');
+    }
     req = addTokenHeader(req, token);
   } else {
-    console.log('No token available');
+    if (isPlatformBrowser(platformId)) {
+      console.log('No token available');
+    }
   }
 
   return next(req).pipe(
