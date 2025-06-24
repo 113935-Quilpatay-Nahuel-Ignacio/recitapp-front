@@ -1,11 +1,8 @@
 // Event List Component Styles - Using Unified App Styles
-// Following artist module patterns for consistency
-
-// Import and apply unified app styles
 @import '../../../../shared/styles/global-component-styles';
 
-// Apply the list component styling pattern
-@include app-list-component;
+// Apply the unified list component styling pattern
+@include app-unified-list-component;
 
 // Event-specific customizations
 .event-card {

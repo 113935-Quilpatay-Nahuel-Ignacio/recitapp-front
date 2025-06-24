@@ -1,0 +1,37 @@
+<div *ngIf="!loading && totalPages > 1" class="d-flex justify-content-center mt-4 pagination-wrapper">
+  <nav aria-label="Navegación de páginas">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button 
+          class="page-link" 
+          (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1 || loading"
+          aria-label="Página anterior">
+          <span aria-hidden="true">&laquo;</span>
+        </button>
+      </li>
+      
+      <li 
+        class="page-item" 
+        *ngFor="let page of getPageNumbers()"
+        [class.active]="currentPage === page">
+        <button 
+          class="page-link" 
+          (click)="changePage(page)"
+          [disabled]="loading">
+          {{ page }}
+        </button>
+      </li>
+      
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button 
+          class="page-link" 
+          (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages || loading"
+          aria-label="Página siguiente">
+          <span aria-hidden="true">&raquo;</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div> 

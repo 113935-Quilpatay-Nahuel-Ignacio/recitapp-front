@@ -15,11 +15,22 @@ import { Artist } from '../../../artist/models/artist';
 import { ArtistService } from '../../../artist/services/artist.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { ListFiltersComponent } from '../../../../shared/components/list-filters/list-filters.component';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    RouterModule, 
+    FormsModule,
+    PageHeaderComponent,
+    ListFiltersComponent,
+    PaginationComponent
+  ],
   templateUrl: './event-list.component.html',
   styleUrls: ['./event-list.component.scss'],
   providers: [DatePipe] // Proveer DatePipe para formatear fechas en el template si es necesario

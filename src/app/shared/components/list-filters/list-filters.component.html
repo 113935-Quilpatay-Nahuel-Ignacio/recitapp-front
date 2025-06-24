@@ -1,0 +1,15 @@
+<div class="card filter-card shadow-sm mb-4">
+  <div class="card-body">
+    <h5 class="card-title">
+      <i class="bi {{ icon }} me-2"></i>{{ title }}
+    </h5>
+    
+    <ng-content></ng-content>
+    
+    <div class="filter-actions mt-3" *ngIf="showClearButton">
+      <button type="button" class="btn btn-outline-secondary" (click)="onClearFilters()">
+        <i class="bi bi-x-circle me-2"></i>Limpiar Filtros
+      </button>
+    </div>
+  </div>
+</div> 

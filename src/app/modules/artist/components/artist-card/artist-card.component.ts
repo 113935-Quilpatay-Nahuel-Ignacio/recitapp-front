@@ -12,13 +12,17 @@ import { Artist } from '../../models/artist';
 })
 export class ArtistCardComponent implements OnInit {
   @Input() artist!: Artist;
-  defaultImage = 'assets/images/default-artist-avatar.svg';
+  imageError = false;
 
   constructor() {}
 
   ngOnInit(): void {}
 
   onImageError(event: any): void {
-    event.target.src = this.defaultImage;
+    this.imageError = true;
+  }
+
+  hasImageError(): boolean {
+    return this.imageError;
   }
 }

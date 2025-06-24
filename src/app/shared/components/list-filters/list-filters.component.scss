@@ -1,0 +1,5 @@
+@import '../../styles/global-component-styles';
+
+.filter-card {
+  @include app-filter-card;
+} 

@@ -1206,4 +1206,115 @@
     min-width: 120px !important;
     justify-content: center !important;
   }
+}
+
+// ========================================================================
+// UNIFIED LIST COMPONENT MIXINS
+// ========================================================================
+
+@mixin app-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@mixin app-search-input {
+  .search-input-group {
+    .input-group-text {
+      background-color: var(--dark-card-hover);
+      border: 2px solid var(--dark-border);
+      border-right: none;
+      border-radius: 0.5rem 0 0 0.5rem;
+      
+      .bi-search {
+        color: var(--primary-green);
+        font-size: 1rem;
+      }
+    }
+    
+    .form-control {
+      border-left: none;
+      border-radius: 0;
+      
+      &:focus {
+        border-left: none;
+        z-index: 3;
+      }
+    }
+    
+    .btn-outline-primary {
+      border-radius: 0 0.5rem 0.5rem 0;
+      border-left: none;
+      
+      &:hover, &:focus {
+        border-left: 2px solid var(--primary-green);
+      }
+    }
+  }
+}
+
+@mixin app-clear-filters-button {
+  .clear-filters-btn {
+    border: 2px solid var(--dark-border);
+    color: var(--dark-text-muted);
+    background-color: transparent;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--dark-card-hover);
+      border-color: var(--primary-green);
+      color: var(--primary-green);
+      transform: translateY(-1px);
+    }
+    
+    i {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+@mixin app-empty-state {
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    
+    .alert {
+      max-width: 500px;
+      margin: 0 auto;
+      
+      i {
+        font-size: 1.125rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+// Complete list component mixin
+@mixin app-unified-list-component {
+  @include app-list-component;
+  @include app-search-input;
+  @include app-clear-filters-button;
+  @include app-empty-state;
+  
+  .items-grid {
+    @include app-items-grid;
+  }
 } 

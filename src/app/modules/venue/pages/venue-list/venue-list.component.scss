@@ -1,53 +1,13 @@
-// Import shared venue styles
-@import '../../../venue/styles/shared-venue-styles';
+// Venue List Component Styles - Using Unified App Styles
+@import '../../../../shared/styles/global-component-styles';
 
-// Apply base styles
-:host {
-  @include venue-component-base;
-}
+// Apply the unified list component styling pattern
+@include app-unified-list-component;
 
-.container {
-  @include venue-container;
-}
-
-.card {
-  @include venue-card;
-}
-
-// Apply form control styles
-@include venue-form-controls;
-
-// Apply button styles
-@include venue-buttons;
-
-// Apply alert styles
-@include venue-alerts;
-
-// Apply utility styles
-@include venue-utilities;
-
-// Apply input group styles
-@include venue-input-groups;
-
-// Apply dropdown styles
-@include venue-dropdowns;
-
-// Venue specific card styles
+// Venue-specific customizations
 .venue-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  background-color: #2D2D2D;
-  border: 1px solid var(--dark-border);
-  color: var(--dark-text);
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-    border-color: #22C55E;
-  }
-
+  
   .card-img-container {
     height: 200px;
     overflow: hidden;
@@ -66,7 +26,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #3a3a3a, #2D2D2D);
+      background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
       color: var(--dark-text-muted);
 
       i {
@@ -80,41 +40,15 @@
     transform: scale(1.05);
   }
 
-  .card-body {
-    background-color: #2D2D2D;
-    color: var(--dark-text);
-
-  .card-title {
-    font-weight: 600;
-      color: var(--dark-text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-      margin-bottom: 0.75rem;
-  }
-
-    .card-text {
-      color: var(--dark-text-muted);
-      
-      &.venue-description {
+  .card-text.venue-description {
     max-height: 80px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-        line-height: 1.4;
+    line-height: 1.4;
   }
-
-      i {
-        color: #22C55E;
-      }
-    }
-  }
-
-  .card-footer {
-    background-color: #3a3a3a;
-    border-top: 1px solid var(--dark-border);
 
   .social-link {
     display: inline-flex;
@@ -123,45 +57,33 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-      background-color: #3a3a3a;
-      color: var(--dark-text-muted);
+    background-color: var(--dark-card-hover);
+    color: var(--dark-text-muted);
     text-decoration: none;
     transition: all 0.2s ease;
-      border: 1px solid var(--dark-border);
+    border: 1px solid var(--dark-border);
 
     &:hover {
       transform: scale(1.1);
     }
 
     &.instagram:hover {
-        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
       color: white;
-        border-color: transparent;
+      border-color: transparent;
     }
 
     &.web:hover {
-        background-color: var(--info-blue);
+      background-color: var(--info-blue);
       color: white;
-        border-color: var(--info-blue);
+      border-color: var(--info-blue);
     }
 
-    i {
-      font-size: 1rem;
-    }
-      
-      // Estilos para iconos SVG
-      .social-icon-img {
-        width: 18px;
-        height: 18px;
-        object-fit: contain;
-        transition: all 0.2s ease;
-      }
-  }
-  
-    .btn-sm {
-      padding: 0.375rem 0.75rem;
-      font-size: 0.875rem;
-      border-radius: 0.375rem;
+    .social-icon-img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      transition: all 0.2s ease;
     }
   }
 
@@ -183,21 +105,18 @@
   &.inactive-venue {
     opacity: 0.75;
     
-    .card-body .card-title {
+    .card-title {
       color: var(--dark-text-muted);
     }
   }
 }
 
-// Apply responsive styles
-@include venue-responsive;
-
-// Additional responsive improvements specific to venue list
+// Responsive improvements
 @media (max-width: 992px) {
   .venue-card .card-img-container {
     height: 180px;
-      }
-    }
+  }
+}
 
 @media (max-width: 768px) {
   .venue-card {
@@ -216,8 +135,6 @@
       > div:last-child {
         justify-content: center;
         display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
       }
     }
   }

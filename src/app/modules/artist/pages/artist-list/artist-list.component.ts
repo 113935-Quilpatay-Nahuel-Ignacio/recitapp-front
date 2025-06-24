@@ -9,6 +9,9 @@ import { ArtistCardComponent } from '../../components/artist-card/artist-card.co
 import { HttpClientModule } from '@angular/common/http';
 import { SessionService } from '../../../../core/services/session.service';
 import { SimpleDropdownDirective } from '../../../../shared/directives/simple-dropdown.directive';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { ListFiltersComponent } from '../../../../shared/components/list-filters/list-filters.component';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-artist-list',
@@ -20,6 +23,9 @@ import { SimpleDropdownDirective } from '../../../../shared/directives/simple-dr
     ArtistCardComponent,
     HttpClientModule,
     SimpleDropdownDirective,
+    PageHeaderComponent,
+    ListFiltersComponent,
+    PaginationComponent,
   ],
   templateUrl: './artist-list.component.html',
   styleUrls: ['./artist-list.component.scss'],

@@ -5,11 +5,22 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { VenueService } from '../../services/venue.service';
 import { Venue } from '../../models/venue';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { ListFiltersComponent } from '../../../../shared/components/list-filters/list-filters.component';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    FormsModule, 
+    HttpClientModule,
+    PageHeaderComponent,
+    ListFiltersComponent,
+    PaginationComponent
+  ],
   templateUrl: './venue-list.component.html',
   styleUrls: ['./venue-list.component.scss'],
 })
@@ -22,6 +33,11 @@ export class VenueListComponent implements OnInit {
   showInactive = false;
   isAdmin = true; // En una implementación real, esto vendría de un servicio de autenticación
   imageErrors = new Map<number, boolean>(); // Track image errors by venue ID
+
+  // Pagination
+  currentPage: number = 1;
+  itemsPerPage: number = 12;
+  totalItems: number = 0;
 
   constructor(private venueService: VenueService) {}
 
@@ -47,25 +63,45 @@ export class VenueListComponent implements OnInit {
   }
 
   applyFilter(): void {
+    let filtered: Venue[];
+    
     if (!this.searchTerm.trim()) {
-      this.filteredVenues = [...this.venues];
-      return;
+      filtered = [...this.venues];
+    } else {
+      const term = this.searchTerm.toLowerCase().trim();
+      filtered = this.venues.filter(
+        (venue) =>
+          venue.name.toLowerCase().includes(term) ||
+          venue.address.toLowerCase().includes(term)
+      );
     }
+    
+    this.totalItems = filtered.length;
+    this.filteredVenues = this.getPaginatedVenues(filtered);
+  }
 
-    const term = this.searchTerm.toLowerCase().trim();
-    this.filteredVenues = this.venues.filter(
-      (venue) =>
-        venue.name.toLowerCase().includes(term) ||
-        venue.address.toLowerCase().includes(term)
-    );
+  getPaginatedVenues(sourceVenues: Venue[]): Venue[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return sourceVenues.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  changePage(page: number): void {
+    this.currentPage = page;
+    this.applyFilter();
   }
 
   onSearch(): void {
+    this.currentPage = 1;
     this.applyFilter();
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+    this.currentPage = 1;
     this.applyFilter();
   }
 

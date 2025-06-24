@@ -1,10 +1,17 @@
 <div class="card h-100 shadow-sm artist-card" [class.artist-inactive]="!artist.active">
     <div class="position-relative">
-        <img [src]="artist.profileImage || defaultImage" class="card-img-top" [alt]="artist.name"
-            (error)="onImageError($event)">
-
+        <!-- Badge de estado (si está inactivo) -->
         <div *ngIf="!artist.active" class="inactive-badge">
             <span class="badge bg-danger">Inactivo</span>
+        </div>
+
+        <!-- Imagen del artista -->
+        <div class="card-img-container">
+            <img *ngIf="artist.profileImage && !hasImageError()" [src]="artist.profileImage" class="card-img-top"
+                [alt]="artist.name" (error)="onImageError($event)">
+            <div *ngIf="!artist.profileImage || hasImageError()" class="card-img-placeholder">
+                <i class="bi bi-person-fill"></i>
+            </div>
         </div>
 
         <div *ngIf="artist.spotifyUrl || artist.youtubeUrl || artist.soundcloudUrl || artist.instagramUrl"
