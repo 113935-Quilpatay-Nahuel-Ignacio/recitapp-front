@@ -595,6 +595,84 @@
       font-weight: 700;
     }
     
+    // Estilos para los detalles del resumen
+    .summary-details {
+      text-align: left;
+      margin-bottom: 1.5rem;
+      
+      p {
+        color: #ffffff !important; // Texto blanco
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        
+        i {
+          color: var(--primary-green);
+          margin-right: 0.5rem;
+        }
+        
+        strong {
+          color: #ffffff !important; // Labels en blanco
+          font-weight: 600;
+        }
+      }
+    }
+    
+    // Estilos específicos para alertas de validación en el resumen
+    .alert {
+      text-align: left;
+      border-radius: 0.75rem;
+      border: none;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      
+      &.alert-warning {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08));
+        border-left: 4px solid var(--warning-yellow);
+        
+        // Título de la alerta en blanco
+        .alert-heading,
+        h6.alert-heading {
+          color: #ffffff !important; // Texto blanco para "Campos pendientes por completar:"
+          font-weight: 600;
+          font-size: 1rem;
+          margin-bottom: 0.75rem;
+          
+          i {
+            color: var(--warning-yellow);
+            margin-right: 0.5rem;
+          }
+        }
+        
+        // Lista de errores en blanco
+        ul {
+          color: #ffffff !important;
+          margin-bottom: 0;
+          padding-left: 1.25rem;
+          
+          li {
+            color: #ffffff !important; // Bullets y texto en blanco
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            
+            // Bullets personalizados en blanco
+            &::marker {
+              color: #ffffff !important;
+            }
+          }
+        }
+        
+        // Párrafos adicionales en blanco
+        p {
+          color: #ffffff !important;
+          margin-bottom: 0;
+          font-size: 0.95rem;
+          line-height: 1.4;
+        }
+      }
+    }
+    
     .total-amount {
       font-size: 2rem;
       font-weight: 700;
@@ -622,6 +700,14 @@
         opacity: 0.6;
         cursor: not-allowed;
         transform: none;
+      }
+      
+      // Texto pequeño en botones
+      small {
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        font-weight: 400;
       }
     }
   }

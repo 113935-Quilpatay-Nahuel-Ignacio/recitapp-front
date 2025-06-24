@@ -449,25 +449,17 @@
                   {{ isLoading ? 'Procesando...' : 'Pagar con Billetera Virtual' }}
                 </button>
                 
-                <!-- Pago con MercadoPago (con o sin descuento de billetera) -->
+                <!-- 💳 PAGO UNIFICADO: Incluye TODAS las opciones de MercadoPago -->
                 <button 
                   type="submit" 
-                  class="btn btn-success btn-lg me-2" 
+                  class="btn btn-success btn-lg" 
                   [disabled]="payerForm.invalid || isLoading">
                   <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  <i *ngIf="!isLoading" class="bi bi-credit-card me-2"></i>
+                  <i *ngIf="!isLoading" class="bi bi-credit-card-2-front me-2"></i>
                   {{ isLoading ? 'Creando Pago...' : (amountAfterWallet > 0 && showWalletOption ? 'Completar pago con MercadoPago' : 'Pagar con MercadoPago') }}
-                </button>
-                
-                <!-- Pago solo con cuenta de MercadoPago -->
-                <button 
-                  type="button" 
-                  class="btn btn-warning btn-lg" 
-                  [disabled]="payerForm.invalid || isLoading"
-                  (click)="processMercadoPagoWalletOnlyPayment()">
-                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  <i *ngIf="!isLoading" class="bi bi-wallet me-2"></i>
-                  {{ isLoading ? 'Creando Pago...' : 'Pagar con Cuenta MercadoPago' }}
+                  <small class="d-block text-light mt-1" style="font-size: 0.8rem;">
+                    Tarjetas, Cuenta MP y más opciones
+                  </small>
                 </button>
               </div>
             </div>

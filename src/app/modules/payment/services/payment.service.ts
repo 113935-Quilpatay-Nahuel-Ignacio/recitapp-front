@@ -78,12 +78,13 @@ export class PaymentService {
   constructor(private http: HttpClient) {}
 
   createPaymentPreference(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
+    // ✅ MÉTODO UNIFICADO: Ahora incluye automáticamente todas las opciones de pago
+    // incluyendo tarjetas de crédito/débito Y saldo de MercadoPago
     return this.http.post<PaymentResponse>(`${this.apiUrl}/create-preference`, paymentRequest);
   }
 
-  createPaymentPreferenceWalletOnly(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
-    return this.http.post<PaymentResponse>(`${this.apiUrl}/create-preference-wallet-only`, paymentRequest);
-  }
+  // MÉTODO ELIMINADO: createPaymentPreferenceWalletOnly
+  // Ya no es necesario porque createPaymentPreference incluye todas las opciones
 
   processPayment(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
     return this.http.post<PaymentResponse>(`${this.apiUrl}/process-payment`, paymentRequest);

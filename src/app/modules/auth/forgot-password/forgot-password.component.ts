@@ -13,6 +13,7 @@ export class ForgotPasswordComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   emailSent = false;
+  isTemporaryAccount = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -39,9 +40,10 @@ export class ForgotPasswordComponent implements OnInit {
       const email = this.forgotPasswordForm.get('email')?.value?.trim();
 
       this.authService.forgotPassword(email).subscribe({
-        next: () => {
+        next: (response: any) => {
           this.emailSent = true;
-          this.successMessage = 'Correo de recuperación enviado exitosamente';
+          this.isTemporaryAccount = response.isTemporaryAccount || false;
+          this.successMessage = response.message || 'Correo de recuperación enviado exitosamente';
         },
         error: (error) => {
           this.errorMessage = error.message;
@@ -63,8 +65,9 @@ export class ForgotPasswordComponent implements OnInit {
       const email = this.forgotPasswordForm.get('email')?.value?.trim();
 
       this.authService.forgotPassword(email).subscribe({
-        next: () => {
-          this.successMessage = 'Correo reenviado exitosamente';
+        next: (response: any) => {
+          this.isTemporaryAccount = response.isTemporaryAccount || false;
+          this.successMessage = response.message || 'Correo reenviado exitosamente';
         },
         error: (error) => {
           this.errorMessage = error.message;
