@@ -13,7 +13,7 @@
           <!-- Mensaje de error -->
           <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
             <i class="fas fa-exclamation-triangle me-2"></i>
-            {{ errorMessage }}
+            <div [innerHTML]="getFormattedErrorMessage()"></div>
           </div>
 
           <!-- Mensaje de éxito -->
@@ -37,15 +37,11 @@
                   class="form-control"
                   formControlName="firstName"
                   placeholder="Tu nombre"
-                  [class.is-invalid]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched"
+                  [class.is-invalid]="isFieldInvalid('firstName')"
+                  [class.is-valid]="isFieldValid('firstName')"
                 >
-                <div *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched" class="invalid-feedback">
-                  <div *ngIf="registerForm.get('firstName')?.errors?.['required']">
-                    El nombre es requerido
-                  </div>
-                  <div *ngIf="registerForm.get('firstName')?.errors?.['minlength']">
-                    El nombre debe tener al menos 2 caracteres
-                  </div>
+                <div *ngIf="isFieldInvalid('firstName')" class="invalid-feedback">
+                  {{ getFieldError('firstName') }}
                 </div>
               </div>
 
@@ -61,15 +57,11 @@
                   class="form-control"
                   formControlName="lastName"
                   placeholder="Tu apellido"
-                  [class.is-invalid]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched"
+                  [class.is-invalid]="isFieldInvalid('lastName')"
+                  [class.is-valid]="isFieldValid('lastName')"
                 >
-                <div *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched" class="invalid-feedback">
-                  <div *ngIf="registerForm.get('lastName')?.errors?.['required']">
-                    El apellido es requerido
-                  </div>
-                  <div *ngIf="registerForm.get('lastName')?.errors?.['minlength']">
-                    El apellido debe tener al menos 2 caracteres
-                  </div>
+                <div *ngIf="isFieldInvalid('lastName')" class="invalid-feedback">
+                  {{ getFieldError('lastName') }}
                 </div>
               </div>
             </div>
@@ -86,15 +78,11 @@
                 class="form-control"
                 formControlName="email"
                 placeholder="tu@email.com"
-                [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+                [class.is-invalid]="isFieldInvalid('email')"
+                [class.is-valid]="isFieldValid('email')"
               >
-              <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="invalid-feedback">
-                <div *ngIf="registerForm.get('email')?.errors?.['required']">
-                  El correo electrónico es requerido
-                </div>
-                <div *ngIf="registerForm.get('email')?.errors?.['email']">
-                  Ingresa un correo electrónico válido
-                </div>
+              <div *ngIf="isFieldInvalid('email')" class="invalid-feedback">
+                {{ getFieldError('email') }}
               </div>
             </div>
 
@@ -111,15 +99,11 @@
                   class="form-control"
                   formControlName="dni"
                   placeholder="12345678"
-                  [class.is-invalid]="registerForm.get('dni')?.invalid && registerForm.get('dni')?.touched"
+                  [class.is-invalid]="isFieldInvalid('dni')"
+                  [class.is-valid]="isFieldValid('dni')"
                 >
-                <div *ngIf="registerForm.get('dni')?.invalid && registerForm.get('dni')?.touched" class="invalid-feedback">
-                  <div *ngIf="registerForm.get('dni')?.errors?.['required']">
-                    El DNI es requerido
-                  </div>
-                  <div *ngIf="registerForm.get('dni')?.errors?.['pattern']">
-                    El DNI debe tener entre 8 y 12 dígitos
-                  </div>
+                <div *ngIf="isFieldInvalid('dni')" class="invalid-feedback">
+                  {{ getFieldError('dni') }}
                 </div>
               </div>
 
@@ -134,13 +118,12 @@
                   id="phone"
                   class="form-control"
                   formControlName="phone"
-                  placeholder="987654321"
-                  [class.is-invalid]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched"
+                  placeholder="987654721"
+                  [class.is-invalid]="isFieldInvalid('phone')"
+                  [class.is-valid]="isFieldValid('phone')"
                 >
-                <div *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched" class="invalid-feedback">
-                  <div *ngIf="registerForm.get('phone')?.errors?.['pattern']">
-                    Ingresa un teléfono válido (9-15 dígitos)
-                  </div>
+                <div *ngIf="isFieldInvalid('phone')" class="invalid-feedback">
+                  {{ getFieldError('phone') }}
                 </div>
               </div>
             </div>
@@ -173,7 +156,8 @@
                   class="form-control"
                   formControlName="password"
                   placeholder="Tu contraseña"
-                  [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                  [class.is-invalid]="isFieldInvalid('password')"
+                  [class.is-valid]="isFieldValid('password')"
                 >
                 <button
                   type="button"
@@ -183,13 +167,8 @@
                   <i [class]="showPassword ? 'fas fa-eye-slash text-green-medium' : 'fas fa-eye text-green-medium'"></i>
                 </button>
               </div>
-              <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="invalid-feedback d-block">
-                <div *ngIf="registerForm.get('password')?.errors?.['required']">
-                  La contraseña es requerida
-                </div>
-                <div *ngIf="registerForm.get('password')?.errors?.['passwordStrength']">
-                  {{ registerForm.get('password')?.errors?.['passwordStrength'] }}
-                </div>
+              <div *ngIf="isFieldInvalid('password')" class="invalid-feedback d-block">
+                {{ getFieldError('password') }}
               </div>
               <!-- Indicador de fortaleza de contraseña -->
               <div *ngIf="registerForm.get('password')?.value" class="mt-2">
@@ -219,7 +198,8 @@
                   class="form-control"
                   formControlName="confirmPassword"
                   placeholder="Confirma tu contraseña"
-                  [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
+                  [class.is-invalid]="isFieldInvalid('confirmPassword') || registerForm.errors?.['passwordMismatch']"
+                  [class.is-valid]="isFieldValid('confirmPassword') && !registerForm.errors?.['passwordMismatch']"
                 >
                 <button
                   type="button"
@@ -229,13 +209,13 @@
                   <i [class]="showConfirmPassword ? 'fas fa-eye-slash text-green-medium' : 'fas fa-eye text-green-medium'"></i>
                 </button>
               </div>
-              <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="invalid-feedback d-block">
-                <div *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
+              <div *ngIf="isFieldInvalid('confirmPassword') || registerForm.errors?.['passwordMismatch']" class="invalid-feedback d-block">
+                <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
                   Debes confirmar tu contraseña
-                </div>
-                <div *ngIf="registerForm.errors?.['passwordMismatch']">
+                </span>
+                <span *ngIf="registerForm.errors?.['passwordMismatch']">
                   Las contraseñas no coinciden
-                </div>
+                </span>
               </div>
             </div>
 
@@ -250,9 +230,7 @@
               >
               <label class="form-check-label" for="acceptTerms">
                 Acepto los 
-                <a href="#" class="text-decoration-none">términos y condiciones</a>
-                y la 
-                <a href="#" class="text-decoration-none">política de privacidad</a>
+                <a routerLink="/legal/terms/utn" class="text-decoration-none" target="_blank">términos y condiciones y la política de privacidad</a>
               </label>
               <div *ngIf="registerForm.get('acceptTerms')?.invalid && registerForm.get('acceptTerms')?.touched" class="invalid-feedback d-block">
                 Debes aceptar los términos y condiciones

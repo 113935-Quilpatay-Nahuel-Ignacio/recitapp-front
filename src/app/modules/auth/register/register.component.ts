@@ -132,6 +132,56 @@ export class RegisterComponent implements OnInit {
     return 'text-success';
   }
 
+  getFormattedErrorMessage(): string {
+    return this.errorMessage.replace(/\n/g, '<br>');
+  }
+
+  private getFieldDisplayName(fieldName: string): string {
+    const fieldMap: { [key: string]: string } = {
+      'firstName': 'Nombre',
+      'lastName': 'Apellido', 
+      'email': 'Correo electrónico',
+      'password': 'Contraseña',
+      'confirmPassword': 'Confirmar contraseña',
+      'dni': 'DNI',
+      'phone': 'Teléfono',
+      'address': 'Dirección',
+      'acceptTerms': 'Términos y condiciones'
+    };
+    
+    return fieldMap[fieldName] || fieldName;
+  }
+
+  // Methods for real-time validation feedback
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.registerForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  isFieldValid(fieldName: string): boolean {
+    const field = this.registerForm.get(fieldName);
+    return !!(field && field.valid && (field.dirty || field.touched));
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.registerForm.get(fieldName);
+    if (!field || !field.errors) return '';
+
+    const errors = field.errors;
+    
+    if (errors['required']) return `${this.getFieldDisplayName(fieldName)} es requerido`;
+    if (errors['email']) return 'Debe ser un email válido';
+    if (errors['minlength']) return `${this.getFieldDisplayName(fieldName)} debe tener al menos ${errors['minlength'].requiredLength} caracteres`;
+    if (errors['pattern']) {
+      if (fieldName === 'dni') return 'DNI debe tener entre 8 y 12 dígitos';
+      if (fieldName === 'phone') return 'Teléfono debe tener entre 9 y 15 dígitos';
+    }
+    if (errors['passwordStrength']) return errors['passwordStrength'];
+    if (errors['passwordMismatch']) return 'Las contraseñas no coinciden';
+    
+    return 'Campo inválido';
+  }
+
   onSubmit(): void {
     if (this.registerForm.valid) {
       this.isLoading = true;
@@ -160,8 +210,45 @@ export class RegisterComponent implements OnInit {
           }, 2000);
         },
         error: (error) => {
-          this.errorMessage = error.message;
           this.isLoading = false;
+          
+          // Handle specific validation errors from the API
+          if (error.status === 400 && error.error) {
+            if (typeof error.error === 'string') {
+              this.errorMessage = error.error;
+            } else if (error.error.message) {
+              this.errorMessage = error.error.message;
+              
+              // Check if there are specific field errors in details
+              if (error.error.details) {
+                const fieldErrors = error.error.details;
+                const errorMessages = Object.keys(fieldErrors).map(field => {
+                  const fieldName = this.getFieldDisplayName(field);
+                  return `• ${fieldName}: ${fieldErrors[field]}`;
+                });
+                
+                if (errorMessages.length > 0) {
+                  this.errorMessage = 'Errores de validación encontrados:\n' + errorMessages.join('\n');
+                }
+              }
+            } else if (error.error.errors) {
+              // Handle validation errors array
+              const validationErrors = error.error.errors;
+              if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+                this.errorMessage = 'Errores de validación:\n' + validationErrors.map(err => '• ' + err).join('\n');
+              } else {
+                this.errorMessage = 'Hay errores de validación en los campos proporcionados.';
+              }
+            } else {
+              this.errorMessage = 'Hay errores de validación en los campos proporcionados.';
+            }
+          } else if (error.status === 409) {
+            this.errorMessage = 'El email o DNI ya están registrados. Por favor, use datos diferentes.';
+          } else if (error.status === 500) {
+            this.errorMessage = 'Error interno del servidor. Por favor, intente más tarde.';
+          } else {
+            this.errorMessage = error.message || 'Ha ocurrido un error inesperado. Por favor, intente nuevamente.';
+          }
         },
         complete: () => {
           this.isLoading = false;

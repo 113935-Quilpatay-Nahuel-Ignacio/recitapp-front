@@ -43,6 +43,12 @@ export class StatusFormatter {
       icon: 'check-circle-fill',
       color: '#198754'
     },
+    'CANCELADA': {
+      displayName: 'Cancelada',
+      className: 'bg-danger',
+      icon: 'x-circle-fill',
+      color: '#dc3545'
+    },
     'RESERVADA': {
       displayName: 'Reservada',
       className: 'bg-warning text-dark',
@@ -160,6 +166,7 @@ export class StatusFormatter {
   static getTicketStatuses(): Array<{ value: string; viewValue: string }> {
     return [
       { value: 'VENDIDA', viewValue: 'Vendida' },
+      { value: 'CANCELADA', viewValue: 'Cancelada' },
       { value: 'RESERVADA', viewValue: 'Reservada' },
       { value: 'TRANSFERIDA', viewValue: 'Transferida' },
       { value: 'USADA', viewValue: 'Usada' },

@@ -183,20 +183,41 @@
               </div>
               
               <div *ngIf="stats && !isLoadingStats" class="stats-card">
-                <div class="row g-0">
-                  <div class="col-sm-6">
-                    <div class="stat-item">
-                      <div class="stat-value">{{ stats.soldTickets | number:'1.0-0':'es-AR' }}</div>
-                      <div class="stat-label">
-                        <i class="bi bi-ticket-perforated me-1"></i>Tickets Vendidos
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="stat-item">
-                      <div class="stat-value">{{ getAvailableOccupancyPercentage() | number:'1.2-2':'es-AR' }}%</div>
-                      <div class="stat-label">
-                        <i class="bi bi-pie-chart-fill me-1"></i>Ocupación Disponible
+                <!-- Estadísticas por Sección -->
+                <div *ngIf="stats.sectionStatistics && stats.sectionStatistics.length > 0" class="section-stats">
+                  <h5 class="mb-3">
+                    <i class="bi bi-diagram-3 me-2"></i>Disponibilidad por Sección
+                  </h5>
+                  <div class="row">
+                    <div class="col-md-6 mb-3" *ngFor="let section of stats.sectionStatistics">
+                      <div class="card border-0 bg-light">
+                        <div class="card-body p-3">
+                          <h6 class="card-title mb-2">{{ section.sectionName }}</h6>
+                          <div class="row g-2 text-center">
+                            <div class="col-4">
+                              <div class="small fw-bold text-success">{{ section.ticketsRemaining }}</div>
+                              <div class="small text-muted">Disponibles</div>
+                            </div>
+                            <div class="col-4">
+                              <div class="small fw-bold text-primary">{{ section.ticketsSold }}</div>
+                              <div class="small text-muted">Vendidas</div>
+                            </div>
+                            <div class="col-4">
+                              <div class="small fw-bold text-info">{{ section.percentageAvailable | number:'1.1-1':'es-AR' }}%</div>
+                              <div class="small text-muted">Disponible</div>
+                            </div>
+                          </div>
+                          <!-- Progress bar for visual representation -->
+                          <div class="progress mt-2" style="height: 6px;">
+                            <div class="progress-bar bg-success" 
+                                 role="progressbar" 
+                                 [style.width.%]="section.percentageAvailable" 
+                                 [attr.aria-valuenow]="section.percentageAvailable" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
