@@ -1,0 +1,215 @@
+.detail-header {
+  position: relative;
+  overflow: hidden;
+  border-bottom: none;
+
+  // Gradient variations
+  &.bg-gradient-artist {
+    background: linear-gradient(135deg, var(--primary-green, #4caf50) 0%, var(--primary-green-dark, #388e3c) 100%);
+    color: white;
+    
+    .detail-title,
+    .detail-subtitle {
+      color: white !important;
+    }
+  }
+
+  &.bg-gradient-event {
+    background: linear-gradient(135deg, var(--dark-bg), var(--dark-card));
+    border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+    
+    .detail-title,
+    .detail-subtitle {
+      color: var(--dark-text, #ffffff) !important;
+    }
+  }
+
+  &.bg-light {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    
+    .detail-title,
+    .detail-subtitle {
+      color: var(--dark-text, #212529) !important;
+    }
+  }
+
+  .header-content {
+    flex: 1;
+    min-width: 0;
+
+    .title-section {
+      .detail-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        line-height: 1.2;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        margin-bottom: 0.5rem;
+
+        @media (max-width: 768px) {
+          font-size: 1.75rem;
+        }
+      }
+
+      .detail-subtitle {
+        opacity: 0.9;
+        font-size: 1rem;
+        font-weight: 400;
+      }
+    }
+
+    .status-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 1rem;
+      
+      .badge {
+        font-size: 0.8rem;
+        padding: 0.6rem 1rem;
+        font-weight: 600;
+        border-radius: 25px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        i {
+          margin-right: 0.4rem;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+
+  .header-actions {
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: flex-start;
+      margin-top: 1rem;
+    }
+  }
+
+  // Loading state
+  .spinner-border {
+    color: white;
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+    padding: 1.5rem !important;
+  }
+}
+
+// Enhanced dropdown styling for admin actions
+:host ::ng-deep {
+  .dropdown {
+    .btn {
+      background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover));
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.25);
+      }
+    }
+    
+    .dropdown-menu {
+      background: var(--dark-card, #2d2d2d) !important;
+      border: 1px solid var(--dark-border, #404040) !important;
+      border-radius: 12px;
+      padding: 0.5rem 0;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 0.5rem;
+      
+      .dropdown-item {
+        color: var(--dark-text, #ffffff) !important;
+        background-color: transparent !important;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        
+        i {
+          width: 20px;
+          text-align: center;
+          margin-right: 0.75rem;
+          color: inherit;
+        }
+        
+        &:hover,
+        &:focus {
+          background: var(--dark-card-hover, #3a3a3a) !important;
+          color: var(--primary-green, #22c55e) !important;
+          transform: translateX(4px);
+          text-decoration: none !important;
+        }
+        
+        &.text-danger {
+          color: #ef5350 !important;
+          
+          &:hover,
+          &:focus {
+            background: rgba(239, 83, 80, 0.1) !important;
+            color: #ef5350 !important;
+          }
+        }
+
+        &.text-warning {
+          color: #ff9800 !important;
+          
+          &:hover,
+          &:focus {
+            background: rgba(255, 152, 0, 0.1) !important;
+            color: #ff9800 !important;
+          }
+        }
+
+        &.text-success {
+          color: #4caf50 !important;
+          
+          &:hover,
+          &:focus {
+            background: rgba(76, 175, 80, 0.1) !important;
+            color: #4caf50 !important;
+          }
+        }
+      }
+      
+      .dropdown-divider {
+        border-color: var(--dark-border, #404040);
+      }
+      
+      .dropdown-header {
+        color: var(--dark-text-muted, #a3a3a3);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+} 

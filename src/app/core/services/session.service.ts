@@ -56,4 +56,11 @@ export class SessionService {
   getCurrentUser() {
     return this.authService.getCurrentUser();
   }
+
+  /**
+   * Actualizar el usuario actual en la sesión
+   */
+  updateCurrentUser(updatedUser: any) {
+    this.authService.updateCurrentUser(updatedUser);
+  }
 } 

@@ -26,11 +26,11 @@ export class NotificationPreferencesComponent implements OnInit {
 
   // Define the structure of your preference items for the template
   preferenceItems = [
-    { key: 'receiveEventPush', label: 'New Event Alerts (In-App)' },
-    { key: 'receiveAvailabilityPush', label: 'Low Ticket Availability (In-App)' },
-    { key: 'receiveReminderEmails', label: 'Event Reminders (Email)' },
-    { key: 'receiveWeeklyNewsletter', label: 'Weekly Recommendations (Email)' },
-    { key: 'receiveArtistPush', label: 'Updates from Followed Artists (In-App)' },
+    { key: 'receiveEventPush', label: 'Alertas de Nuevos Eventos (En la App)' },
+    { key: 'receiveAvailabilityPush', label: 'Baja Disponibilidad de Entradas (En la App)' },
+    { key: 'receiveReminderEmails', label: 'Recordatorios de Eventos (Email)' },
+    { key: 'receiveWeeklyNewsletter', label: 'Recomendaciones Semanales (Email)' },
+    { key: 'receiveArtistPush', label: 'Actualizaciones de Artistas Seguidos (En la App)' },
     // Add more as they are defined in your DTO and API logic
   ];
 

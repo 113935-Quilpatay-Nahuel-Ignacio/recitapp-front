@@ -54,6 +54,11 @@ export class UserService {
     return this.http.put<User>(`${this.baseUrl}/${id}`, userData);
   }
 
+  validateCurrentPassword(id: number, currentPassword: string): Observable<boolean> {
+    return this.http.post<{valid: boolean}>(`${this.baseUrl}/${id}/validate-password`, { currentPassword })
+      .pipe(map(response => response.valid));
+  }
+
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }

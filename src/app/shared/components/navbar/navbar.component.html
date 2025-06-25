@@ -176,16 +176,18 @@
 
                 <!-- Authentication Links - Only for non-authenticated users -->
                 <li class="nav-item" *ngIf="!isAuthenticated">
-                    <a class="nav-link" routerLink="/auth/login" routerLinkActive="active">
+                    <a class="nav-link auth-login-link" routerLink="/auth/login" routerLinkActive="active">
                         <i class="fas fa-sign-in-alt me-1"></i>
                         <span>Iniciar Sesión</span>
                     </a>
                 </li>
                 <li class="nav-item" *ngIf="!isAuthenticated">
-                    <a class="nav-link btn btn-outline-light ms-2" routerLink="/auth/register" routerLinkActive="active">
-                        <i class="fas fa-user-plus me-1"></i>
-                        <span>Registrarse</span>
-                    </a>
+                    <div class="d-flex align-items-center ms-2">
+                        <a class="btn btn-outline-light auth-register-btn" routerLink="/auth/register" routerLinkActive="active">
+                            <i class="fas fa-user-plus me-1"></i>
+                            <span>Registrarse</span>
+                        </a>
+                    </div>
                 </li>
             </ul>
         </div>

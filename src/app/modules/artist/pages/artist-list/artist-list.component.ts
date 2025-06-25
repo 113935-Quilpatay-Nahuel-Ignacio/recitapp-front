@@ -40,6 +40,9 @@ export class ArtistListComponent implements OnInit {
   error: string = '';
   isAdmin: boolean = false;
 
+  // Exponer Math para el template
+  Math = Math;
+
   // Pagination
   currentPage: number = 1;
   itemsPerPage: number = 12;
@@ -164,6 +167,12 @@ export class ArtistListComponent implements OnInit {
 
   changePage(page: number): void {
     this.currentPage = page;
+  }
+
+  onPageSizeChange(size: number): void {
+    this.itemsPerPage = size;
+    this.currentPage = 1; // Reset to first page
+    // No need to reload data since we're using client-side pagination
   }
 
   navigateToArtist(artistId: number): void {

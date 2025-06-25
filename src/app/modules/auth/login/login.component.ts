@@ -49,13 +49,17 @@ export class LoginComponent implements OnInit {
       this.isLoading = true;
       this.errorMessage = '';
 
-      const { email, password } = this.loginForm.value;
+      const { email, password, rememberMe } = this.loginForm.value;
       
       // Aplicar trim para evitar problemas con espacios en blanco
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
 
-      this.authService.login({ email: trimmedEmail, password: trimmedPassword }).subscribe({
+      this.authService.login({ 
+        email: trimmedEmail, 
+        password: trimmedPassword, 
+        rememberMe: rememberMe || false 
+      }).subscribe({
         next: () => {
           this.router.navigate([this.returnUrl]);
         },

@@ -193,6 +193,15 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getAvailableOccupancyPercentage(): number {
+    if (!this.stats || !this.stats.totalTickets || this.stats.totalTickets === 0) {
+      return 0;
+    }
+    const availableTickets = this.stats.totalTickets - this.stats.soldTickets;
+    const percentage = (availableTickets / this.stats.totalTickets) * 100;
+    return Math.round(percentage * 100) / 100; // Round to 2 decimal places
+  }
+
   navigateToVenue(venueId: number | undefined): void {
     if (venueId) {
       this.router.navigate(['/venues', venueId]);

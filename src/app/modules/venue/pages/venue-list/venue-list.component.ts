@@ -26,7 +26,6 @@ import { PaginationComponent } from '../../../../shared/components/pagination/pa
 })
 export class VenueListComponent implements OnInit {
   venues: Venue[] = [];
-  filteredVenues: Venue[] = [];
   searchTerm: string = '';
   loading = false;
   error = '';
@@ -34,10 +33,14 @@ export class VenueListComponent implements OnInit {
   isAdmin = true; // En una implementación real, esto vendría de un servicio de autenticación
   imageErrors = new Map<number, boolean>(); // Track image errors by venue ID
 
-  // Pagination
-  currentPage: number = 1;
+  // Exponer Math para el template
+  Math = Math;
+
+  // Pagination - Actualizado para usar paginación del backend
+  currentPage: number = 0; // Cambiar a 0-based para coincidir con backend
   itemsPerPage: number = 12;
   totalItems: number = 0;
+  totalPages: number = 0;
 
   constructor(private venueService: VenueService) {}
 
@@ -48,79 +51,65 @@ export class VenueListComponent implements OnInit {
   loadVenues(): void {
     this.loading = true;
     this.error = '';
-
-    this.venueService.getAllVenues(!this.showInactive).subscribe({
-      next: (venues) => {
-        this.venues = venues;
-        this.applyFilter();
+    
+    // Usar el nuevo método paginado
+    this.venueService.getVenuesPaginated(
+      this.currentPage, 
+      this.itemsPerPage, 
+      this.searchTerm || undefined,
+      !this.showInactive // activeOnly
+    ).subscribe({
+      next: (response) => {
+        this.venues = response.content;
+        this.totalItems = response.totalElements;
+        this.totalPages = response.totalPages;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err.error?.message || 'Error al cargar los recintos';
+      error: (error) => {
+        console.error('Error loading venues:', error);
+        this.error = 'Error al cargar los recintos';
         this.loading = false;
-      },
+      }
     });
   }
 
   applyFilter(): void {
-    let filtered: Venue[];
-    
-    if (!this.searchTerm.trim()) {
-      filtered = [...this.venues];
-    } else {
-      const term = this.searchTerm.toLowerCase().trim();
-      filtered = this.venues.filter(
-        (venue) =>
-          venue.name.toLowerCase().includes(term) ||
-          venue.address.toLowerCase().includes(term)
-      );
-    }
-    
-    this.totalItems = filtered.length;
-    this.filteredVenues = this.getPaginatedVenues(filtered);
-  }
-
-  getPaginatedVenues(sourceVenues: Venue[]): Venue[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return sourceVenues.slice(startIndex, startIndex + this.itemsPerPage);
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-  changePage(page: number): void {
-    this.currentPage = page;
-    this.applyFilter();
-  }
-
-  onSearch(): void {
-    this.currentPage = 1;
-    this.applyFilter();
-  }
-
-  clearSearch(): void {
-    this.searchTerm = '';
-    this.currentPage = 1;
-    this.applyFilter();
-  }
-
-  toggleShowInactive(): void {
+    // Reset to first page when filtering
+    this.currentPage = 0;
     this.loadVenues();
   }
 
-  formatCapacity(capacity: number | undefined): string {
-    if (!capacity) return 'No especificada';
-    return capacity.toLocaleString('es-AR');
+  onPageChange(page: number): void {
+    this.currentPage = page - 1; // Convertir de 1-based a 0-based
+    this.loadVenues();
   }
 
-  onImageError(venue: Venue): void {
-    if (venue.id !== undefined) {
-      this.imageErrors.set(venue.id, true);
-    }
+  onPageSizeChange(size: number): void {
+    this.itemsPerPage = size;
+    this.currentPage = 0; // Reset to first page
+    this.loadVenues();
   }
 
-  hasImageError(venue: Venue): boolean {
-    return venue.id !== undefined ? (this.imageErrors.get(venue.id) || false) : false;
+  onActiveFilterChange(): void {
+    this.currentPage = 0; // Reset to first page
+    this.loadVenues();
+  }
+
+  onSearchChange(): void {
+    // Debounce search - could implement later
+    this.applyFilter();
+  }
+
+  onImageError(venueId: number): void {
+    this.imageErrors.set(venueId, true);
+  }
+
+  hasImageError(venueId: number): boolean {
+    return this.imageErrors.get(venueId) || false;
+  }
+
+  // Método helper para el componente de paginación
+  get displayCurrentPage(): number {
+    return this.currentPage + 1; // Convertir de 0-based a 1-based para display
   }
 }

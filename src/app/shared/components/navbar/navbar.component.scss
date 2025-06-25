@@ -60,14 +60,43 @@
   }
 }
 
-.btn-outline-light {
+// Authentication buttons styling
+.auth-login-link {
+  position: relative;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+.auth-register-btn {
   border: 2px solid rgba(255, 255, 255, 0.8);
   font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  text-decoration: none !important;
   
   &:hover {
     background-color: white;
     color: var(--primary-green) !important;
     border-color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  }
+  
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+  }
+}
+
+// Ensure proper alignment in navbar
+.navbar-nav {
+  align-items: center;
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -129,6 +158,8 @@
 @media (max-width: 991.98px) {
   .navbar-collapse {
     margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .navbar-nav {
@@ -137,6 +168,17 @@
   
   .navbar-nav .nav-item {
     margin: 0.25rem 0;
+  }
+  
+  // Stack auth buttons vertically on mobile
+  .auth-register-btn {
+    width: 100%;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+  
+  .auth-login-link {
+    margin-bottom: 0.25rem;
   }
   
   .dropdown-menu {
@@ -165,5 +207,21 @@
   
   .navbar-brand {
     font-size: 1.25rem;
+  }
+}
+
+// Ensure proper spacing on desktop
+@media (min-width: 992px) {
+  .navbar-nav {
+    .nav-item:not(:last-child) {
+      margin-right: 0.25rem;
+    }
+  }
+  
+  // Align authentication buttons properly
+  .navbar-nav .nav-item {
+    &:nth-last-child(2) { // Login button
+      margin-right: 0.5rem;
+    }
   }
 }

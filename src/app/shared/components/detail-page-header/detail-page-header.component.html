@@ -1,0 +1,48 @@
+<div [ngClass]="getHeaderClasses()">
+  <!-- Loading state -->
+  <div *ngIf="loading" class="w-100 text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Header content -->
+  <div *ngIf="!loading" class="header-content">
+    <div class="title-section">
+      <h1 class="detail-title mb-0" *ngIf="title">{{ title }}</h1>
+      <h1 class="detail-title mb-0" *ngIf="!title && gradientType === 'artist'">Detalles del artista</h1>
+      <h1 class="detail-title mb-0" *ngIf="!title && gradientType === 'venue'">Detalles del recinto</h1>
+      <h1 class="detail-title mb-0" *ngIf="!title && gradientType === 'event'">Detalles del evento</h1>
+      
+      <p *ngIf="subtitle" class="detail-subtitle mb-0">{{ subtitle }}</p>
+    </div>
+
+    <!-- Status badges -->
+    <div *ngIf="verified !== null || status" class="status-badges mt-2">
+      <!-- Verification badge for events -->
+      <span *ngIf="verified === false" class="badge bg-warning text-dark me-2">
+        <i class="bi bi-exclamation-triangle me-1"></i>No Verificado
+      </span>
+      <span *ngIf="verified === true" class="badge bg-success me-2">
+        <i class="bi bi-check-circle me-1"></i>Verificado
+      </span>
+      
+      <!-- Status badge -->
+      <span *ngIf="status" class="badge" [ngClass]="getStatusBadgeClass()">
+        <i *ngIf="statusIcon" class="bi bi-{{ statusIcon }} me-1"></i>{{ status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Actions section -->
+  <div *ngIf="!loading" class="header-actions d-flex gap-2 align-items-center">
+    <!-- Follow button projection -->
+    <ng-container *ngTemplateOutlet="followButton"></ng-container>
+    
+    <!-- Custom actions projection -->
+    <ng-container *ngTemplateOutlet="customActions"></ng-container>
+    
+    <!-- Admin dropdown projection -->
+    <ng-container *ngTemplateOutlet="adminDropdown"></ng-container>
+  </div>
+</div> 

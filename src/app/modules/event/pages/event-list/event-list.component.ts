@@ -50,6 +50,9 @@ export class EventListComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 9; // Layout 3x3
 
+  // Exponer Math para el template
+  Math = Math;
+
   // Admin and Cleanup related properties
   isAdmin = true; // Placeholder for real role management
   cleanupCutoffDate: string = ''; // For ngModel binding
@@ -214,6 +217,12 @@ export class EventListComponent implements OnInit {
       this.currentPage = page;
       this.events = this.getPaginatedEvents(this.allEvents);
     }
+  }
+
+  onPageSizeChange(size: number): void {
+    this.itemsPerPage = size;
+    this.currentPage = 1; // Reset to first page
+    this.events = this.getPaginatedEvents(this.allEvents);
   }
 
   // Helper para formatear fechas en el template (si no se usa DatePipe directamente en HTML)

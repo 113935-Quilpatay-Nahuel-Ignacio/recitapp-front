@@ -23,11 +23,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
+    // Inicializar valores inmediatamente para evitar parpadeo
+    this.isAuthenticated = this.authService.isAuthenticated();
+    this.currentUser = this.authService.getCurrentUser();
+
     // Suscribirse al estado de autenticación
     this.authService.isAuthenticated$
       .pipe(takeUntil(this.destroy$))
       .subscribe(isAuth => {
         this.isAuthenticated = isAuth;
+        console.log('🔐 [Navbar] Authentication state changed:', isAuth);
       });
 
     // Suscribirse al usuario actual
@@ -35,6 +40,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
         this.currentUser = user;
+        console.log('👤 [Navbar] Current user changed:', user?.email || 'No user');
       });
   }
 
@@ -59,12 +65,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
+    console.log('🚪 [Navbar] Initiating logout...');
     this.authService.logout().subscribe({
       next: () => {
-        console.log('Sesión cerrada exitosamente');
+        console.log('✅ [Navbar] Logout successful');
+        // El AuthService ya maneja la redirección y limpieza de estado
       },
       error: (error) => {
-        console.error('Error al cerrar sesión:', error);
+        console.error('❌ [Navbar] Logout error:', error);
+        // Incluso si hay error en el servidor, limpiar localmente
       }
     });
   }

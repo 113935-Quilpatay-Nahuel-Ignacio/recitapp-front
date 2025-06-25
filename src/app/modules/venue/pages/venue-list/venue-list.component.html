@@ -10,7 +10,7 @@
     <app-list-filters 
         title="Filtrar Recintos" 
         [showClearButton]="!!searchTerm" 
-        (clearFilters)="clearSearch()">
+        (clearFilters)="onSearchChange()">
         <div class="row g-3">
             <div class="col-md-8">
                 <div class="input-group search-input-group">
@@ -18,8 +18,8 @@
                         <i class="bi bi-search text-muted"></i>
                     </span>
                     <input type="text" class="form-control" placeholder="Buscar por nombre o dirección..."
-                        [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
-                    <button class="btn btn-outline-primary" type="button" (click)="onSearch()">
+                        [(ngModel)]="searchTerm" (keyup.enter)="onSearchChange()" (input)="onSearchChange()">
+                    <button class="btn btn-outline-primary" type="button" (click)="onSearchChange()">
                         Buscar
                     </button>
                 </div>
@@ -28,7 +28,7 @@
             <div class="col-md-4">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="showInactive"
-                        [(ngModel)]="showInactive" (change)="toggleShowInactive()">
+                        [(ngModel)]="showInactive" (change)="onActiveFilterChange()">
                     <label class="form-check-label" for="showInactive">
                         Mostrar recintos inactivos
                     </label>
@@ -36,6 +36,25 @@
             </div>
         </div>
     </app-list-filters>
+
+    <!-- Pagination Info -->
+    <div class="pagination-info mb-3" *ngIf="totalItems > 0">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="showing-info">
+                Mostrando {{ (currentPage * itemsPerPage) + 1 }} - {{ Math.min((currentPage + 1) * itemsPerPage, totalItems) }} de {{ totalItems }} recintos
+            </div>
+            <div class="page-size-selector">
+                <label for="pageSize" class="form-label me-2">Recintos por página:</label>
+                <select id="pageSize" class="form-select form-select-sm" style="width: auto; display: inline-block;" 
+                        [value]="itemsPerPage" (change)="onPageSizeChange(+($any($event.target).value))">
+                    <option value="6">6</option>
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
     <!-- Loading State -->
     <div *ngIf="loading" class="text-center py-5">
@@ -51,18 +70,18 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!loading && !error && filteredVenues.length === 0" class="empty-state">
+    <div *ngIf="!loading && !error && venues.length === 0" class="empty-state">
         <div class="alert alert-info text-center">
             <i class="bi bi-search me-2"></i>No se encontraron recintos que coincidan con tu búsqueda.
-            <br><button class="btn btn-outline-primary mt-2" (click)="clearSearch()">
+            <br><button class="btn btn-outline-primary mt-2" (click)="searchTerm = ''; onSearchChange()">
                 Limpiar búsqueda
             </button>
         </div>
     </div>
 
     <!-- Venues Grid -->
-    <div *ngIf="!loading && filteredVenues.length > 0" class="items-grid">
-        <div *ngFor="let venue of filteredVenues" class="card h-100 venue-card" [class.inactive-venue]="!venue.active">
+    <div *ngIf="!loading && venues.length > 0" class="items-grid">
+        <div *ngFor="let venue of venues" class="card h-100 venue-card" [class.inactive-venue]="!venue.active">
             <!-- Badge de estado (si está inactivo) -->
             <div *ngIf="!venue.active" class="inactive-badge">
                 <span class="badge bg-danger">Inactivo</span>
@@ -70,9 +89,9 @@
 
             <!-- Imagen del recinto -->
             <div class="card-img-container">
-                <img *ngIf="venue.image && !hasImageError(venue)" [src]="venue.image" class="card-img-top"
-                    alt="{{ venue.name }}" (error)="onImageError(venue)">
-                <div *ngIf="!venue.image || hasImageError(venue)" class="card-img-placeholder">
+                <img *ngIf="venue.image && !hasImageError(venue.id!)" [src]="venue.image" class="card-img-top"
+                    alt="{{ venue.name }}" (error)="onImageError(venue.id!)">
+                <div *ngIf="!venue.image || hasImageError(venue.id!)" class="card-img-placeholder">
                     <i class="bi bi-building"></i>
                 </div>
             </div>
@@ -83,7 +102,7 @@
                     <i class="bi bi-geo-alt me-1"></i> {{ venue.address }}
                 </p>
                 <p class="card-text mb-2">
-                    <i class="bi bi-people me-1"></i> Capacidad: {{ formatCapacity(venue.totalCapacity) }}
+                    <i class="bi bi-people me-1"></i> Capacidad: {{ venue.totalCapacity ? venue.totalCapacity.toLocaleString('es-AR') : 'No especificada' }}
                 </p>
                 <p *ngIf="venue.description" class="card-text venue-description">
                     {{ venue.description }}
@@ -115,9 +134,9 @@
 
     <!-- Pagination -->
     <app-pagination 
-        [currentPage]="currentPage"
+        [currentPage]="displayCurrentPage"
         [totalPages]="totalPages"
         [loading]="loading"
-        (pageChange)="changePage($event)">
+        (pageChange)="onPageChange($event)">
     </app-pagination>
 </div>

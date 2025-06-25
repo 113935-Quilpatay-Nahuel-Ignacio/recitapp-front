@@ -1,0 +1,28 @@
+<div class="form-page-header mb-4" [ngClass]="headerClass">
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="header-content">
+      <h1 class="header-title mb-1">
+        <i [class]="getIcon()" class="me-3"></i>
+        {{ getTitle() }}
+      </h1>
+      <p class="header-subtitle text-muted mb-0">
+        {{ getSubtitle() }}
+      </p>
+    </div>
+    
+    <div class="header-actions">
+      <!-- Custom actions projection -->
+      <ng-container *ngTemplateOutlet="actions"></ng-container>
+      
+      <!-- Default back button -->
+      <button *ngIf="showBackButton" 
+              type="button" 
+              class="btn btn-outline-secondary" 
+              (click)="onCancel()">
+        <i class="bi bi-arrow-left me-1"></i>
+        <span class="d-none d-md-inline">{{ getBackButtonText() }}</span>
+        <span class="d-md-none">Volver</span>
+      </button>
+    </div>
+  </div>
+</div> 

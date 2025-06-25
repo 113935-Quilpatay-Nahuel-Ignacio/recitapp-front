@@ -1317,4 +1317,256 @@
   .items-grid {
     @include app-items-grid;
   }
+}
+
+// ========================================================================
+// DETAIL PAGE ENHANCED MIXINS
+// ========================================================================
+
+@mixin app-detail-image-enhanced {
+  .detail-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
+    
+    .detail-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+    
+    .detail-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--dark-card-hover), var(--dark-card));
+      color: var(--primary-green);
+      
+      .placeholder-content {
+        text-align: center;
+        
+        .placeholder-icon {
+          font-size: 3rem;
+          opacity: 0.6;
+          margin-bottom: 0.5rem;
+        }
+        
+        .placeholder-text {
+          font-size: 2rem;
+          font-weight: 700;
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}
+
+@mixin app-info-section-enhanced {
+  .info-section {
+    margin-bottom: 2rem;
+    
+    &.card {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section-title {
+      color: var(--dark-text);
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      
+      i {
+        color: var(--primary-green);
+        margin-right: 0.5rem;
+        font-size: 1.1em;
+      }
+    }
+    
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      
+      i {
+        font-size: 1.25rem;
+        margin-top: 0.25rem;
+        flex-shrink: 0;
+        color: var(--primary-green);
+      }
+      
+      .info-content {
+        flex: 1;
+        
+        .info-label {
+          font-weight: 600;
+          color: var(--dark-text-muted);
+          font-size: 0.9rem;
+          margin-bottom: 0.25rem;
+        }
+        
+        .info-value {
+          color: var(--dark-text);
+          font-size: 1rem;
+        }
+      }
+    }
+    
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      
+      .detail-item {
+        .detail-label {
+          font-weight: 600;
+          color: var(--dark-text-muted);
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+          display: flex;
+          align-items: center;
+          
+          i {
+            margin-right: 0.5rem;
+            color: var(--primary-green);
+          }
+        }
+        
+        .detail-value {
+          color: var(--dark-text);
+          font-size: 1rem;
+          
+          .detail-link {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            
+            &:hover {
+              color: var(--primary-green-hover);
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// ========================================================================
+// FORM PAGE ENHANCED MIXINS
+// ========================================================================
+
+@mixin app-form-controls-enhanced {
+  .form-label {
+    color: var(--dark-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    
+    i {
+      margin-right: 0.5rem;
+      font-size: 1em;
+    }
+  }
+  
+  .form-control,
+  .form-select {
+    background-color: var(--dark-input-bg, var(--dark-card-hover));
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+      background-color: var(--dark-input-focus-bg, var(--dark-card));
+    }
+    
+    &:hover:not(:focus) {
+      border-color: var(--dark-border-hover, #555);
+    }
+    
+    &::placeholder {
+      color: var(--dark-text-muted);
+      opacity: 0.7;
+    }
+  }
+  
+  .form-text {
+    color: var(--dark-text-muted);
+    font-size: 0.825rem;
+    margin-top: 0.25rem;
+  }
+  
+  .invalid-feedback {
+    color: var(--danger-red);
+    font-size: 0.825rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+  }
+}
+
+@mixin app-form-section-enhanced {
+  .form-section {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .form-section-title {
+      color: var(--dark-text);
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      
+      i {
+        color: var(--primary-green);
+        margin-right: 0.5rem;
+        font-size: 1em;
+      }
+    }
+  }
+}
+
+// ========================================================================
+// UNIFIED DETAIL PAGE MIXIN - COMPLETE SOLUTION
+// ========================================================================
+
+@mixin app-unified-detail-component {
+  @include app-detail-component;
+  @include app-detail-image-enhanced;
+  @include app-info-section-enhanced;
+}
+
+// ========================================================================
+// UNIFIED FORM COMPONENT MIXIN - COMPLETE SOLUTION  
+// ========================================================================
+
+@mixin app-unified-form-component {
+  @include app-form-component;
+  @include app-form-controls-enhanced;
+  @include app-form-section-enhanced;
 } 

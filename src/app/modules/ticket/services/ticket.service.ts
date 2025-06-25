@@ -99,6 +99,17 @@ export interface PromotionalTicketResponse {
   tickets: TicketResponseItem[];
 }
 
+export interface PaginatedTicketsResponse {
+  content: BackendTicketDTO[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -145,6 +156,24 @@ export class TicketService {
     return this.http.get<BackendTicketDTO[]>(`${this.apiUrl}/user/${userId}`)
       .pipe(
         map(backendTickets => backendTickets.map(this.mapBackendTicketToFrontend))
+      );
+  }
+
+  /**
+   * Get paginated tickets for a specific user
+   */
+  getUserTicketsPaginated(userId: number, page: number = 0, size: number = 10): Observable<{tickets: Ticket[], totalElements: number, totalPages: number}> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    return this.http.get<PaginatedTicketsResponse>(`${this.apiUrl}/user/${userId}/paginated`, { params })
+      .pipe(
+        map(response => ({
+          tickets: response.content.map(this.mapBackendTicketToFrontend),
+          totalElements: response.totalElements,
+          totalPages: response.totalPages
+        }))
       );
   }
 

@@ -4,7 +4,7 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow">
                 <div class="card-header bg-light py-3">
-                    <h2 class="mb-0 text-center">Modificar Perfil de Usuario</h2>
+                    <h2 class="mb-0 text-center">Perfil de Usuario</h2>
                 </div>
                 <div class="card-body">
                     <div *ngIf="loading && !user" class="text-center py-5">
@@ -68,33 +68,125 @@
                             <input type="text" formControlName="city" class="form-control" />
                         </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Nueva Contraseña (dejar vacío para mantener la
-                                actual)</label>
-                            <input type="password" formControlName="password" class="form-control"
-                                [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
-                            <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
-                                <div *ngIf="f['password'].errors['minlength']">La contraseña debe tener al menos 6
-                                    caracteres</div>
+                        <!-- Sección de cambio de contraseña mejorada -->
+                        <div class="mt-4 pt-3 border-top">
+                            <h5 class="mb-3">Cambiar Contraseña</h5>
+                            
+                            <div class="mb-3" *ngIf="showPasswordForm">
+                                <label for="currentPassword" class="form-label">Contraseña Actual *</label>
+                                <div class="input-group">
+                                    <input [type]="showCurrentPassword ? 'text' : 'password'" 
+                                           formControlName="currentPassword" 
+                                           class="form-control"
+                                           [ngClass]="{ 'is-invalid': submitted && f['currentPassword'].errors }" />
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            (click)="toggleCurrentPasswordVisibility()">
+                                        <i class="bi" [ngClass]="showCurrentPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                    </button>
+                                </div>
+                                <div *ngIf="submitted && f['currentPassword'].errors" class="invalid-feedback d-block">
+                                    <div *ngIf="f['currentPassword'].errors['required']">La contraseña actual es obligatoria</div>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
-                            <input type="password" formControlName="confirmPassword" class="form-control"
-                                [ngClass]="{ 'is-invalid': submitted && f['confirmPassword'].errors }" />
-                            <div *ngIf="submitted && f['confirmPassword'].errors" class="invalid-feedback">
-                                <div *ngIf="f['confirmPassword'].errors['passwordMismatch']">Las contraseñas no
-                                    coinciden</div>
+                            <div class="mb-3" *ngIf="!showPasswordForm">
+                                <button type="button" class="btn btn-outline-primary" (click)="togglePasswordForm()">
+                                    <i class="bi bi-key me-2"></i>Cambiar Contraseña
+                                </button>
+                            </div>
+
+                            <div *ngIf="showPasswordForm">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Nueva Contraseña *</label>
+                                    <div class="input-group">
+                                        <input [type]="showNewPassword ? 'text' : 'password'" 
+                                               formControlName="password" 
+                                               class="form-control"
+                                               [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+                                               (input)="checkPasswordStrength()" />
+                                        <button class="btn btn-outline-secondary" type="button" 
+                                                (click)="toggleNewPasswordVisibility()">
+                                            <i class="bi" [ngClass]="showNewPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                        </button>
+                                    </div>
+                                    <div *ngIf="submitted && f['password'].errors" class="invalid-feedback d-block">
+                                        <div *ngIf="f['password'].errors['required']">La nueva contraseña es obligatoria</div>
+                                        <div *ngIf="f['password'].errors['minlength']">La contraseña debe tener al menos 8 caracteres</div>
+                                        <div *ngIf="f['password'].errors['pattern']">La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial</div>
+                                    </div>
+                                    
+                                    <!-- Indicador de fortaleza de contraseña -->
+                                    <div *ngIf="f['password'].value" class="mt-2">
+                                        <div class="password-strength">
+                                            <small class="text-muted">Fortaleza de la contraseña:</small>
+                                            <div class="progress mt-1" style="height: 8px;">
+                                                <div class="progress-bar" 
+                                                     [ngClass]="passwordStrength.class"
+                                                     [style.width.%]="passwordStrength.score * 25">
+                                                </div>
+                                            </div>
+                                            <small [ngClass]="passwordStrength.class">{{ passwordStrength.text }}</small>
+                                        </div>
+                                        
+                                        <!-- Requisitos de contraseña -->
+                                        <div class="password-requirements mt-2">
+                                            <small class="d-block" [ngClass]="hasMinLength ? 'text-success' : 'text-muted'">
+                                                <i class="bi" [ngClass]="hasMinLength ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                                                Al menos 8 caracteres
+                                            </small>
+                                            <small class="d-block" [ngClass]="hasUppercase ? 'text-success' : 'text-muted'">
+                                                <i class="bi" [ngClass]="hasUppercase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                                                Una letra mayúscula
+                                            </small>
+                                            <small class="d-block" [ngClass]="hasLowercase ? 'text-success' : 'text-muted'">
+                                                <i class="bi" [ngClass]="hasLowercase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                                                Una letra minúscula
+                                            </small>
+                                            <small class="d-block" [ngClass]="hasNumber ? 'text-success' : 'text-muted'">
+                                                <i class="bi" [ngClass]="hasNumber ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                                                Un número
+                                            </small>
+                                            <small class="d-block" [ngClass]="hasSpecialChar ? 'text-success' : 'text-muted'">
+                                                <i class="bi" [ngClass]="hasSpecialChar ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                                                Un carácter especial (!&#64;#$%^&*)
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña *</label>
+                                    <div class="input-group">
+                                        <input [type]="showConfirmPassword ? 'text' : 'password'" 
+                                               formControlName="confirmPassword" 
+                                               class="form-control"
+                                               [ngClass]="{ 'is-invalid': submitted && f['confirmPassword'].errors }" />
+                                        <button class="btn btn-outline-secondary" type="button" 
+                                                (click)="toggleConfirmPasswordVisibility()">
+                                            <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                        </button>
+                                    </div>
+                                    <div *ngIf="submitted && f['confirmPassword'].errors" class="invalid-feedback d-block">
+                                        <div *ngIf="f['confirmPassword'].errors['required']">La confirmación de contraseña es obligatoria</div>
+                                        <div *ngIf="f['confirmPassword'].errors['passwordMismatch']">Las contraseñas no coinciden</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-outline-secondary" (click)="cancelPasswordChange()">
+                                        <i class="bi bi-x-circle me-2"></i>Cancelar Cambio
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <button type="submit" class="btn btn-primary" [disabled]="loading">
+                            <button type="submit" class="btn btn-primary" [disabled]="loading || !hasFormChanges">
                                 <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
                                 Guardar Cambios
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" routerLink="/">Cancelar</button>
+                            <button type="button" class="btn btn-outline-secondary" (click)="cancelChanges()" 
+                                    [disabled]="!hasFormChanges">Cancelar</button>
                         </div>
                     </form>
 

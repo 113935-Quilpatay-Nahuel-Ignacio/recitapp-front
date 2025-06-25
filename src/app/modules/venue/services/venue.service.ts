@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
@@ -8,6 +8,17 @@ import {
   VenueSection,
   VenueStatistics,
 } from '../models/venue';
+
+export interface PaginatedVenuesResponse {
+  content: Venue[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +30,24 @@ export class VenueService {
 
   getAllVenues(activeOnly: boolean = true): Observable<Venue[]> {
     return this.http.get<Venue[]>(`${this.baseUrl}?activeOnly=${activeOnly}`);
+  }
+
+  getVenuesPaginated(
+    page: number = 0, 
+    size: number = 12, 
+    search?: string, 
+    activeOnly: boolean = true
+  ): Observable<PaginatedVenuesResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('activeOnly', activeOnly.toString());
+    
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
+    }
+    
+    return this.http.get<PaginatedVenuesResponse>(`${this.baseUrl}/paginated`, { params });
   }
 
   searchVenuesByName(name: string): Observable<Venue[]> {

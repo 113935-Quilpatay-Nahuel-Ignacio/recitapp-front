@@ -4,11 +4,21 @@ import { PageHeaderComponent } from './components/page-header/page-header.compon
 import { ListFiltersComponent } from './components/list-filters/list-filters.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 
+// New unified components for detail pages and forms
+import { DetailPageHeaderComponent } from './components/detail-page-header/detail-page-header.component';
+import { DetailImageComponent } from './components/detail-image/detail-image.component';
+import { InfoSectionComponent } from './components/info-section/info-section.component';
+import { FormPageHeaderComponent } from './components/form-page-header/form-page-header.component';
+
 @NgModule({
   declarations: [
     PageHeaderComponent,
     ListFiltersComponent,
-    PaginationComponent
+    PaginationComponent,
+    DetailPageHeaderComponent,
+    DetailImageComponent,
+    InfoSectionComponent,
+    FormPageHeaderComponent
   ],
   imports: [
     CommonModule
@@ -16,7 +26,11 @@ import { PaginationComponent } from './components/pagination/pagination.componen
   exports: [
     PageHeaderComponent,
     ListFiltersComponent,
-    PaginationComponent
+    PaginationComponent,
+    DetailPageHeaderComponent,
+    DetailImageComponent,
+    InfoSectionComponent,
+    FormPageHeaderComponent
   ]
 })
 export class SharedModule { }

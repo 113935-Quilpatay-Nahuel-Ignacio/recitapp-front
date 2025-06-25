@@ -523,6 +523,11 @@ export class TicketPurchaseComponent implements OnInit {
           paymentRequest: paymentRequest // Include original payment request
         };
         this.showPaymentForm = true;
+        
+        // Scroll to bottom to show the payment form
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 100);
       });
   }
 

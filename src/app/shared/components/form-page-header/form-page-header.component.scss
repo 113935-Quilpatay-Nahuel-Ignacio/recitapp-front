@@ -1,0 +1,133 @@
+.form-page-header {
+  background: linear-gradient(135deg, var(--dark-card, #2c2c34) 0%, var(--dark-bg, #1a1a1a) 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--dark-border, #404040);
+
+  .header-content {
+    flex: 1;
+    min-width: 0;
+
+    .header-title {
+      color: var(--dark-text, #e0e0e0) !important;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      font-size: 2rem;
+      
+      i {
+        font-size: 1.2em;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 1.75rem;
+        
+        i {
+          font-size: 1.1em;
+        }
+      }
+    }
+
+    .header-subtitle {
+      color: var(--dark-text-muted, #a3a3a3) !important;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+  }
+
+  .header-actions {
+    flex-shrink: 0;
+
+    .btn {
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      padding: 0.75rem 1.5rem;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
+
+      &.btn-outline-secondary {
+        border-color: var(--dark-border, #404040);
+        color: var(--dark-text, #e0e0e0);
+
+        &:hover {
+          background-color: var(--dark-card-hover, #3a3a3a);
+          border-color: var(--dark-border-hover, #555);
+          color: var(--dark-text, #e0e0e0);
+        }
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    
+    .d-flex {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start !important;
+      
+      .header-actions {
+        align-self: stretch;
+        
+        .btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Enhanced styling for different entity types
+.form-page-header {
+  // Artist form styling
+  &.artist-form {
+    border-left: 4px solid var(--primary-green, #22c55e);
+  }
+
+  // Event form styling  
+  &.event-form {
+    border-left: 4px solid var(--primary-blue, #3b82f6);
+  }
+
+  // Venue form styling
+  &.venue-form {
+    border-left: 4px solid var(--primary-purple, #8b5cf6);
+  }
+}
+
+// Card header styling for form cards
+.form-card-header {
+  border: none;
+  border-radius: 0.75rem 0.75rem 0 0;
+  padding: 1.5rem;
+
+  &.bg-gradient-create {
+    background: linear-gradient(135deg, var(--primary-green, #22c55e), var(--primary-green-dark, #16a34a));
+    color: white;
+  }
+
+  &.bg-gradient-edit {
+    background: linear-gradient(135deg, var(--warning-orange, #f59e0b), var(--warning-orange-dark, #d97706));
+    color: white;
+  }
+
+  h5 {
+    color: inherit;
+    font-weight: 600;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+
+    i {
+      margin-right: 0.5rem;
+      font-size: 1.1em;
+    }
+  }
+} 

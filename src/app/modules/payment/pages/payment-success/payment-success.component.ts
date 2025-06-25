@@ -22,12 +22,12 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
                 Tu compra ha sido procesada correctamente.
               </p>
               
-              <div class="alert alert-info mb-4" *ngIf="paymentId">
+              <div class="alert alert-info mb-4" *ngIf="isDataLoaded && paymentId">
                 <strong>ID de Pago:</strong> {{ paymentId }}
               </div>
               
-              <div class="alert alert-info mb-4" *ngIf="status">
-                <strong>Estado:</strong> {{ status }}
+              <div class="alert alert-info mb-4" *ngIf="isDataLoaded && status">
+                <strong>Estado:</strong> {{ getStatusText(status) }}
               </div>
               
               <p class="text-muted mb-4">
@@ -65,13 +65,30 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 export class PaymentSuccessComponent implements OnInit {
   paymentId: string | null = null;
   status: string | null = null;
+  isDataLoaded = false;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.paymentId = params['payment_id'] || null;
+      this.paymentId = params['payment_id'] || params['transaction_id'] || null;
       this.status = params['status'] || null;
+      this.isDataLoaded = true; // Mark as loaded after processing params
     });
+  }
+
+  getStatusText(status: string | null): string {
+    if (!status) return 'Estado desconocido';
+    
+    const statusMap: { [key: string]: string } = {
+      'COMPLETED': 'Completado exitosamente',
+      'approved': 'Aprobado',
+      'pending': 'Pendiente de procesamiento',
+      'rejected': 'Rechazado',
+      'cancelled': 'Cancelado',
+      'in_process': 'En proceso'
+    };
+    
+    return statusMap[status] || status.charAt(0).toUpperCase() + status.slice(1);
   }
 } 

@@ -132,78 +132,104 @@ export class TransactionHistoryComponent implements OnInit {
   }
 
   // Placeholder for RAPP113935-111: Register Refund
-  // This would typically involve more complex UI/logic
+  // Simplificado: siempre agrega saldo a billetera virtual
   requestRefund(transactionId: number): void {
-    this.modalService.showPrompt({
-      title: 'Solicitar Reembolso',
-      message: 'Por favor, ingrese el motivo del reembolso:',
-      placeholder: 'Motivo del reembolso...',
-      confirmText: 'Continuar',
+    const transaction = this.transactions.find(t => t.id === transactionId);
+    if (!transaction) {
+      this.modalService.error('Transacción no encontrada.', 'Error');
+      return;
+    }
+
+    this.modalService.showConfirm({
+      title: 'Confirmar Reembolso',
+      message: '¿Está seguro de que desea procesar el reembolso? El monto será agregado a su billetera virtual.',
+      type: 'info',
+      confirmText: 'Sí, procesar reembolso',
       cancelText: 'Cancelar',
-      inputType: 'textarea'
-    }).subscribe(reasonResult => {
-      if (reasonResult.confirmed && reasonResult.value) {
-        const reason = reasonResult.value;
+      details: [
+        `Transacción: #${transactionId}`,
+        `Monto: $${transaction.totalAmount}`,
+        'El saldo se agregará a su billetera virtual inmediatamente'
+      ]
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        // Filter out already refunded tickets
+        const availableTickets = transaction.details?.filter(detail => !detail.isRefunded && detail.ticketStatus !== 'CANCELADA') || [];
         
+        if (availableTickets.length === 0) {
+          this.modalService.info('No hay tickets disponibles para reembolso en esta transacción. Todos los tickets ya han sido reembolsados.', 'Sin Tickets Disponibles');
+          return;
+        }
+
+        if (availableTickets.length === 1) {
+          // Only one ticket available, process full refund for this ticket
+          this.modalService.showConfirm({
+            title: 'Confirmar Reembolso',
+            message: 'Solo queda un ticket disponible para reembolso. Se procesará como reembolso completo.',
+            type: 'info',
+            confirmText: 'Procesar Reembolso',
+            cancelText: 'Cancelar',
+            details: [
+              `Ticket: ${availableTickets[0].eventName}`,
+              `Monto: $${availableTickets[0].unitPrice}`,
+              'El monto se agregará a su billetera virtual'
+            ]
+          }).subscribe(confirmedSingle => {
+            if (confirmedSingle) {
+              this.processSimplifiedRefund(transactionId, false, [availableTickets[0].ticketId]);
+            }
+          });
+          return;
+        }
+
+        // Multiple tickets available, show selection
         this.modalService.showConfirm({
           title: 'Tipo de Reembolso',
-          message: '¿Es este un reembolso completo?',
+          message: `Tickets disponibles para reembolso: ${availableTickets.length}. ¿Desea reembolsar todos los tickets?`,
           type: 'info',
-          confirmText: 'Reembolso Completo',
-          cancelText: 'Reembolso Parcial'
+          confirmText: 'Reembolsar Todos',
+          cancelText: 'Seleccionar Tickets'
         }).subscribe(isFullRefund => {
           if (isFullRefund) {
-            // Full refund
-            this.processRefund(transactionId, reason, true);
+            // Refund all available tickets
+            const allAvailableIds = availableTickets.map(t => t.ticketId);
+            this.processSimplifiedRefund(transactionId, false, allAvailableIds);
           } else {
-            // Partial refund - ask for ticket IDs
-            this.modalService.showPrompt({
-              title: 'Reembolso Parcial',
-              message: 'Ingrese los IDs de tickets a reembolsar (separados por comas):',
-              placeholder: 'Ej: 1, 2, 3',
-              confirmText: 'Procesar Reembolso',
-              cancelText: 'Cancelar'
-            }).subscribe(ticketIdsResult => {
-              if (ticketIdsResult.confirmed && ticketIdsResult.value) {
-                const ticketIds = ticketIdsResult.value.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
-                
-                if (ticketIds.length === 0) {
-                  this.modalService.error('IDs de tickets inválidos o no proporcionados.', 'Error de Validación');
-                  return;
-                }
-                
-                this.processRefund(transactionId, reason, false, ticketIds);
-              } else {
-                this.modalService.info('Reembolso parcial cancelado: No se proporcionaron IDs de tickets.');
-              }
-            });
+            // Show ticket selection interface for partial refund
+            this.showImprovedTicketSelectionModal(transaction, availableTickets);
           }
         });
       }
     });
   }
 
-  private processRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
-    // Show enhanced refund options
-    this.modalService.showConfirm({
-      title: 'Opciones de Reembolso',
-      message: '¿Desea usar el sistema de reembolso mejorado con integración MercadoPago?',
-      type: 'info',
-      confirmText: 'Reembolso Mejorado',
-      cancelText: 'Reembolso Básico'
-    }).subscribe(useEnhanced => {
-      if (useEnhanced) {
-        this.processEnhancedRefund(transactionId, reason, fullRefund, ticketIds);
-      } else {
-        this.processBasicRefund(transactionId, reason, fullRefund, ticketIds);
-      }
-    });
-  }
+  private processSimplifiedRefund(transactionId: number, fullRefund: boolean, ticketIds?: number[]): void {
+    const transaction = this.transactions.find(t => t.id === transactionId);
+    if (!transaction) {
+      this.modalService.error('Transacción no encontrada.', 'Error');
+      return;
+    }
 
-  private processBasicRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
+    // Crear descripción automática
+    const ticketCount = fullRefund ? 'todas las entradas' : `${ticketIds?.length || 0} entrada(s)`;
+    
+    // Extraer el nombre del evento de la descripción original
+    let eventName = 'evento';
+    if (transaction.description) {
+      // Buscar patrón "para [nombre del evento]" en la descripción
+      const match = transaction.description.match(/para (.+?)(?:\s-\s|$)/);
+      if (match && match[1]) {
+        eventName = match[1].trim();
+      }
+    }
+    
+    const paymentMethod = this.getPaymentMethodName(transaction.paymentMethodId?.toString() || 'UNKNOWN');
+    
+    const autoDescription = `Reembolso de ${ticketCount} para ${eventName} - Pago procesado con ${paymentMethod}`;
+
     const refundRequest: RefundRequestDTO = {
       transactionId,
-      reason,
+      reason: autoDescription,
       fullRefund,
     };
 
@@ -211,67 +237,15 @@ export class TransactionHistoryComponent implements OnInit {
       refundRequest.ticketIds = ticketIds;
     }
 
+    this.loading = true;
     this.transactionService.registerRefund(refundRequest).subscribe({
       next: (refundTransaction) => {
-        this.modalService.success(`Reembolso básico para transacción ${transactionId} procesado. ID de reembolso: ${refundTransaction.id}`).subscribe(() => {
-          this.loadTransactions();
-        });
-      },
-      error: (err) => {
-        console.error('Error processing basic refund:', err);
-        this.modalService.error('Error al procesar el reembolso básico.', 'Error de Reembolso');
-      },
-    });
-  }
-
-  private processEnhancedRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
-    const enhancedRefundRequest: EnhancedRefundRequestDTO = {
-      transactionId,
-      reason: `${reason} - Procesado con sistema mejorado MercadoPago`,
-      fullRefund,
-      forceMercadoPagoRefund: false,
-      allowWalletFallback: true
-    };
-
-    if (!fullRefund && ticketIds && ticketIds.length > 0) {
-      enhancedRefundRequest.ticketIds = ticketIds;
-    }
-
-    this.loading = true;
-    this.transactionService.registerEnhancedRefund(enhancedRefundRequest).subscribe({
-      next: (response: EnhancedRefundResponseDTO) => {
         this.loading = false;
         
-        let message = `🎉 Reembolso procesado exitosamente\n💰 Monto: $${response.refundAmount}`;
-        
-        if (response.mercadoPagoRefundSuccessful) {
-          message += `\n\n✅ PROCESADO VÍA MERCADOPAGO`;
-          message += `\n🔗 ID de reembolso: ${response.mercadoPagoRefundId}`;
-          message += `\n📊 Estado: ${response.status}`;
-          message += `\n\n💳 El dinero será devuelto a su método de pago original`;
-          
-          // Información adicional según el estado
-          if (response.status === 'approved') {
-            message += `\n⚡ Reembolso aprobado inmediatamente`;
-          } else if (response.status === 'pending') {
-            message += `\n⏳ Reembolso en proceso - Se completará en días hábiles`;
-          }
-        } else if (response.walletFallbackUsed) {
-          message += `\n\n💰 CRÉDITO AGREGADO A BILLETERA VIRTUAL`;
-          message += `\n🏦 Nuevo saldo: $${response.newWalletBalance}`;
-          message += `\n📝 Motivo: El reembolso vía MercadoPago no fue posible`;
-          
-          if (response.mercadoPagoErrorMessage) {
-            message += `\n⚠️ Error MercadoPago: ${response.mercadoPagoErrorMessage}`;
-          }
-        }
-        
-        if (response.processedAt) {
-          const processedDate = new Date(response.processedAt);
-          message += `\n\n⏰ Procesado: ${processedDate.toLocaleString()}`;
-        }
-        
-        message += `\n\n📋 Método de procesamiento: ${response.processingMethod}`;
+        let message = `🎉 Reembolso procesado exitosamente\n`;
+        message += `💰 Monto agregado a billetera virtual: $${refundTransaction.totalAmount}\n`;
+        message += `📝 Descripción: ${autoDescription}\n`;
+        message += `⏰ Procesado: ${new Date().toLocaleString()}`;
         
         this.modalService.success(message).subscribe(() => {
           this.loadTransactions();
@@ -279,15 +253,111 @@ export class TransactionHistoryComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        console.error('Error processing enhanced refund:', err);
-        
-        let errorMessage = 'Error al procesar el reembolso mejorado';
-        if (err.error && err.error.message) {
-          errorMessage += `: ${err.error.message}`;
-        }
-        
-        this.modalService.error(errorMessage, 'Error de Reembolso');
+        console.error('Error processing refund:', err);
+        this.modalService.error('Error al procesar el reembolso.', 'Error de Reembolso');
       },
     });
+  }
+
+  private getPaymentMethodName(paymentMethod: string): string {
+    const methodMap: { [key: string]: string } = {
+      '1': 'MercadoPago',
+      '2': 'Tarjeta de Crédito', 
+      '3': 'Tarjeta de Débito',
+      '4': 'Transferencia Bancaria',
+      '5': 'Billetera Virtual',
+      '6': 'Efectivo',
+      'MERCADO_PAGO': 'MercadoPago',
+      'MERCADOPAGO': 'MercadoPago',
+      'CREDIT_CARD': 'Tarjeta de Crédito',
+      'DEBIT_CARD': 'Tarjeta de Débito',
+      'BANK_TRANSFER': 'Transferencia Bancaria',
+      'WALLET': 'Billetera Virtual',
+      'CASH': 'Efectivo'
+    };
+    
+    return methodMap[paymentMethod] || 'Método de Pago';
+  }
+
+  private showImprovedTicketSelectionModal(transaction: Transaction, availableTickets: any[]): void {
+    if (!availableTickets || availableTickets.length === 0) {
+      this.modalService.error('No hay tickets disponibles para reembolso.', 'Error');
+      return;
+    }
+
+    // Create a detailed list of available tickets for selection
+    const ticketOptions = availableTickets.map(detail => ({
+      ticketId: detail.ticketId,
+      display: `Ticket #${detail.ticketId} - ${detail.eventName || 'Evento'} - $${detail.unitPrice} (${detail.ticketStatus || 'Estado desconocido'})`,
+      price: detail.unitPrice,
+      eventName: detail.eventName,
+      ticketCode: detail.ticketCode,
+      status: detail.ticketStatus
+    }));
+
+    // Show a custom modal with checkboxes (simplified version using confirm with details)
+    const ticketList = ticketOptions.map((ticket, index) => `${index + 1}. ${ticket.display}`).join('\n');
+    
+    this.modalService.showPrompt({
+      title: 'Seleccionar Tickets para Reembolso',
+      message: `Seleccione los tickets a reembolsar escribiendo sus números separados por comas.\n\nTickets disponibles:\n${ticketList}`,
+      placeholder: 'Ej: 1, 3, 5 (números de la lista)',
+      confirmText: 'Procesar Reembolso Parcial',
+      cancelText: 'Cancelar'
+    }).subscribe(result => {
+      if (result.confirmed && result.value) {
+        const selectedIndices = result.value.split(',')
+          .map(index => parseInt(index.trim(), 10) - 1) // Convert to 0-based index
+          .filter(index => !isNaN(index) && index >= 0 && index < ticketOptions.length);
+
+        if (selectedIndices.length === 0) {
+          this.modalService.error('Números inválidos. Verifique los números ingresados.', 'Error de Validación');
+          return;
+        }
+
+        // Get selected tickets
+        const selectedTickets = selectedIndices.map(index => ticketOptions[index]);
+        const selectedIds = selectedTickets.map(ticket => ticket.ticketId);
+
+        // Calculate refund amount
+        const refundAmount = selectedTickets.reduce((sum, ticket) => sum + ticket.price, 0);
+
+        // Show confirmation with calculated amount and ticket details
+        const ticketDetails = selectedTickets.map(t => `• ${t.eventName} - $${t.price}`).join('\n');
+        
+        this.modalService.showConfirm({
+          title: 'Confirmar Reembolso Parcial',
+          message: `¿Confirma el reembolso parcial de ${selectedTickets.length} entrada(s)?`,
+          type: 'info',
+          confirmText: 'Sí, procesar reembolso',
+          cancelText: 'Cancelar',
+          details: [
+            `Tickets seleccionados:\n${ticketDetails}`,
+            `Monto total a reembolsar: $${refundAmount}`,
+            'El monto se agregará a su billetera virtual'
+          ]
+        }).subscribe(confirmed => {
+          if (confirmed) {
+            this.processSimplifiedRefund(transaction.id, false, selectedIds);
+          }
+        });
+      }
+    });
+  }
+
+  // Remover métodos de reembolso mejorado que ya no se usan
+  private processRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
+    // Método obsoleto - usar processSimplifiedRefund en su lugar
+    this.processSimplifiedRefund(transactionId, fullRefund, ticketIds);
+  }
+
+  private processBasicRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
+    // Método obsoleto - usar processSimplifiedRefund en su lugar
+    this.processSimplifiedRefund(transactionId, fullRefund, ticketIds);
+  }
+
+  private processEnhancedRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
+    // Método obsoleto - usar processSimplifiedRefund en su lugar
+    this.processSimplifiedRefund(transactionId, fullRefund, ticketIds);
   }
 }

@@ -1,0 +1,19 @@
+<div [ngClass]="getContainerClasses()" [style.height]="height">
+  <!-- Image with error handling -->
+  <img *ngIf="src && !imageError$" 
+       [src]="src" 
+       [alt]="alt"
+       [ngClass]="getImageClasses()"
+       (error)="onImageError($event)"
+       (load)="onImageLoad($event)">
+  
+  <!-- Placeholder when no image or error -->
+  <div *ngIf="!src || imageError$" [ngClass]="getPlaceholderClasses()">
+    <div class="placeholder-content text-center">
+      <i [class]="placeholderIcon" class="placeholder-icon"></i>
+      <div class="placeholder-text" *ngIf="getPlaceholderText()">
+        {{ getPlaceholderText() }}
+      </div>
+    </div>
+  </div>
+</div> 

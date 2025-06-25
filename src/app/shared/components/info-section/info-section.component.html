@@ -1,0 +1,36 @@
+<div [ngClass]="getSectionClasses()">
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-state text-center py-4">
+    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <small class="text-muted ms-2">Cargando...</small>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" [ngClass]="getContentClasses()">
+    <!-- Title with icon and actions -->
+    <div *ngIf="title" class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3 [ngClass]="getTitleClasses()">
+        <i *ngIf="icon" class="bi bi-{{ icon }} me-2"></i>{{ title }}
+      </h3>
+      
+      <!-- Actions projection -->
+      <div *ngIf="actions" class="section-actions">
+        <ng-container *ngTemplateOutlet="actions"></ng-container>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="empty && !loading" class="empty-state text-center py-4">
+      <i class="bi bi-{{ emptyIcon }} text-muted" style="font-size: 2rem;"></i>
+      <p class="text-muted mt-2 mb-0">{{ emptyMessage }}</p>
+    </div>
+
+    <!-- Content projection -->
+    <div *ngIf="!empty" class="section-body">
+      <ng-container *ngTemplateOutlet="content"></ng-container>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div> 

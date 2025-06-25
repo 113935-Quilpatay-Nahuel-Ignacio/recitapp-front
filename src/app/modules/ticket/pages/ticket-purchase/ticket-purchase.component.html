@@ -312,7 +312,7 @@
         </form>
 
         <!-- Formulario del pagador -->
-        <div class="payer-form" *ngIf="showPayerForm">
+        <div class="payer-form mt-5" *ngIf="showPayerForm">
           <h4><i class="bi bi-person-fill me-2"></i>Datos del Pagador</h4>
           <form [formGroup]="payerForm" (ngSubmit)="proceedToPayment()">
             <div class="row">
@@ -467,7 +467,7 @@
         </div>
 
         <!-- Formulario de pago con MercadoPago Bricks -->
-        <div class="payment-form" *ngIf="showPaymentForm && paymentData">
+        <div class="payment-form mt-5" *ngIf="showPaymentForm && paymentData">
           <h4><i class="bi bi-credit-card me-2"></i>Completar Pago</h4>
           
           <div class="payment-summary mb-4">

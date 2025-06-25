@@ -53,6 +53,7 @@ export class AuthService {
    */
   private initializeAuth(): void {
     if (!this.isBrowser()) {
+      console.log('🌐 [AuthService] Not in browser, skipping auth initialization');
       return;
     }
 
@@ -60,28 +61,31 @@ export class AuthService {
     const refreshToken = this.getRefreshToken();
     const user = this.getStoredUser();
 
+    console.log('🔑 [AuthService] Initializing auth - Token:', !!token, 'RefreshToken:', !!refreshToken, 'User:', !!user);
+
     if (token && user && this.isTokenValid(token)) {
+      console.log('✅ [AuthService] Valid token found, setting authenticated state');
       this.currentUserSubject.next(user);
       this.isAuthenticatedSubject.next(true);
       this.scheduleTokenRefresh();
     } else if (refreshToken && user) {
+      console.log('🔄 [AuthService] Token expired, attempting refresh');
       // Si el token expiró pero tenemos refresh token, intentar renovar
       this.refreshToken().subscribe({
         next: () => {
-          // Token renovado exitosamente
+          console.log('✅ [AuthService] Token refreshed successfully');
         },
         error: () => {
-          // Error al renovar, limpiar datos
+          console.log('❌ [AuthService] Token refresh failed, clearing data');
           this.clearAuthData();
         }
       });
     } else {
+      console.log('🚫 [AuthService] No valid tokens, clearing auth data');
       // No hay tokens válidos, limpiar datos
       this.clearAuthData();
     }
   }
-
-
 
   /**
    * Iniciar sesión
@@ -179,6 +183,21 @@ export class AuthService {
    */
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
+  }
+
+  /**
+   * Actualizar usuario actual
+   */
+  updateCurrentUser(updatedUser: User): void {
+    if (!this.isBrowser()) {
+      return;
+    }
+    
+    // Update localStorage
+    localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
+    
+    // Update BehaviorSubject
+    this.currentUserSubject.next(updatedUser);
   }
 
   /**
@@ -397,6 +416,4 @@ export class AuthService {
 
     return throwError(() => new Error(errorMessage));
   };
-
-
 } 

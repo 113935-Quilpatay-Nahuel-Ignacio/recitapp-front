@@ -41,6 +41,12 @@ export class TicketListComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
   
+  // Pagination properties
+  currentPage = 0;
+  pageSize = 12;
+  totalElements = 0;
+  totalPages = 0;
+  
   // Filter properties
   searchTerm = '';
   selectedStatus = 'all';
@@ -72,23 +78,19 @@ export class TicketListComponent implements OnInit {
       return;
     }
 
-    this.ticketService.getUserTickets(currentUser.id)
+    this.ticketService.getUserTicketsPaginated(currentUser.id, this.currentPage, this.pageSize)
       .pipe(
         catchError((error: any) => {
           console.error('Error loading user tickets:', error);
           this.error = 'Error al cargar las entradas';
-          return of([]);
+          return of({tickets: [], totalElements: 0, totalPages: 0});
         })
       )
-      .subscribe(tickets => {
-        console.log('🎁 [DEBUG] Tickets loaded:', tickets);
-        console.log('🎁 [DEBUG] First few tickets with type info:', tickets.slice(0, 3).map(t => ({
-          id: t.id,
-          eventName: t.eventName,
-          ticketType: t.ticketType,
-          promotionName: t.promotionName
-        })));
-        this.tickets = tickets;
+      .subscribe(response => {
+        console.log('🎁 [DEBUG] Paginated tickets loaded:', response);
+        this.tickets = response.tickets;
+        this.totalElements = response.totalElements;
+        this.totalPages = response.totalPages;
         this.calculateStats();
         this.applyFilters();
         this.isLoading = false;
@@ -337,7 +339,31 @@ export class TicketListComponent implements OnInit {
   }
 
   refreshTickets(): void {
+    this.currentPage = 0; // Reset to first page
     this.loadUserTickets();
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadUserTickets();
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 0; // Reset to first page
+    this.loadUserTickets();
+  }
+
+  get pageNumbers(): number[] {
+    const pages = [];
+    for (let i = 0; i < this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  getEndIndex(): number {
+    return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
   }
 
   goToEvents(): void {

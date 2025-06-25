@@ -184,27 +184,19 @@
               
               <div *ngIf="stats && !isLoadingStats" class="stats-card">
                 <div class="row g-0">
-                  <div class="col-sm-4">
-                    <div class="stat-item">
-                      <div class="stat-value">{{ stats.totalTickets | number:'1.0-0':'es-AR' }}</div>
-                      <div class="stat-label">
-                        <i class="bi bi-ticket-detailed me-1"></i>Total Tickets
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-6">
                     <div class="stat-item">
                       <div class="stat-value">{{ stats.soldTickets | number:'1.0-0':'es-AR' }}</div>
                       <div class="stat-label">
-                        <i class="bi bi-ticket-perforated me-1"></i>Vendidos
+                        <i class="bi bi-ticket-perforated me-1"></i>Tickets Vendidos
                       </div>
                     </div>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-6">
                     <div class="stat-item">
-                      <div class="stat-value">{{ stats.occupancyRate | number:'1.1-1':'es-AR' }}%</div>
+                      <div class="stat-value">{{ getAvailableOccupancyPercentage() | number:'1.2-2':'es-AR' }}%</div>
                       <div class="stat-label">
-                        <i class="bi bi-pie-chart-fill me-1"></i>Ocupación
+                        <i class="bi bi-pie-chart-fill me-1"></i>Ocupación Disponible
                       </div>
                     </div>
                   </div>
