@@ -57,14 +57,8 @@ export class EventListComponent implements OnInit {
   // Expose Number function to template
   Number = Number;
 
-  // Admin and Cleanup related properties
-  isAdmin = true; // Placeholder for real role management
-  cleanupCutoffDate: string = ''; // For ngModel binding
-  isCleaningUp = false;
-  cleanupSuccessMessage = '';
-  cleanupErrorMessage = '';
-
-  // Admin and role management
+  // User role management
+  isAdmin = false; // Changed from hardcoded true to false
   isModerador = false;
   isComprador = false;
   isEventRegistrar = false;
@@ -73,6 +67,12 @@ export class EventListComponent implements OnInit {
 
   // Filter for REGISTRADOR_EVENTO to see only their events
   showOnlyMyEvents = false;
+
+  // Admin cleanup related properties
+  cleanupCutoffDate: string = ''; // For ngModel binding
+  isCleaningUp = false;
+  cleanupSuccessMessage = '';
+  cleanupErrorMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -157,12 +157,21 @@ export class EventListComponent implements OnInit {
       filters.registrarId = this.currentUser.id;
     }
 
+    console.log('🔍 [DEBUG] loadEvents filters applied:', {
+      showOnlyMyEvents: this.showOnlyMyEvents,
+      isEventRegistrar: this.isEventRegistrar,
+      registrarIdApplied: filters.registrarId,
+      allFilters: filters
+    });
+
     // Remove empty/null values
     Object.keys(filters).forEach(key => {
       if (filters[key] === null || filters[key] === '' || filters[key] === undefined) {
         delete filters[key];
       }
     });
+
+    console.log('🔍 [DEBUG] Final filters sent to API:', filters);
 
     this.eventService.searchEvents(filters).subscribe({
       next: (events) => {
@@ -352,6 +361,12 @@ export class EventListComponent implements OnInit {
   }
 
   onMyEventsFilterChange(): void {
+    console.log('🔍 [DEBUG] onMyEventsFilterChange called:', {
+      showOnlyMyEvents: this.showOnlyMyEvents,
+      isEventRegistrar: this.isEventRegistrar,
+      currentUser: this.currentUser,
+      currentUserId: this.currentUser?.id
+    });
     this.loadEvents();
   }
 
