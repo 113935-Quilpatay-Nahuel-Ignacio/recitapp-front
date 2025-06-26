@@ -391,24 +391,11 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
    * Check if the current user owns this event
    */
   isEventOwner(): boolean {
-    console.log('🔍 [DEBUG] isEventOwner check:', {
-      hasEvent: !!this.event,
-      hasCurrentUser: !!this.currentUser,
-      isEventRegistrar: this.isEventRegistrar,
-      eventRegistrarId: this.event?.registrarId,
-      currentUserId: this.currentUser?.id,
-      eventRegistrarIdType: typeof this.event?.registrarId,
-      currentUserIdType: typeof this.currentUser?.id
-    });
-    
     if (!this.event || !this.currentUser || !this.isEventRegistrar) {
-      console.log('🔍 [DEBUG] isEventOwner: early return false - missing basic requirements');
       return false;
     }
     
-    const result = Number(this.event.registrarId) === Number(this.currentUser.id);
-    console.log('🔍 [DEBUG] isEventOwner result:', result);
-    return result;
+    return Number(this.event.registrarId) === Number(this.currentUser.id);
   }
 
   /**
@@ -419,20 +406,7 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     const isOwner = this.isEventOwner();
     const isNotComprador = !this.isComprador;
     
-    const result = (isAdminOrModerador || isOwner) && isNotComprador;
-    
-    console.log('🔍 [DEBUG] shouldShowAdminActions check:', {
-      isAdmin: this.isAdmin,
-      isModerador: this.isModerador,
-      isEventRegistrar: this.isEventRegistrar,
-      isComprador: this.isComprador,
-      isAdminOrModerador,
-      isOwner,
-      isNotComprador,
-      result
-    });
-    
-    return result;
+    return (isAdminOrModerador || isOwner) && isNotComprador;
   }
 
   // TODO: Implementar lógica de navegación para ver detalles de Venue y Artist si es necesario

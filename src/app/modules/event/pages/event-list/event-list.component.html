@@ -23,16 +23,6 @@
           <label for="endDate" class="form-label">Fecha Hasta</label>
           <input type="date" id="endDate" formControlName="endDate" class="form-control" />
         </div>
-        <!-- Toggle for REGISTRADOR_EVENTO to see only their events -->
-        <div class="col-md-6" *ngIf="isEventRegistrar && !isAdmin && !isModerador">
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="showOnlyMyEvents"
-                [(ngModel)]="showOnlyMyEvents" (change)="onMyEventsFilterChange()">
-            <label class="form-check-label" for="showOnlyMyEvents">
-              Mostrar solo mis eventos
-            </label>
-          </div>
-        </div>
         <div class="col-md-12 mt-2 mb-3">
           <div class="btn-group btn-group-sm status-filter-buttons" role="group" aria-label="Filtros rápidos de fecha">
             <button type="button" class="btn btn-outline-secondary" (click)="filterToday()">Hoy</button>
@@ -139,48 +129,60 @@
     <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
   </div>
 
-  <!-- Lista de Eventos -->
-  <div *ngIf="!isLoading && events.length > 0" class="items-grid">
-    <div *ngFor="let event of events" class="card h-100 shadow-hover event-card">
-      <div class="card-img-wrapper">
-        <img *ngIf="event.flyerImage" 
-             [src]="event.flyerImage" 
-             class="card-img-top event-image" 
-             [alt]="event.name"
-             (error)="onImageError($event)">
-        <div class="event-image-placeholder" [style.display]="event.flyerImage ? 'none' : 'flex'">
-          <i class="bi bi-calendar-event"></i>
-        </div>
+  <!-- Lista de eventos -->
+  <div *ngIf="!isLoading && !errorMessage" class="row">
+    <!-- Mensaje cuando no hay eventos -->
+    <div *ngIf="events.length === 0" class="col-12">
+      <div class="alert alert-warning" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>No se encontraron eventos.</strong>
+        <p class="mb-0 mt-2">Intenta ajustar los filtros o verifica que haya eventos disponibles.</p>
       </div>
-      <div class="card-body d-flex flex-column">
-        <!-- Indicador de autoría -->
-        <div *ngIf="isEventOwner(event)" class="mb-2">
-          <span class="badge bg-primary">
-            <i class="bi bi-person-check me-1"></i>Tu evento
+    </div>
+
+    <!-- Lista normal de eventos -->
+    <div *ngFor="let event of events" class="col-md-4 mb-4">
+      <div class="card h-100 shadow-hover event-card">
+        <div class="card-img-wrapper">
+          <img *ngIf="event.flyerImage" 
+               [src]="event.flyerImage" 
+               class="card-img-top event-image" 
+               [alt]="event.name"
+               (error)="onImageError($event)">
+          <div class="event-image-placeholder" [style.display]="event.flyerImage ? 'none' : 'flex'">
+            <i class="bi bi-calendar-event"></i>
+          </div>
+        </div>
+        <div class="card-body d-flex flex-column">
+          <!-- Indicador de autoría -->
+          <div *ngIf="isEventOwner(event)" class="mb-2">
+            <span class="badge bg-primary">
+              <i class="bi bi-person-check me-1"></i>Tu evento
+            </span>
+          </div>
+          
+          <h5 class="card-title">{{ event.name }}</h5>
+          <p class="card-text event-date">
+            <i class="bi bi-calendar-week"></i> {{ formatEventDate(event.startDateTime) }}
+          </p>
+          <p class="card-text venue-info">
+            <i class="bi bi-geo-alt-fill"></i> {{ event.venueName }}
+          </p>
+          <p class="card-text venue-info" *ngIf="event.mainArtistName">
+            <i class="bi bi-person-fill"></i> {{ event.mainArtistName }}
+          </p>
+          <p class="card-text event-description">{{ event.description | slice:0:100 }}{{ (event.description && event.description.length > 100) ? '...' : '' }}</p>
+          <div class="mt-auto pt-2">
+            <a [routerLink]="['/events', event.id]" class="btn btn-outline-primary w-100 mb-2">
+              <i class="bi bi-eye me-2"></i>Ver Detalles
+            </a>
+          </div>
+        </div>
+        <div class="card-footer text-center event-status">
+          <span class="badge" [ngClass]="getStatusClass(event.statusName)">
+            <i class="bi bi-{{ getStatusIcon(event.statusName) }} me-1"></i>{{ formatStatusName(event.statusName) }}
           </span>
         </div>
-        
-        <h5 class="card-title">{{ event.name }}</h5>
-        <p class="card-text event-date">
-          <i class="bi bi-calendar-week"></i> {{ formatEventDate(event.startDateTime) }}
-        </p>
-        <p class="card-text venue-info">
-          <i class="bi bi-geo-alt-fill"></i> {{ event.venueName }}
-        </p>
-        <p class="card-text venue-info" *ngIf="event.mainArtistName">
-          <i class="bi bi-person-fill"></i> {{ event.mainArtistName }}
-        </p>
-        <p class="card-text event-description">{{ event.description | slice:0:100 }}{{ (event.description && event.description.length > 100) ? '...' : '' }}</p>
-        <div class="mt-auto pt-2">
-          <a [routerLink]="['/events', event.id]" class="btn btn-outline-primary w-100 mb-2">
-            <i class="bi bi-eye me-2"></i>Ver Detalles
-          </a>
-        </div>
-      </div>
-      <div class="card-footer text-center event-status">
-        <span class="badge" [ngClass]="getStatusClass(event.statusName)">
-          <i class="bi bi-{{ getStatusIcon(event.statusName) }} me-1"></i>{{ formatStatusName(event.statusName) }}
-        </span>
       </div>
     </div>
   </div>

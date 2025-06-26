@@ -34,13 +34,13 @@ import { AuthService } from '../../../../core/services/auth.service';
   ],
   templateUrl: './event-list.component.html',
   styleUrls: ['./event-list.component.scss'],
-  providers: [DatePipe] // Proveer DatePipe para formatear fechas en el template si es necesario
+  providers: [DatePipe]
 })
 export class EventListComponent implements OnInit {
   filterForm!: FormGroup;
   eventStatuses = StatusFormatter.getEventStatuses();
   events: EventDTO[] = [];
-  allEvents: EventDTO[] = []; // Para paginación del lado del cliente
+  allEvents: EventDTO[] = [];
   venues: Venue[] = [];
   artists: Artist[] = [];
 
@@ -49,7 +49,7 @@ export class EventListComponent implements OnInit {
 
   // Paginación del lado del cliente
   currentPage = 1;
-  itemsPerPage = 9; // Layout 3x3
+  itemsPerPage = 9;
 
   // Exponer Math para el template
   Math = Math;
@@ -58,18 +58,15 @@ export class EventListComponent implements OnInit {
   Number = Number;
 
   // User role management
-  isAdmin = false; // Changed from hardcoded true to false
+  isAdmin = false;
   isModerador = false;
   isComprador = false;
   isEventRegistrar = false;
   isVerificadorEntradas = false;
   currentUser: any = null;
 
-  // Filter for REGISTRADOR_EVENTO to see only their events
-  showOnlyMyEvents = false;
-
   // Admin cleanup related properties
-  cleanupCutoffDate: string = ''; // For ngModel binding
+  cleanupCutoffDate: string = '';
   isCleaningUp = false;
   cleanupSuccessMessage = '';
   cleanupErrorMessage = '';
@@ -86,15 +83,12 @@ export class EventListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Initialize user role FIRST, before everything else
     this.initializeUserRole();
-    
     this.initFilterForm();
     
-    // Only load data if running in browser (not during server-side rendering)
     if (isPlatformBrowser(this.platformId)) {
       this.loadFilterData();
-      this.loadEvents(); // Carga inicial de todos los eventos (o según filtros por defecto)
+      this.loadEvents();
     }
 
     this.setupFilterSubscription();
@@ -102,16 +96,12 @@ export class EventListComponent implements OnInit {
 
   private initFilterForm(): void {
     this.filterForm = this.fb.group({
-      startDate: [null], // Campo para fecha de inicio del rango
-      endDate: [null],   // Campo para fecha de fin del rango
+      startDate: [null],
+      endDate: [null],
       venueId: [null],
       artistId: [null],
-      statusName: [null], // Nuevo campo para el estado del evento
-      // name: [null] // Opcional: para búsqueda por nombre de evento
+      statusName: [null]
     });
-
-    // Recargar eventos cuando cambien los filtros (opcional, si no se usa botón "Aplicar")
-    // this.filterForm.valueChanges.subscribe(() => this.applyFilters());
   }
 
   loadFilterData(): void {
@@ -130,7 +120,7 @@ export class EventListComponent implements OnInit {
         console.error('Error loading artists:', err);
         this.errorMessage = 'Error al cargar artistas para filtros.';
       },
-      complete: () => this.isLoading = false // Solo al final de ambas cargas si fueran secuenciales
+      complete: () => this.isLoading = false
     });
   }
 
@@ -138,13 +128,10 @@ export class EventListComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Determine verification filter based on user role
     let verificationFilter: boolean | undefined = undefined;
     
-    // Only ADMIN, MODERADOR, and REGISTRADOR_EVENTO can see unverified events
-    // For COMPRADOR and VERIFICADOR_ENTRADAS, only show verified events
     if (!this.isAdmin && !this.isModerador && !this.isEventRegistrar) {
-      verificationFilter = true; // Only verified events
+      verificationFilter = true;
     }
 
     const filters: any = {
@@ -152,26 +139,11 @@ export class EventListComponent implements OnInit {
       verified: verificationFilter
     };
 
-    // Add registrarId filter if REGISTRADOR_EVENTO wants to see only their events
-    if (this.showOnlyMyEvents && this.isEventRegistrar && this.currentUser?.id) {
-      filters.registrarId = this.currentUser.id;
-    }
-
-    console.log('🔍 [DEBUG] loadEvents filters applied:', {
-      showOnlyMyEvents: this.showOnlyMyEvents,
-      isEventRegistrar: this.isEventRegistrar,
-      registrarIdApplied: filters.registrarId,
-      allFilters: filters
-    });
-
-    // Remove empty/null values
     Object.keys(filters).forEach(key => {
       if (filters[key] === null || filters[key] === '' || filters[key] === undefined) {
         delete filters[key];
       }
     });
-
-    console.log('🔍 [DEBUG] Final filters sent to API:', filters);
 
     this.eventService.searchEvents(filters).subscribe({
       next: (events) => {
@@ -207,9 +179,8 @@ export class EventListComponent implements OnInit {
 
   filterThisWeek(): void {
     const today = new Date();
-    const currentDay = today.getDay(); // 0 (Domingo) - 6 (Sábado)
-    const firstDayOfWeek = new Date(today); // Clonar para no modificar 'today'
-    // Ajustar al Lunes de esta semana (si Domingo es 0, Lunes es 1)
+    const currentDay = today.getDay();
+    const firstDayOfWeek = new Date(today);
     const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay;
     firstDayOfWeek.setDate(today.getDate() + diffToMonday);
 
@@ -235,7 +206,6 @@ export class EventListComponent implements OnInit {
     this.applyFilters();
   }
 
-  // --- Paginación --- 
   getPaginatedEvents(sourceEvents: EventDTO[]): EventDTO[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return sourceEvents.slice(startIndex, startIndex + this.itemsPerPage);
@@ -254,14 +224,12 @@ export class EventListComponent implements OnInit {
 
   onPageSizeChange(size: number): void {
     this.itemsPerPage = size;
-    this.currentPage = 1; // Reset to first page
+    this.currentPage = 1;
     this.events = this.getPaginatedEvents(this.allEvents);
   }
 
-  // Helper para formatear fechas en el template (si no se usa DatePipe directamente en HTML)
   formatEventDate(date: string | Date | undefined): string {
     if (!date) return 'N/A';
-    // Using toISOString().split('T')[0] for yyyy-MM-dd format, robust for Date or string
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     if (isNaN(dateObj.getTime())) {
         return 'Fecha Inválida';
@@ -308,17 +276,14 @@ export class EventListComponent implements OnInit {
       this.cleanupErrorMessage = '';
       this.cleanupSuccessMessage = '';
 
-      // The input type="date" should provide it in this format.
-      const formattedDate = `${this.cleanupCutoffDate}T00:00:00`; // Append time for LocalDateTime
+      const formattedDate = `${this.cleanupCutoffDate}T00:00:00`;
 
       this.eventService.cleanupCanceledEvents(formattedDate).subscribe({
         next: (response) => {
           this.isCleaningUp = false;
-          // Assuming response might contain details like how many events were deleted.
-          // For now, a generic success message.
           this.cleanupSuccessMessage = response?.message || 'Eventos cancelados eliminados correctamente.';
           this.modalService.success(this.cleanupSuccessMessage, 'Limpieza Completada').subscribe(() => {
-            this.loadEvents(); // Refresh the list of events
+            this.loadEvents();
           });
         },
         error: (err) => {
@@ -358,16 +323,6 @@ export class EventListComponent implements OnInit {
   private setupFilterSubscription(): void {
     // Listen to form changes and optionally auto-apply filters
     // this.filterForm.valueChanges.subscribe(() => this.applyFilters());
-  }
-
-  onMyEventsFilterChange(): void {
-    console.log('🔍 [DEBUG] onMyEventsFilterChange called:', {
-      showOnlyMyEvents: this.showOnlyMyEvents,
-      isEventRegistrar: this.isEventRegistrar,
-      currentUser: this.currentUser,
-      currentUserId: this.currentUser?.id
-    });
-    this.loadEvents();
   }
 
   /**
