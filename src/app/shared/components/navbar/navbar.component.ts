@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
@@ -15,33 +15,38 @@ import { SimpleDropdownDirective } from '../../directives/simple-dropdown.direct
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-  
+  isAuthenticated: boolean = false;
+  isAdmin: boolean = false;
+  isEventRegistrar: boolean = false;
+  isModerator: boolean = false;
+  isComprador: boolean = false;
+  isVerificadorEntradas: boolean = false;
   currentUser: User | null = null;
-  isAuthenticated = false;
+  userDisplayName: string = '';
+  
+  private destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    // Inicializar valores inmediatamente para evitar parpadeo
-    this.isAuthenticated = this.authService.isAuthenticated();
-    this.currentUser = this.authService.getCurrentUser();
+    // Subscribe to authentication state
+    this.authService.isAuthenticated$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(isAuth => {
+      this.isAuthenticated = isAuth;
+      this.updateUserInfo();
+    });
 
-    // Suscribirse al estado de autenticación
-    this.authService.isAuthenticated$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(isAuth => {
-        this.isAuthenticated = isAuth;
-        console.log('🔐 [Navbar] Authentication state changed:', isAuth);
-      });
-
-    // Suscribirse al usuario actual
-    this.authService.currentUser$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
-        this.currentUser = user;
-        console.log('👤 [Navbar] Current user changed:', user?.email || 'No user');
-      });
+    // Subscribe to current user changes
+    this.authService.currentUser$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(user => {
+      this.currentUser = user;
+      this.updateUserInfo();
+    });
   }
 
   ngOnDestroy(): void {
@@ -49,32 +54,49 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  get isAdmin(): boolean {
-    return this.authService.hasRole('ADMIN');
-  }
-
-  get isEventRegistrar(): boolean {
-    return this.authService.hasAnyRole(['ADMIN', 'REGISTRADOR_EVENTO']);
-  }
-
-  get userDisplayName(): string {
+  private updateUserInfo(): void {
     if (this.currentUser) {
-      return `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+      this.userDisplayName = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+      const userRole = this.currentUser.role?.name;
+      
+      // Reset all role flags
+      this.isAdmin = false;
+      this.isEventRegistrar = false;
+      this.isModerator = false;
+      this.isComprador = false;
+      this.isVerificadorEntradas = false;
+      
+      // Set role flags based on user role
+      switch (userRole) {
+        case 'ADMIN':
+          this.isAdmin = true;
+          break;
+        case 'MODERADOR':
+          this.isModerator = true;
+          break;
+        case 'REGISTRADOR_EVENTO':
+          this.isEventRegistrar = true;
+          break;
+        case 'COMPRADOR':
+          this.isComprador = true;
+          break;
+        case 'VERIFICADOR_ENTRADAS':
+          this.isVerificadorEntradas = true;
+          break;
+      }
+    } else {
+      this.userDisplayName = '';
+      this.isAdmin = false;
+      this.isEventRegistrar = false;
+      this.isModerator = false;
+      this.isComprador = false;
+      this.isVerificadorEntradas = false;
     }
-    return '';
   }
 
   logout(): void {
-    console.log('🚪 [Navbar] Initiating logout...');
-    this.authService.logout().subscribe({
-      next: () => {
-        console.log('✅ [Navbar] Logout successful');
-        // El AuthService ya maneja la redirección y limpieza de estado
-      },
-      error: (error) => {
-        console.error('❌ [Navbar] Logout error:', error);
-        // Incluso si hay error en el servidor, limpiar localmente
-      }
+    this.authService.logout().subscribe(() => {
+      this.router.navigate(['/auth/login']);
     });
   }
 }

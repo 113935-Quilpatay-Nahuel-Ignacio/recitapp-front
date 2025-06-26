@@ -2,10 +2,10 @@
   <!-- Page Header -->
   <app-page-header title="Lista de Eventos" icon="bi-calendar-event">
     <div class="d-flex gap-2">
-      <a routerLink="/events/calendar" class="btn btn-outline-primary">
+      <a routerLink="/events/calendar" class="btn btn-outline-primary" *ngIf="!isComprador">
         <i class="bi bi-calendar3 me-2"></i>Ver Calendario
       </a>
-      <a routerLink="/events/new" class="btn btn-success">
+      <a routerLink="/events/new" class="btn btn-success" *ngIf="(isAdmin || isEventRegistrar) && !isModerador && !isComprador">
         <i class="bi bi-plus-circle-fill me-2"></i>Registrar Nuevo Evento
       </a>
     </div>
@@ -70,7 +70,7 @@
   </app-list-filters>
 
   <!-- Acciones Administrativas -->
-  <div class="card mb-4 shadow-sm admin-card" *ngIf="isAdmin">
+  <div class="card mb-4 shadow-sm admin-card" *ngIf="(isAdmin || isModerador) && !isComprador">
     <div class="card-body">
       <h5 class="card-title">
         <i class="bi bi-shield-fill-check me-2"></i>Acciones Administrativas

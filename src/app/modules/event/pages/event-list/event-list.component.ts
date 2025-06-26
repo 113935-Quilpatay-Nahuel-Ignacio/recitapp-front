@@ -18,6 +18,7 @@ import { StatusFormatter } from '../../../../shared/utils/status-formatter.util'
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ListFiltersComponent } from '../../../../shared/components/list-filters/list-filters.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-event-list',
@@ -60,6 +61,12 @@ export class EventListComponent implements OnInit {
   cleanupSuccessMessage = '';
   cleanupErrorMessage = '';
 
+  // Admin and role management
+  isModerador = false;
+  isComprador = false;
+  isEventRegistrar = false;
+  currentUser: any = null;
+
   constructor(
     private fb: FormBuilder,
     private eventService: EventService,
@@ -67,7 +74,8 @@ export class EventListComponent implements OnInit {
     private artistService: ArtistService,
     private datePipe: DatePipe,
     private modalService: ModalService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +86,9 @@ export class EventListComponent implements OnInit {
       this.loadFilterData();
       this.loadEvents(); // Carga inicial de todos los eventos (o según filtros por defecto)
     }
+
+    this.initializeUserRole();
+    this.setupFilterSubscription();
   }
 
   private initFilterForm(): void {
@@ -117,21 +128,25 @@ export class EventListComponent implements OnInit {
   loadEvents(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    this.currentPage = 1; // Resetear a la primera página con cada nueva carga/filtro
 
-    const formValues = this.filterForm.value;
-    const filters: EventSearchFilters = {
-      startDate: formValues.startDate ? this.datePipe.transform(formValues.startDate, 'yyyy-MM-ddT00:00:00') || undefined : undefined,
-      endDate: formValues.endDate ? this.datePipe.transform(formValues.endDate, 'yyyy-MM-ddT23:59:59') || undefined : undefined,
-      venueId: formValues.venueId || undefined,
-      artistId: formValues.artistId || undefined,
-      statusName: formValues.statusName || undefined,
+    // Determine verification filter based on user role
+    let verificationFilter: boolean | undefined = undefined;
+    
+    // Only ADMIN, MODERADOR, and REGISTRADOR_EVENTO can see unverified events
+    // For COMPRADOR and other roles, only show verified events
+    if (!this.isAdmin && !this.isModerador && !this.isEventRegistrar) {
+      verificationFilter = true; // Only verified events
+    }
+
+    const filters: any = {
+      ...this.filterForm.value,
+      verified: verificationFilter
     };
 
-    // Remover propiedades undefined para no enviarlas en los params
+    // Remove empty/null values
     Object.keys(filters).forEach(key => {
-      if (filters[key as keyof EventSearchFilters] === undefined || filters[key as keyof EventSearchFilters] === null) {
-        delete filters[key as keyof EventSearchFilters];
+      if (filters[key] === null || filters[key] === '' || filters[key] === undefined) {
+        delete filters[key];
       }
     });
 
@@ -140,17 +155,12 @@ export class EventListComponent implements OnInit {
         this.allEvents = events;
         this.events = this.getPaginatedEvents(this.allEvents);
         this.isLoading = false;
-        if (events.length === 0) {
-          this.errorMessage = 'No se encontraron eventos con los filtros aplicados.';
-        }
       },
-      error: (err) => {
+      error: (error) => {
+        console.error('Error loading events:', error);
+        this.errorMessage = 'Error al cargar los eventos. Por favor, inténtalo de nuevo.';
         this.isLoading = false;
-        this.errorMessage = 'Error al cargar eventos. ' + (err.error?.message || '');
-        console.error('Error loading events:', err);
-        this.allEvents = [];
-        this.events = [];
-      },
+      }
     });
   }
 
@@ -307,5 +317,20 @@ export class EventListComponent implements OnInit {
         placeholder.style.display = 'flex';
       }
     }
+  }
+
+  private initializeUserRole(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser && this.currentUser.role) {
+      const userRole = this.currentUser.role.name;
+      this.isAdmin = userRole === 'ADMIN';
+      this.isModerador = userRole === 'MODERADOR';
+      this.isComprador = userRole === 'COMPRADOR';
+      this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+    }
+  }
+
+  private setupFilterSubscription(): void {
+    // Implementation of setupFilterSubscription method
   }
 }

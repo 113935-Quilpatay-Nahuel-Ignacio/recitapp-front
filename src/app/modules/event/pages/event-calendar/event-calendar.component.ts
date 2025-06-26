@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { EventCalendarService, CalendarEvent } from '../../../../services/event-calendar.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 interface CalendarDay {
   date: Date;
@@ -498,28 +499,48 @@ interface CalendarDay {
 export class EventCalendarComponent implements OnInit {
   currentDate = new Date();
   calendarDays: CalendarDay[] = [];
-  
+  events: CalendarEvent[] = [];
   loading = false;
   error = '';
 
-  // Navegación de meses
+  // User roles
+  isAdmin = false;
+  isModerador = false;
+  isEventRegistrar = false;
+  isComprador = false;
+  currentUser: any = null;
+
   monthNames = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
-
   dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-  // Evento seleccionado para mostrar detalles
+  // Modal states
   selectedEvents: CalendarEvent[] = [];
   showEventDetails = false;
   selectedDate = '';
 
-  constructor(private eventCalendarService: EventCalendarService) {}
+  constructor(
+    private eventCalendarService: EventCalendarService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.initializeUserRole();
     this.generateCalendar();
     this.loadEvents();
+  }
+
+  private initializeUserRole(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser && this.currentUser.role) {
+      const userRole = this.currentUser.role.name;
+      this.isAdmin = userRole === 'ADMIN';
+      this.isModerador = userRole === 'MODERADOR';
+      this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+      this.isComprador = userRole === 'COMPRADOR';
+    }
   }
 
   generateCalendar(): void {
@@ -587,8 +608,14 @@ export class EventCalendarComponent implements OnInit {
     // Reset events
     this.calendarDays.forEach(day => day.events = []);
     
-    // Assign events to days
-    events.forEach(event => {
+    // Filter events based on user role - COMPRADOR can only see verified events
+    let filteredEvents = events;
+    if (this.isComprador) {
+      filteredEvents = events.filter(event => event.verified === true);
+    }
+    
+    // Assign filtered events to days
+    filteredEvents.forEach(event => {
       const eventDate = new Date(event.startDateTime);
       const dateString = this.formatDateString(eventDate);
       

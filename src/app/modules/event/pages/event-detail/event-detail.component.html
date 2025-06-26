@@ -45,7 +45,7 @@
                   </span>
                 </div>
               </div>
-              <div *ngIf="isAdmin" class="admin-actions">
+              <div *ngIf="(isAdmin || isModerador) && !isComprador" class="admin-actions">
                   <div class="dropdown">
                       <button class="btn btn-outline-secondary dropdown-toggle" 
                               type="button" 

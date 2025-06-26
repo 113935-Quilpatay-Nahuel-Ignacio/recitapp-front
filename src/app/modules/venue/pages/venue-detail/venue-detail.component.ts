@@ -10,6 +10,7 @@ import { SessionService } from '../../../../core/services/session.service';
 import { SimpleDropdownDirective } from '../../../../shared/directives/simple-dropdown.directive';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-venue-detail',
@@ -38,6 +39,10 @@ export class VenueDetailComponent implements OnInit {
   };
   userId: number | null = null;
   isAdmin = false;
+  isModerador = false;
+  isEventRegistrar = false;
+  isComprador = false;
+  currentUser: any = null;
   currentTab: 'info' | 'events' | 'sections' | 'stats' = 'info';
   imageError = false;
   eventImageErrors: Set<number> = new Set(); // Para trackear errores de imágenes de eventos
@@ -48,10 +53,12 @@ export class VenueDetailComponent implements OnInit {
     private venueService: VenueService,
     private userService: UserService,
     private sessionService: SessionService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.initializeUserRole();
     this.userId = this.sessionService.getCurrentUserId();
     const currentUser = this.sessionService.getCurrentUser();
     this.isAdmin = currentUser?.role?.name === 'ADMIN';
@@ -60,6 +67,17 @@ export class VenueDetailComponent implements OnInit {
       this.venueId = +params['id'];
       this.loadVenueDetails();
     });
+  }
+
+  private initializeUserRole(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser && this.currentUser.role) {
+      const userRole = this.currentUser.role.name;
+      this.isAdmin = userRole === 'ADMIN';
+      this.isModerador = userRole === 'MODERADOR';
+      this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+      this.isComprador = userRole === 'COMPRADOR';
+    }
   }
 
   loadVenueDetails(): void {
@@ -103,7 +121,12 @@ export class VenueDetailComponent implements OnInit {
 
     this.venueService.getVenueEvents(this.venueId, false).subscribe({
       next: (events) => {
-        this.upcomingEvents = events;
+        // Filter events based on user role - COMPRADOR can only see verified events
+        if (this.isComprador) {
+          this.upcomingEvents = events.filter(event => event.verified === true);
+        } else {
+          this.upcomingEvents = events;
+        }
         this.loading.events = false;
       },
       error: (err) => {

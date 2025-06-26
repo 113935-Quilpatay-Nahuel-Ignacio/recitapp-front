@@ -22,6 +22,7 @@ export interface CalendarEvent {
   ticketPrice: number;
   availableTickets: number;
   imageUrl?: string;
+  verified?: boolean;
 }
 
 @Injectable({

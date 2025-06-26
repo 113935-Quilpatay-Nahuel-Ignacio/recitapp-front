@@ -12,6 +12,7 @@ import { SimpleDropdownDirective } from '../../../../shared/directives/simple-dr
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ListFiltersComponent } from '../../../../shared/components/list-filters/list-filters.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-artist-list',
@@ -39,6 +40,10 @@ export class ArtistListComponent implements OnInit {
   loading: boolean = false;
   error: string = '';
   isAdmin: boolean = false;
+  isModerador: boolean = false;
+  isEventRegistrar: boolean = false;
+  isComprador: boolean = false;
+  currentUser: any = null;
 
   // Exponer Math para el template
   Math = Math;
@@ -52,18 +57,31 @@ export class ArtistListComponent implements OnInit {
     private artistService: ArtistService, 
     private router: Router,
     private sessionService: SessionService,
+    private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
     // Only load data if running in browser (not during server-side rendering)
     if (isPlatformBrowser(this.platformId)) {
+      this.initializeUserRole();
       // Check if user is admin
       const currentUser = this.sessionService.getCurrentUser();
       this.isAdmin = currentUser?.role?.name === 'ADMIN';
       
       this.loadGenres();
       this.loadArtists();
+    }
+  }
+
+  private initializeUserRole(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser && this.currentUser.role) {
+      const userRole = this.currentUser.role.name;
+      this.isAdmin = userRole === 'ADMIN';
+      this.isModerador = userRole === 'MODERADOR';
+      this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+      this.isComprador = userRole === 'COMPRADOR';
     }
   }
 

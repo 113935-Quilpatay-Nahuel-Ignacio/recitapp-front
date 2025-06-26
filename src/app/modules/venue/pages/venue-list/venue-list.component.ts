@@ -8,6 +8,8 @@ import { Venue } from '../../models/venue';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { ListFiltersComponent } from '../../../../shared/components/list-filters/list-filters.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-venue-list',
@@ -26,11 +28,16 @@ import { PaginationComponent } from '../../../../shared/components/pagination/pa
 })
 export class VenueListComponent implements OnInit {
   venues: Venue[] = [];
+  filteredVenues: Venue[] = [];
   searchTerm: string = '';
   loading = false;
   error = '';
   showInactive = false;
   isAdmin = true; // En una implementación real, esto vendría de un servicio de autenticación
+  isModerador = false;
+  isComprador = false;
+  isEventRegistrar = false;
+  currentUser: any = null;
   imageErrors = new Map<number, boolean>(); // Track image errors by venue ID
 
   // Exponer Math para el template
@@ -42,10 +49,44 @@ export class VenueListComponent implements OnInit {
   totalItems: number = 0;
   totalPages: number = 0;
 
-  constructor(private venueService: VenueService) {}
+  // Filter form
+  filterForm: FormGroup;
+
+  constructor(
+    private venueService: VenueService,
+    private formBuilder: FormBuilder,
+    private authService: AuthService
+  ) {
+    this.filterForm = this.formBuilder.group({
+      search: [''],
+      venueCapacityMin: [''],
+      venueCapacityMax: [''],
+      venueLocation: ['']
+    });
+  }
 
   ngOnInit(): void {
+    this.initializeUserRole();
     this.loadVenues();
+    this.setupFilterSubscription();
+  }
+
+  private initializeUserRole(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser && this.currentUser.role) {
+      const userRole = this.currentUser.role.name;
+      this.isAdmin = userRole === 'ADMIN';
+      this.isModerador = userRole === 'MODERADOR';
+      this.isComprador = userRole === 'COMPRADOR';
+      this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+    }
+  }
+
+  private setupFilterSubscription(): void {
+    // Implementation of setupFilterSubscription method
+    this.filterForm.valueChanges.subscribe(() => {
+      this.applyFilter();
+    });
   }
 
   loadVenues(): void {

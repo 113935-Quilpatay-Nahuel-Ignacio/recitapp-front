@@ -1,7 +1,7 @@
 <div class="container py-4">
     <!-- Page Header -->
     <app-page-header title="Recintos" icon="bi-building">
-        <button *ngIf="isAdmin" class="btn btn-primary" [routerLink]="['/venues/new']">
+        <button *ngIf="(isAdmin || isEventRegistrar) && !isModerador && !isComprador" class="btn btn-primary" [routerLink]="['/venues/new']">
             <i class="bi bi-plus-circle me-2"></i>Registrar Nuevo Recinto
         </button>
     </app-page-header>
@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4" *ngIf="!isComprador">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="showInactive"
                         [(ngModel)]="showInactive" (change)="onActiveFilterChange()">

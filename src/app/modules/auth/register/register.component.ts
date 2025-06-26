@@ -38,8 +38,8 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, this.passwordStrengthValidator]],
       confirmPassword: ['', [Validators.required]],
-      dni: ['', [Validators.required, Validators.pattern(/^\d{8,12}$/)]],
-      phone: ['', [Validators.pattern(/^\d{9,15}$/)]],
+      dni: ['', [Validators.required, Validators.pattern(/^\d{7,9}$/)]],
+      phone: ['', [Validators.pattern(/^\+[1-9]\d{9,14}$/)]],
       address: [''],
       acceptTerms: [false, [Validators.requiredTrue]]
     }, {
@@ -173,8 +173,8 @@ export class RegisterComponent implements OnInit {
     if (errors['email']) return 'Debe ser un email válido';
     if (errors['minlength']) return `${this.getFieldDisplayName(fieldName)} debe tener al menos ${errors['minlength'].requiredLength} caracteres`;
     if (errors['pattern']) {
-      if (fieldName === 'dni') return 'DNI debe tener entre 8 y 12 dígitos';
-      if (fieldName === 'phone') return 'Teléfono debe tener entre 9 y 15 dígitos';
+      if (fieldName === 'dni') return 'DNI debe tener entre 7 y 9 dígitos';
+      if (fieldName === 'phone') return 'Teléfono debe comenzar con + seguido del código de país y número (ej: +541112345678)';
     }
     if (errors['passwordStrength']) return errors['passwordStrength'];
     if (errors['passwordMismatch']) return 'Las contraseñas no coinciden';

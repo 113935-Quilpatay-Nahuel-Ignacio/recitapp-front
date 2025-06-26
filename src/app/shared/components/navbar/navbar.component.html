@@ -36,7 +36,7 @@
                 </li>
                 
                 <!-- Creator Links - Only for Event Registrars and Admins -->
-                <li class="nav-item dropdown" *ngIf="isEventRegistrar">
+                <li class="nav-item dropdown" *ngIf="(isEventRegistrar || isAdmin) && !isModerator && !isComprador">
                     <a class="nav-link dropdown-toggle" href="#" id="creatorDropdown" role="button"
                         simpleDropdown aria-expanded="false">
                         <i class="fas fa-plus-circle me-1"></i>
@@ -55,8 +55,8 @@
 
             <!-- Right Navigation - User Area -->
             <ul class="navbar-nav">
-                <!-- Payment Management - Only for authenticated users -->
-                <li class="nav-item dropdown" *ngIf="isAuthenticated">
+                <!-- Payment Management - Only for authenticated users (except MODERADOR) -->
+                <li class="nav-item dropdown" *ngIf="isAuthenticated && !isModerator">
                     <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button"
                         simpleDropdown aria-expanded="false">
                         <i class="fas fa-credit-card me-1"></i>
@@ -129,13 +129,13 @@
                         <li><a class="dropdown-item" routerLink="/user/profile">
                             <i class="fas fa-user me-2"></i>Mi Perfil
                         </a></li>
-                        <li><a class="dropdown-item" routerLink="/tickets">
+                        <li *ngIf="!isModerator"><a class="dropdown-item" routerLink="/tickets">
                             <i class="fas fa-ticket-alt me-2"></i>Mis Entradas
                         </a></li>
-                        <li><a class="dropdown-item" routerLink="/user/following">
+                        <li *ngIf="!isModerator"><a class="dropdown-item" routerLink="/user/following">
                             <i class="fas fa-heart me-2"></i>Mis Seguimientos
                         </a></li>
-                        <li><a class="dropdown-item" routerLink="/user/recommendations">
+                        <li *ngIf="!isModerator"><a class="dropdown-item" routerLink="/user/recommendations">
                             <i class="fas fa-star me-2"></i>Recomendaciones
                         </a></li>
                         <li><hr class="dropdown-divider"></li>

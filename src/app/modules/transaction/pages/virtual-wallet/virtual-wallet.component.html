@@ -11,7 +11,7 @@
     </p>
   </div>
 
-  <div class="wallet-actions">
+  <div class="wallet-actions" *ngIf="!isComprador">
     <h3>Ajustar Saldo (Depósito/Retiro)</h3>
     <form [formGroup]="walletForm" (ngSubmit)="adjustBalance()">
       <div class="form-group">

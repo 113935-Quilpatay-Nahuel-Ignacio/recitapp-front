@@ -7,6 +7,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction';
 import { WalletTransactionDTO } from '../../models/dto/wallet-transaction.dto';
 import { SessionService } from '../../../../core/services/session.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-virtual-wallet',
@@ -23,9 +24,17 @@ export class VirtualWalletComponent implements OnInit {
   isLoading = false;
   userId: number | null = null;
 
+  // User roles
+  isAdmin = false;
+  isModerador = false;
+  isEventRegistrar = false;
+  isComprador = false;
+  currentUser: any = null;
+
   private fb = inject(FormBuilder);
   private transactionService = inject(TransactionService);
   private sessionService = inject(SessionService);
+  private authService = inject(AuthService);
 
   walletBalance: any = null;
   loading = false;
@@ -38,6 +47,7 @@ export class VirtualWalletComponent implements OnInit {
   rechargeError = '';
 
   ngOnInit(): void {
+    this.initializeUserRole();
     this.userId = this.sessionService.getCurrentUserId();
     
     if (!this.userId) {
@@ -51,6 +61,17 @@ export class VirtualWalletComponent implements OnInit {
       description: ['Ajuste de billetera'] // Descripción opcional para transacción de billetera
     });
     this.loadWalletData();
+  }
+
+  private initializeUserRole(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser && this.currentUser.role) {
+      const userRole = this.currentUser.role.name;
+      this.isAdmin = userRole === 'ADMIN';
+      this.isModerador = userRole === 'MODERADOR';
+      this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+      this.isComprador = userRole === 'COMPRADOR';
+    }
   }
 
   loadWalletData(): void {

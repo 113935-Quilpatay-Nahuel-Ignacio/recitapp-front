@@ -7,9 +7,7 @@ import { EventStatisticsDTO } from '../../models/event-statistics.dto';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { StatusFormatter } from '../../../../shared/utils/status-formatter.util';
 import { SimpleDropdownDirective } from '../../../../shared/directives/simple-dropdown.directive';
-// Podríamos necesitar importar Venue y Artist si queremos enlazar a sus detalles o mostrar más info
-// import { VenueService } from '../../../venue/services/venue.service';
-// import { ArtistService } from '../../../artist/services/artist.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-event-detail',
@@ -27,6 +25,10 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   isLoadingStats = false;
   errorMessage = '';
   isAdmin = true; // Placeholder: Implementar lógica de roles/permisos real
+  isModerador = false;
+  isComprador = false;
+  isEventRegistrar = false;
+  currentUser: any = null;
   isVerifying = false; // Added for verification loading state
   verificationMessage = ''; // Added for verification feedback
   imageError = false;
@@ -41,10 +43,12 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     private eventService: EventService,
     private datePipe: DatePipe,
     private elementRef: ElementRef,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.initializeUserRole();
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('id');
       if (idParam) {
@@ -66,6 +70,17 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     // Add any necessary after view init logic here
+  }
+
+  private initializeUserRole(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser && this.currentUser.role) {
+      const userRole = this.currentUser.role.name;
+      this.isAdmin = userRole === 'ADMIN';
+      this.isModerador = userRole === 'MODERADOR';
+      this.isComprador = userRole === 'COMPRADOR';
+      this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+    }
   }
 
   loadEventDetails(): void {

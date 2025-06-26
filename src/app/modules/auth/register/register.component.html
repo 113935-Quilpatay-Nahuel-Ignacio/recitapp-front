@@ -102,6 +102,7 @@
                   [class.is-invalid]="isFieldInvalid('dni')"
                   [class.is-valid]="isFieldValid('dni')"
                 >
+                <small class="form-text text-muted">Entre 7 y 9 dígitos</small>
                 <div *ngIf="isFieldInvalid('dni')" class="invalid-feedback">
                   {{ getFieldError('dni') }}
                 </div>
@@ -118,10 +119,11 @@
                   id="phone"
                   class="form-control"
                   formControlName="phone"
-                  placeholder="987654721"
+                  placeholder="+541112345678"
                   [class.is-invalid]="isFieldInvalid('phone')"
                   [class.is-valid]="isFieldValid('phone')"
                 >
+                <small class="form-text text-muted">Debe comenzar con + seguido del código de país</small>
                 <div *ngIf="isFieldInvalid('phone')" class="invalid-feedback">
                   {{ getFieldError('phone') }}
                 </div>
