@@ -46,7 +46,7 @@
                         <li><a class="dropdown-item" routerLink="/events/new" routerLinkActive="active">
                             <i class="fas fa-calendar-plus me-2"></i>Nuevo Evento
                         </a></li>
-                        <li><a class="dropdown-item" routerLink="/venues/new" routerLinkActive="active">
+                        <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/venues/new" routerLinkActive="active">
                             <i class="fas fa-building me-2"></i>Nuevo Recinto
                         </a></li>
                     </ul>
@@ -55,8 +55,8 @@
 
             <!-- Right Navigation - User Area -->
             <ul class="navbar-nav">
-                <!-- Payment Management - Only for authenticated users (except MODERADOR) -->
-                <li class="nav-item dropdown" *ngIf="isAuthenticated && !isModerator">
+                <!-- Payment Management - Only for authenticated users (except MODERADOR, REGISTRADOR_EVENTO, VERIFICADOR_ENTRADAS) -->
+                <li class="nav-item dropdown" *ngIf="isAuthenticated && !isModerator && !isEventRegistrar && !isVerificadorEntradas">
                     <a class="nav-link dropdown-toggle" href="#" id="paymentsDropdown" role="button"
                         simpleDropdown aria-expanded="false">
                         <i class="fas fa-credit-card me-1"></i>
@@ -82,36 +82,42 @@
                     </ul>
                 </li>
 
-                <!-- Admin Menu - Only for administrators -->
-                <li class="nav-item dropdown" *ngIf="isAdmin">
+                <!-- Admin Menu - For administrators and ticket validators -->
+                <li class="nav-item dropdown" *ngIf="isAdmin || isVerificadorEntradas">
                     <a class="nav-link dropdown-toggle admin-link" href="#" id="adminDropdown" role="button"
                         simpleDropdown aria-expanded="false">
                         <i class="fas fa-shield-alt me-1"></i>
                         <span class="d-none d-lg-inline">Admin</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                        <li><h6 class="dropdown-header">Panel de Control</h6></li>
-                        <li><a class="dropdown-item" routerLink="/admin/dashboard">
-                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                        </a></li>
-                        <li><a class="dropdown-item" routerLink="/admin/users">
-                            <i class="fas fa-users me-2"></i>Usuarios
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><h6 class="dropdown-header">Configuración</h6></li>
-                        <li><a class="dropdown-item" routerLink="/admin/genres">
-                            <i class="fas fa-music me-2"></i>Géneros Musicales
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><h6 class="dropdown-header">Reportes y Herramientas</h6></li>
-                        <li><a class="dropdown-item" routerLink="/admin/event-sales-report">
-                            <i class="fas fa-chart-bar me-2"></i>Reporte de Ventas
-                        </a></li>
+                        <!-- Admin only sections -->
+                        <ng-container *ngIf="isAdmin">
+                            <li><h6 class="dropdown-header">Panel de Control</h6></li>
+                            <li><a class="dropdown-item" routerLink="/admin/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a></li>
+                            <li><a class="dropdown-item" routerLink="/admin/users">
+                                <i class="fas fa-users me-2"></i>Usuarios
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Configuración</h6></li>
+                            <li><a class="dropdown-item" routerLink="/admin/genres">
+                                <i class="fas fa-music me-2"></i>Géneros Musicales
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Reportes y Herramientas</h6></li>
+                            <li><a class="dropdown-item" routerLink="/admin/event-sales-report">
+                                <i class="fas fa-chart-bar me-2"></i>Reporte de Ventas
+                            </a></li>
+                            <li><a class="dropdown-item" routerLink="/admin/expired-tickets">
+                                <i class="fas fa-clock me-2"></i>Tickets Vencidos
+                            </a></li>
+                        </ng-container>
+                        
+                        <!-- Ticket validation for both Admin and Verificador -->
+                        <li *ngIf="isVerificadorEntradas && !isAdmin"><h6 class="dropdown-header">Validación</h6></li>
                         <li><a class="dropdown-item" routerLink="/admin/validate-ticket">
-                            <i class="fas fa-check-circle me-2"></i>Validar Entrada
-                        </a></li>
-                        <li><a class="dropdown-item" routerLink="/admin/expired-tickets">
-                            <i class="fas fa-clock me-2"></i>Tickets Vencidos
+                            <i class="fas fa-check-circle me-2"></i>Validar Entrada / QR
                         </a></li>
                     </ul>
                 </li>
@@ -129,13 +135,13 @@
                         <li><a class="dropdown-item" routerLink="/user/profile">
                             <i class="fas fa-user me-2"></i>Mi Perfil
                         </a></li>
-                        <li *ngIf="!isModerator"><a class="dropdown-item" routerLink="/tickets">
+                        <li *ngIf="!isModerator && !isEventRegistrar && !isVerificadorEntradas"><a class="dropdown-item" routerLink="/tickets">
                             <i class="fas fa-ticket-alt me-2"></i>Mis Entradas
                         </a></li>
-                        <li *ngIf="!isModerator"><a class="dropdown-item" routerLink="/user/following">
+                        <li *ngIf="!isModerator && !isEventRegistrar && !isVerificadorEntradas"><a class="dropdown-item" routerLink="/user/following">
                             <i class="fas fa-heart me-2"></i>Mis Seguimientos
                         </a></li>
-                        <li *ngIf="!isModerator"><a class="dropdown-item" routerLink="/user/recommendations">
+                        <li *ngIf="!isModerator && !isEventRegistrar && !isVerificadorEntradas"><a class="dropdown-item" routerLink="/user/recommendations">
                             <i class="fas fa-star me-2"></i>Recomendaciones
                         </a></li>
                         <li><hr class="dropdown-divider"></li>

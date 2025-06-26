@@ -77,6 +77,10 @@ export class TicketValidationComponent implements OnDestroy {
     this.identificationForm = this.fb.group({
       identificationCode: ['', [Validators.required, Validators.minLength(3)]]
     });
+    
+    // Add logging for debugging VERIFICADOR_ENTRADAS navigation
+    console.log('🎫 TicketValidationComponent initialized');
+    console.log('🔍 Component loaded successfully for QR validation');
   }
 
   ngOnDestroy(): void {
@@ -180,8 +184,6 @@ export class TicketValidationComponent implements OnDestroy {
       this.ticketService.validateTicket(ticketId, qrCode), 'qr-scan'
     );
   }
-
-
 
   onValidateIdentificationCode(): void {
     if (this.identificationForm.invalid) {

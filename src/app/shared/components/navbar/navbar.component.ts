@@ -82,8 +82,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
           break;
         case 'VERIFICADOR_ENTRADAS':
           this.isVerificadorEntradas = true;
+          console.log('🎫 VERIFICADOR_ENTRADAS role detected in navbar');
+          console.log('🔍 User should see Admin menu with QR validation option');
           break;
       }
+      
+      // Additional logging for debugging
+      console.log('👤 User role updated:', {
+        userRole,
+        isAdmin: this.isAdmin,
+        isVerificadorEntradas: this.isVerificadorEntradas,
+        userDisplayName: this.userDisplayName
+      });
     } else {
       this.userDisplayName = '';
       this.isAdmin = false;

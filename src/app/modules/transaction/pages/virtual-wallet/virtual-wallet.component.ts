@@ -29,6 +29,7 @@ export class VirtualWalletComponent implements OnInit {
   isModerador = false;
   isEventRegistrar = false;
   isComprador = false;
+  isVerificadorEntradas = false;
   currentUser: any = null;
 
   private fb = inject(FormBuilder);
@@ -71,6 +72,7 @@ export class VirtualWalletComponent implements OnInit {
       this.isModerador = userRole === 'MODERADOR';
       this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
       this.isComprador = userRole === 'COMPRADOR';
+      this.isVerificadorEntradas = userRole === 'VERIFICADOR_ENTRADAS';
     }
   }
 

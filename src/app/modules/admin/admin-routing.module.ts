@@ -8,45 +8,61 @@ import { UserManagementComponent } from './components/user-management/user-manag
 import { MusicGenreAdminComponent } from '../artist/pages/music-genre-admin/music-genre-admin.component';
 import { NotificationTestComponent } from './pages/notification-test/notification-test.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { RoleGuard } from '../../core/guards/role.guard';
 
 const routes: Routes = [
   {
     path: 'dashboard',
-    component: AdminDashboardComponent
+    component: AdminDashboardComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
   {
     path: 'users',
-    component: UserManagementComponent
+    component: UserManagementComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
   {
     path: 'genres',
-    component: MusicGenreAdminComponent
+    component: MusicGenreAdminComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
   {
     path: 'manage-reservations',
-    component: ReservationManagerComponent
-    // Aquí podríamos añadir el guard si lo tuviéramos: canActivate: [AdminRoleGuard]
+    component: ReservationManagerComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
   {
     path: 'event-sales-report',
-    component: EventSalesReportComponent
+    component: EventSalesReportComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
   {
     path: 'validate-ticket',
-    component: TicketValidationComponent
+    component: TicketValidationComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN', 'VERIFICADOR_ENTRADAS'] }
   },
   {
     path: 'create-promotional-ticket',
-    component: PromotionalTicketFormComponent
+    component: PromotionalTicketFormComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
   {
     path: 'notification-test',
-    component: NotificationTestComponent
+    component: NotificationTestComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
   },
-  // Redirigir por defecto al dashboard
+  // Redirigir por defecto al dashboard para ADMIN, o a validate-ticket para VERIFICADOR_ENTRADAS
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'validate-ticket',
     pathMatch: 'full'
   }
 ];

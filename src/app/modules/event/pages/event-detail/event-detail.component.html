@@ -33,19 +33,26 @@
           <div class="detail-header">
               <div class="header-content">
                 <h1 class="detail-title">{{ event.name }}</h1>
-                <div class="status-badges">
-                  <span *ngIf="event.verified === false" class="badge bg-warning text-dark me-2">
-                    <i class="bi bi-exclamation-triangle me-1"></i>No Verificado
-                  </span>
-                  <span *ngIf="event.verified === true" class="badge bg-success me-2">
-                    <i class="bi bi-check-circle me-1"></i>Verificado
-                  </span>
-                  <span class="badge" [ngClass]="getStatusClass(event.statusName)">
-                    <i class="bi bi-{{ getStatusIcon(event.statusName) }} me-1"></i>{{ formatStatusName(event.statusName) }}
-                  </span>
+                <div class="badge-container">
+                  <div class="status-badges">
+                    <!-- Indicador de autoría -->
+                    <span *ngIf="isEventOwner()" class="badge bg-primary me-2">
+                      <i class="bi bi-person-check me-1"></i>Tu evento
+                    </span>
+                    
+                    <span *ngIf="event.verified === false" class="badge bg-warning text-dark me-2">
+                      <i class="bi bi-exclamation-triangle me-1"></i>Pendiente de verificación
+                    </span>
+                    <span *ngIf="event.verified === true" class="badge bg-success me-2">
+                      <i class="bi bi-check-circle me-1"></i>Verificado
+                    </span>
+                    <span class="badge" [ngClass]="getStatusClass(event.statusName)">
+                      <i class="bi bi-{{ getStatusIcon(event.statusName) }} me-1"></i>{{ formatStatusName(event.statusName) }}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div *ngIf="(isAdmin || isModerador) && !isComprador" class="admin-actions">
+              <div *ngIf="shouldShowAdminActions()" class="admin-actions">
                   <div class="dropdown">
                       <button class="btn btn-outline-secondary dropdown-toggle" 
                               type="button" 
@@ -56,24 +63,24 @@
                       </button>
                       <ul class="dropdown-menu dropdown-menu-end" 
                           aria-labelledby="eventActionsDropdown">
-                          <li *ngIf="!event.verified">
+                          <li *ngIf="!event.verified && (isAdmin || isModerador)">
                               <button class="dropdown-item" type="button" (click)="confirmVerifyEvent()" [disabled]="isVerifying">
                                   <span *ngIf="isVerifying" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                   <i *ngIf="!isVerifying" class="bi bi-check-circle-fill me-2 text-success"></i> Verificar Evento
                               </button>
                           </li>
-                          <li>
+                          <li *ngIf="(isAdmin || isModerador) || isEventOwner()">
                               <a class="dropdown-item" [routerLink]="['/events', event.id, 'edit']">
                                   <i class="bi bi-pencil-square me-2"></i> Editar Evento
                               </a>
                           </li>
-                          <li>
+                          <li *ngIf="isAdmin || isModerador">
                               <button class="dropdown-item" type="button" (click)="promptChangeStatus()">
                                   <i class="bi bi-toggles me-2"></i> Cambiar Estado
                               </button>
                           </li>
-                          <li><hr class="dropdown-divider"></li>
-                          <li>
+                          <li *ngIf="shouldShowAdminActions()"><hr class="dropdown-divider"></li>
+                          <li *ngIf="shouldShowAdminActions()">
                               <button class="dropdown-item text-danger" (click)="confirmDeleteEvent()" type="button">
                                   <i class="bi bi-trash3-fill me-2"></i> Eliminar Evento
                               </button>
@@ -229,11 +236,11 @@
               </div>
             </div>
 
-            <!-- Botón para Comprar Entradas -->
+            <!-- Botón para Comprar Entradas - Solo para compradores -->
             <div class="event-actions">
               <a [routerLink]="['/events', event.id, 'tickets']" 
                  class="btn btn-primary btn-lg" 
-                 *ngIf="event.statusName === 'EN_VENTA'">
+                 *ngIf="event.statusName === 'EN_VENTA' && !isModerador && !isEventRegistrar && !isVerificadorEntradas">
                 <i class="bi bi-ticket-perforated me-2"></i>Comprar Entradas
               </a>
               

@@ -7,7 +7,7 @@
                     <h2 class="mb-0" *ngIf="artist">{{ artist.name }}</h2>
                     <h2 class="mb-0" *ngIf="!artist">Detalles del artista</h2>
                     <div class="d-flex gap-2 align-items-center">
-                        <app-follow-artist-button *ngIf="artist?.active" [artistId]="artistId"
+                        <app-follow-artist-button *ngIf="artist?.active && !isModerador && !isEventRegistrar && !isVerificadorEntradas" [artistId]="artistId"
                             (followStatusChanged)="onFollowStatusChanged($event)">
                         </app-follow-artist-button>
 

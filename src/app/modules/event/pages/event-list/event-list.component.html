@@ -5,7 +5,7 @@
       <a routerLink="/events/calendar" class="btn btn-outline-primary" *ngIf="!isComprador">
         <i class="bi bi-calendar3 me-2"></i>Ver Calendario
       </a>
-      <a routerLink="/events/new" class="btn btn-success" *ngIf="(isAdmin || isEventRegistrar) && !isModerador && !isComprador">
+      <a routerLink="/events/new" class="btn btn-success" *ngIf="isAdmin || isEventRegistrar">
         <i class="bi bi-plus-circle-fill me-2"></i>Registrar Nuevo Evento
       </a>
     </div>
@@ -22,6 +22,16 @@
         <div class="col-md-3">
           <label for="endDate" class="form-label">Fecha Hasta</label>
           <input type="date" id="endDate" formControlName="endDate" class="form-control" />
+        </div>
+        <!-- Toggle for REGISTRADOR_EVENTO to see only their events -->
+        <div class="col-md-6" *ngIf="isEventRegistrar && !isAdmin && !isModerador">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="showOnlyMyEvents"
+                [(ngModel)]="showOnlyMyEvents" (change)="onMyEventsFilterChange()">
+            <label class="form-check-label" for="showOnlyMyEvents">
+              Mostrar solo mis eventos
+            </label>
+          </div>
         </div>
         <div class="col-md-12 mt-2 mb-3">
           <div class="btn-group btn-group-sm status-filter-buttons" role="group" aria-label="Filtros rápidos de fecha">
@@ -143,6 +153,13 @@
         </div>
       </div>
       <div class="card-body d-flex flex-column">
+        <!-- Indicador de autoría -->
+        <div *ngIf="isEventOwner(event)" class="mb-2">
+          <span class="badge bg-primary">
+            <i class="bi bi-person-check me-1"></i>Tu evento
+          </span>
+        </div>
+        
         <h5 class="card-title">{{ event.name }}</h5>
         <p class="card-text event-date">
           <i class="bi bi-calendar-week"></i> {{ formatEventDate(event.startDateTime) }}
@@ -192,4 +209,4 @@
     (pageChange)="changePage($event)">
   </app-pagination>
 
-</div>
+</div> 

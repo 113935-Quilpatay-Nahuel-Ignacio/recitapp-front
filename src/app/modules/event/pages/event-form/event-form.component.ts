@@ -17,6 +17,7 @@ import { VenueService } from '../../../venue/services/venue.service'; // Asegúr
 import { Artist } from '../../../artist/models/artist'; // Asegúrate que la ruta sea correcta
 import { ArtistService } from '../../../artist/services/artist.service'; // Asegúrate que la ruta sea correcta
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-event-form',
@@ -79,7 +80,8 @@ export class EventFormComponent implements OnInit {
     private venueService: VenueService,
     private artistService: ArtistService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -286,8 +288,6 @@ export class EventFormComponent implements OnInit {
         delete eventData.endDateTime;
     }
 
-    // const registrarId = 4; // Hardcoded registrarId for admin user - NO NECESARIO PARA UPDATE
-
     if (this.isEditMode && this.eventId) {
       this.eventService.updateEvent(this.eventId, eventData).subscribe({
         next: (updatedEvent: EventDTO) => {
@@ -304,8 +304,15 @@ export class EventFormComponent implements OnInit {
         },
       });
     } else {
-      // Modo Creación
-      const registrarId = 4; // Hardcoded registrarId for admin user
+      // Modo Creación - get current user ID instead of hardcoded value
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser || !currentUser.id) {
+        this.isLoading = false;
+        this.errorMessage = 'Error: Usuario no autenticado. Por favor, inicia sesión nuevamente.';
+        return;
+      }
+      
+      const registrarId = currentUser.id;
       this.eventService.createEvent(eventData, registrarId).subscribe({
         next: (createdEvent: EventDTO) => {
           this.isLoading = false;

@@ -23,6 +23,9 @@ export class ArtistDetailComponent implements OnInit {
   error = '';
   userId: number | null = null;
   isAdmin = false; // Set to false for regular users - change to true when testing admin features
+  isModerador = false;
+  isEventRegistrar = false;
+  isVerificadorEntradas = false;
   defaultImage = 'assets/images/default-artist-avatar.svg'; // Default artist avatar
   imageError = false;
 
@@ -38,7 +41,11 @@ export class ArtistDetailComponent implements OnInit {
   ngOnInit(): void {
     this.userId = this.sessionService.getCurrentUserId();
     const currentUser = this.sessionService.getCurrentUser();
-    this.isAdmin = currentUser?.role?.name === 'ADMIN';
+    const userRole = currentUser?.role?.name;
+    this.isAdmin = userRole === 'ADMIN';
+    this.isModerador = userRole === 'MODERADOR';
+    this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+    this.isVerificadorEntradas = userRole === 'VERIFICADOR_ENTRADAS';
     
     this.route.params.subscribe((params) => {
       this.artistId = +params['id'];

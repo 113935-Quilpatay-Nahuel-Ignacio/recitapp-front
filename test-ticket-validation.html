@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Ticket Validation</title>
+</head>
+<body>
+    <h1>Test Ticket Validation Endpoint</h1>
+    <button onclick="testValidation()">Test validateTicketByCode</button>
+    <div id="result"></div>
+
+    <script>
+        async function testValidation() {
+            const resultDiv = document.getElementById('result');
+            const testCode = 'TKT-TEST1234';
+            
+            try {
+                resultDiv.innerHTML = 'Testing...';
+                
+                const response = await fetch(`http://localhost:8080/api/tickets/validate-by-code/${testCode}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer YOUR_TOKEN_HERE' // Replace with actual token
+                    }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    resultDiv.innerHTML = `✅ Success! Response: ${JSON.stringify(result)}`;
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `❌ Error ${response.status}: ${error}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Network Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

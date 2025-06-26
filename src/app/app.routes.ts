@@ -235,7 +235,7 @@ export const routes: Routes = [
     path: 'admin',
     loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule),
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['ADMIN'] }
+    data: { roles: ['ADMIN', 'VERIFICADOR_ENTRADAS'] }
   },
 
   // Legal routes (public access)

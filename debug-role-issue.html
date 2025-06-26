@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Role and Ownership Issues</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { padding: 10px; margin: 5px 0; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>RecitApp Role & Ownership Debug Tool</h1>
+    
+    <div class="debug-section">
+        <h2>Instructions</h2>
+        <ol>
+            <li>Open browser console (F12)</li>
+            <li>Navigate to an event detail page as REGISTRADOR_EVENTO</li>
+            <li>Copy and paste the debug script below into the console</li>
+            <li>Run the script to see the comparison results</li>
+        </ol>
+    </div>
+
+    <div class="debug-section">
+        <h2>Debug Script (Copy to Browser Console)</h2>
+        <pre><code>
+// Debug REGISTRADOR_EVENTO ownership issue
+console.log('=== RECITAPP DEBUG ===');
+
+// Get Angular component instance
+const appComponent = angular?.getTestability?.(document.querySelector('app-event-detail'))?.getComponent?.();
+if (!appComponent) {
+    console.log('❌ Could not find Angular component');
+} else {
+    console.log('✅ Angular component found');
+    
+    // Check role variables
+    console.log('User roles:', {
+        isAdmin: appComponent.isAdmin,
+        isModerador: appComponent.isModerador,
+        isEventRegistrar: appComponent.isEventRegistrar,
+        isComprador: appComponent.isComprador
+    });
+    
+    // Check current user
+    console.log('Current user:', appComponent.currentUser);
+    
+    // Check event data
+    console.log('Event data:', {
+        id: appComponent.event?.id,
+        name: appComponent.event?.name,
+        registrarId: appComponent.event?.registrarId,
+        registrarIdType: typeof appComponent.event?.registrarId
+    });
+    
+    // Check ownership comparison
+    if (appComponent.event && appComponent.currentUser) {
+        console.log('Ownership comparison:', {
+            'event.registrarId': appComponent.event.registrarId,
+            'currentUser.id': appComponent.currentUser.id,
+            'strict equality (===)': appComponent.event.registrarId === appComponent.currentUser.id,
+            'loose equality (==)': appComponent.event.registrarId == appComponent.currentUser.id,
+            'number comparison': Number(appComponent.event.registrarId) === Number(appComponent.currentUser.id)
+        });
+    }
+    
+    // Check helper methods if they exist
+    if (typeof appComponent.isEventOwner === 'function') {
+        console.log('isEventOwner():', appComponent.isEventOwner());
+    }
+    if (typeof appComponent.shouldShowAdminActions === 'function') {
+        console.log('shouldShowAdminActions():', appComponent.shouldShowAdminActions());
+    }
+}
+
+console.log('=== END DEBUG ===');
+        </code></pre>
+    </div>
+
+    <div class="debug-section">
+        <h2>Common Issues & Solutions</h2>
+        <div class="result info">
+            <strong>Issue 1:</strong> registrarId is string, currentUser.id is number<br>
+            <strong>Solution:</strong> Use Number() conversion for both values
+        </div>
+        <div class="result info">
+            <strong>Issue 2:</strong> currentUser is null when component loads<br>
+            <strong>Solution:</strong> Ensure role initialization happens before template rendering
+        </div>
+        <div class="result info">
+            <strong>Issue 3:</strong> Browser cache serving old JavaScript<br>
+            <strong>Solution:</strong> Hard refresh (Ctrl+F5) or clear cache
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Expected Results for REGISTRADOR_EVENTO</h2>
+        <div class="result success">✅ isEventRegistrar: true</div>
+        <div class="result success">✅ currentUser.id: [number]</div>
+        <div class="result success">✅ event.registrarId: [same number]</div>
+        <div class="result success">✅ isEventOwner(): true</div>
+        <div class="result success">✅ shouldShowAdminActions(): true</div>
+    </div>
+</body>
+</html> 

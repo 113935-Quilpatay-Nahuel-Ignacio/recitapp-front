@@ -28,6 +28,7 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
   isModerador = false;
   isComprador = false;
   isEventRegistrar = false;
+  isVerificadorEntradas = false;
   currentUser: any = null;
   isVerifying = false; // Added for verification loading state
   verificationMessage = ''; // Added for verification feedback
@@ -74,12 +75,14 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
 
   private initializeUserRole(): void {
     this.currentUser = this.authService.getCurrentUser();
+    
     if (this.currentUser && this.currentUser.role) {
       const userRole = this.currentUser.role.name;
       this.isAdmin = userRole === 'ADMIN';
       this.isModerador = userRole === 'MODERADOR';
       this.isComprador = userRole === 'COMPRADOR';
       this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+      this.isVerificadorEntradas = userRole === 'VERIFICADOR_ENTRADAS';
     }
   }
 
@@ -92,9 +95,6 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
     this.sectionsImageError = false; // Reset sections image error flag
     this.eventService.getEventById(this.eventId).subscribe({
       next: (eventData) => {
-        console.log('🖼️ [DEBUG] Event loaded:', eventData);
-        console.log('🖼️ [DEBUG] Event flyerImage:', eventData.flyerImage);
-        console.log('🖼️ [DEBUG] imageError status:', this.imageError);
         this.event = eventData;
         this.isLoading = false;
         this.loadEventStatistics();
@@ -385,6 +385,23 @@ export class EventDetailComponent implements OnInit, AfterViewInit {
 
   onSectionsImageError(event: any): void {
     this.sectionsImageError = true;
+  }
+
+  /**
+   * Check if the current user owns this event
+   */
+  isEventOwner(): boolean {
+    if (!this.event || !this.currentUser || !this.isEventRegistrar) {
+      return false;
+    }
+    return Number(this.event.registrarId) === Number(this.currentUser.id);
+  }
+
+  /**
+   * Check if admin actions should be visible
+   */
+  shouldShowAdminActions(): boolean {
+    return ((this.isAdmin || this.isModerador) || this.isEventOwner()) && !this.isComprador;
   }
 
   // TODO: Implementar lógica de navegación para ver detalles de Venue y Artist si es necesario

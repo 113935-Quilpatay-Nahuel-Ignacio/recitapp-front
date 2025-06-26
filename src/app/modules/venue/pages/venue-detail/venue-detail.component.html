@@ -20,7 +20,7 @@
                     <h2 class="mb-0">{{ venue.name }}</h2>
                     <div class="d-flex gap-2">
                         <!-- Follow button -->
-                        <app-follow-venue-button *ngIf="venue.active" [venueId]="venueId">
+                        <app-follow-venue-button *ngIf="venue.active && !isModerador && !isEventRegistrar && !isVerificadorEntradas" [venueId]="venueId">
                         </app-follow-venue-button>
 
                         <!-- Admin actions dropdown -->
@@ -212,7 +212,7 @@
                             <!-- No events message -->
                             <div *ngIf="!loading.events && upcomingEvents.length === 0" class="text-center py-4">
                                 <p class="text-muted mb-3">No hay eventos próximos programados en este recinto.</p>
-                                <a *ngIf="isAdmin" [routerLink]="['/events/new']" [queryParams]="{venueId: venueId}"
+                                <a *ngIf="isAdmin || isEventRegistrar" [routerLink]="['/events/new']" [queryParams]="{venueId: venueId}"
                                     class="btn btn-primary">
                                     <i class="bi bi-plus-circle me-2"></i>Registrar nuevo evento
                                 </a>
@@ -233,7 +233,7 @@
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <h5 class="card-title">{{ event.name }}</h5>
                                                 <span class="badge" [ngClass]="getStatusClass(event.statusName)">
-                                                    {{ event.statusName }}
+                                                    {{ formatStatusName(event.statusName) }}
                                                 </span>
                                             </div>
                                             <p class="card-text mb-2">
@@ -262,7 +262,7 @@
                             </div>
 
                             <!-- Add event button for admins -->
-                            <div *ngIf="isAdmin && !loading.events && upcomingEvents.length > 0"
+                            <div *ngIf="(isAdmin || isEventRegistrar) && !loading.events && upcomingEvents.length > 0"
                                 class="mt-4 text-center">
                                 <a [routerLink]="['/events/new']" [queryParams]="{venueId: venueId}"
                                     class="btn btn-outline-primary">

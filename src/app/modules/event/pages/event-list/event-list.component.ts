@@ -54,6 +54,9 @@ export class EventListComponent implements OnInit {
   // Exponer Math para el template
   Math = Math;
 
+  // Expose Number function to template
+  Number = Number;
+
   // Admin and Cleanup related properties
   isAdmin = true; // Placeholder for real role management
   cleanupCutoffDate: string = ''; // For ngModel binding
@@ -65,7 +68,11 @@ export class EventListComponent implements OnInit {
   isModerador = false;
   isComprador = false;
   isEventRegistrar = false;
+  isVerificadorEntradas = false;
   currentUser: any = null;
+
+  // Filter for REGISTRADOR_EVENTO to see only their events
+  showOnlyMyEvents = false;
 
   constructor(
     private fb: FormBuilder,
@@ -79,6 +86,9 @@ export class EventListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Initialize user role FIRST, before everything else
+    this.initializeUserRole();
+    
     this.initFilterForm();
     
     // Only load data if running in browser (not during server-side rendering)
@@ -87,7 +97,6 @@ export class EventListComponent implements OnInit {
       this.loadEvents(); // Carga inicial de todos los eventos (o según filtros por defecto)
     }
 
-    this.initializeUserRole();
     this.setupFilterSubscription();
   }
 
@@ -133,7 +142,7 @@ export class EventListComponent implements OnInit {
     let verificationFilter: boolean | undefined = undefined;
     
     // Only ADMIN, MODERADOR, and REGISTRADOR_EVENTO can see unverified events
-    // For COMPRADOR and other roles, only show verified events
+    // For COMPRADOR and VERIFICADOR_ENTRADAS, only show verified events
     if (!this.isAdmin && !this.isModerador && !this.isEventRegistrar) {
       verificationFilter = true; // Only verified events
     }
@@ -142,6 +151,11 @@ export class EventListComponent implements OnInit {
       ...this.filterForm.value,
       verified: verificationFilter
     };
+
+    // Add registrarId filter if REGISTRADOR_EVENTO wants to see only their events
+    if (this.showOnlyMyEvents && this.isEventRegistrar && this.currentUser?.id) {
+      filters.registrarId = this.currentUser.id;
+    }
 
     // Remove empty/null values
     Object.keys(filters).forEach(key => {
@@ -321,16 +335,33 @@ export class EventListComponent implements OnInit {
 
   private initializeUserRole(): void {
     this.currentUser = this.authService.getCurrentUser();
+    
     if (this.currentUser && this.currentUser.role) {
       const userRole = this.currentUser.role.name;
       this.isAdmin = userRole === 'ADMIN';
       this.isModerador = userRole === 'MODERADOR';
       this.isComprador = userRole === 'COMPRADOR';
       this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
+      this.isVerificadorEntradas = userRole === 'VERIFICADOR_ENTRADAS';
     }
   }
 
   private setupFilterSubscription(): void {
-    // Implementation of setupFilterSubscription method
+    // Listen to form changes and optionally auto-apply filters
+    // this.filterForm.valueChanges.subscribe(() => this.applyFilters());
+  }
+
+  onMyEventsFilterChange(): void {
+    this.loadEvents();
+  }
+
+  /**
+   * Check if the current user owns a specific event
+   */
+  isEventOwner(event: EventDTO): boolean {
+    if (!this.currentUser || !this.isEventRegistrar || !event.registrarId) {
+      return false;
+    }
+    return Number(event.registrarId) === Number(this.currentUser.id);
   }
 }

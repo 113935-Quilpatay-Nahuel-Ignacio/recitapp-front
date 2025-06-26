@@ -42,6 +42,7 @@ export class VenueDetailComponent implements OnInit {
   isModerador = false;
   isEventRegistrar = false;
   isComprador = false;
+  isVerificadorEntradas = false;
   currentUser: any = null;
   currentTab: 'info' | 'events' | 'sections' | 'stats' = 'info';
   imageError = false;
@@ -77,6 +78,7 @@ export class VenueDetailComponent implements OnInit {
       this.isModerador = userRole === 'MODERADOR';
       this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
       this.isComprador = userRole === 'COMPRADOR';
+      this.isVerificadorEntradas = userRole === 'VERIFICADOR_ENTRADAS';
     }
   }
 
@@ -121,12 +123,8 @@ export class VenueDetailComponent implements OnInit {
 
     this.venueService.getVenueEvents(this.venueId, false).subscribe({
       next: (events) => {
-        // Filter events based on user role - COMPRADOR can only see verified events
-        if (this.isComprador) {
-          this.upcomingEvents = events.filter(event => event.verified === true);
-        } else {
-          this.upcomingEvents = events;
-        }
+        // Backend now handles verification filtering automatically based on user role
+        this.upcomingEvents = events;
         this.loading.events = false;
       },
       error: (err) => {
