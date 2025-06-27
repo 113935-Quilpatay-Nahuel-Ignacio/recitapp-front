@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { 
   PaymentResponse, 
   PaymentStatusCode, 
@@ -177,7 +178,7 @@ import {
     </div>
   `
 })
-export class PaymentSuccessComponent implements OnInit {
+export class PaymentSuccessComponent implements OnInit, OnDestroy {
   paymentId: string | null = null;
   status: string | null = null;
   statusCode: PaymentStatusCode | null = null;
@@ -185,53 +186,72 @@ export class PaymentSuccessComponent implements OnInit {
   amount: number | null = null;
   paymentMethod: string | null = null;
   isDataLoaded = false;
+  private subscription: Subscription | undefined;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      console.log('🔍 Payment Success - Query Params:', params);
-      
-      this.paymentId = params['payment_id'] || params['transaction_id'] || params['id'] || null;
-      this.status = params['status'] || null;
-      this.statusCode = params['status_code'] || params['statusCode'] || (this.status as PaymentStatusCode) || null;
-      this.statusDetail = params['status_detail'] || params['statusDetail'] || null;
-      this.amount = params['amount'] ? parseFloat(params['amount']) : null;
-      this.paymentMethod = params['payment_method'] || null;
-      
-      // Procesar parámetros adicionales si están disponibles
-      const shouldDeliver = params['should_deliver_tickets'];
-      const canRetryParam = params['can_retry'];
-      const displayNameParam = params['display_name'];
-      const userMessageParam = params['user_message'];
-      
-      this.isDataLoaded = true;
+    this.ngZone.run(() => {
+      this.subscription = this.route.queryParams.subscribe(params => {
+        console.log('🔍 Payment Success - Query Params:', params);
+        
+        this.paymentId = params['payment_id'] || params['transaction_id'] || params['id'] || null;
+        this.status = params['status'] || null;
+        this.statusCode = params['status_code'] || params['statusCode'] || (this.status as PaymentStatusCode) || null;
+        this.statusDetail = params['status_detail'] || params['statusDetail'] || null;
+        this.amount = params['amount'] ? parseFloat(params['amount']) : null;
+        this.paymentMethod = params['payment_method'] || null;
+        
+        // Procesar parámetros adicionales si están disponibles
+        const shouldDeliver = params['should_deliver_tickets'];
+        const canRetryParam = params['can_retry'];
+        const displayNameParam = params['display_name'];
+        const userMessageParam = params['user_message'];
+        
+        this.isDataLoaded = true;
 
-      console.log('💳 Payment Success - Processed Data:', {
-        paymentId: this.paymentId,
-        status: this.status,
-        statusCode: this.statusCode,
-        statusDetail: this.statusDetail,
-        amount: this.amount,
-        paymentMethod: this.paymentMethod,
-        shouldDeliver: shouldDeliver,
-        canRetry: canRetryParam,
-        displayName: displayNameParam,
-        userMessage: userMessageParam ? decodeURIComponent(userMessageParam) : null
+        console.log('💳 Payment Success - Processed Data:', {
+          paymentId: this.paymentId,
+          status: this.status,
+          statusCode: this.statusCode,
+          statusDetail: this.statusDetail,
+          amount: this.amount,
+          paymentMethod: this.paymentMethod,
+          shouldDeliver: shouldDeliver,
+          canRetry: canRetryParam,
+          displayName: displayNameParam,
+          userMessage: userMessageParam ? decodeURIComponent(userMessageParam) : null
+        });
+
+        // Si no tenemos información del estado, determinarlo basado en la URL
+        if (!this.statusCode && this.status) {
+          this.statusCode = this.determineStatusCode(this.status);
+          console.log('🔄 Status Code determined from status:', this.status, '→', this.statusCode);
+        }
+        
+        // Validar consistencia del estado
+        this.validatePaymentState();
+        
+        // Forzar detección de cambios para asegurar que la UI se actualice
+        this.changeDetectorRef.detectChanges();
+        
+        // Forzar una segunda detección de cambios después de un breve delay
+        // para asegurar que todos los elementos se rendericen correctamente
+        setTimeout(() => {
+          this.changeDetectorRef.detectChanges();
+          console.log('🎨 UI actualizada - isDataLoaded:', this.isDataLoaded, 'statusCode:', this.getStatusCode());
+        }, 50);
       });
-
-      // Si no tenemos información del estado, determinarlo basado en la URL
-      if (!this.statusCode && this.status) {
-        this.statusCode = this.determineStatusCode(this.status);
-        console.log('🔄 Status Code determined from status:', this.status, '→', this.statusCode);
-      }
-      
-      // Validar consistencia del estado
-      this.validatePaymentState();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   /**
@@ -372,7 +392,9 @@ export class PaymentSuccessComponent implements OnInit {
   }
 
   retryPayment(): void {
-    // Volver a la página anterior o a la selección de eventos
-    window.history.back();
+    this.ngZone.run(() => {
+      // Volver a la página anterior o a la selección de eventos
+      window.history.back();
+    });
   }
 } 

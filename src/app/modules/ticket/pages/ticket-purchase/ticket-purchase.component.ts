@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -72,6 +72,7 @@ export class TicketPurchaseComponent implements OnInit {
     private paymentService: PaymentService,
     public sessionService: SessionService, // Hacer público para uso en template
     private transactionService: TransactionService,
+    private ngZone: NgZone
   ) {
     // Form structure needs a major rethink to match TicketPurchaseRequestDTO
     // For now, let's initialize it simply. We will build it dynamically.
@@ -99,8 +100,10 @@ export class TicketPurchaseComponent implements OnInit {
     this.currentUserId = this.sessionService.getCurrentUserId();
     if (!this.currentUserId) {
       this.error = 'Debe iniciar sesión para comprar entradas.';
-      this.router.navigate(['/auth/login'], { 
-        queryParams: { returnUrl: this.router.url } 
+      this.ngZone.run(() => {
+        this.router.navigate(['/auth/login'], { 
+          queryParams: { returnUrl: this.router.url } 
+        });
       });
       return;
     }
@@ -148,7 +151,9 @@ export class TicketPurchaseComponent implements OnInit {
           this.error = statusMessage;
           // Redirigir de vuelta al detalle del evento
           setTimeout(() => {
-            this.router.navigate(['/events', this.eventId]);
+            this.ngZone.run(() => {
+              this.router.navigate(['/events', this.eventId]);
+            });
           }, 3000);
         }
 
@@ -503,12 +508,14 @@ export class TicketPurchaseComponent implements OnInit {
             'Entradas de regalo procesadas exitosamente', 
             'Compra Exitosa'
           ).subscribe(() => {
-            this.router.navigate(['/payment/success'], {
-              queryParams: {
-                transaction_id: response.preferenceId?.replace('GIFT_', ''),
-                status: 'COMPLETED',
-                type: 'gift'
-              }
+            this.ngZone.run(() => {
+              this.router.navigate(['/payment/success'], {
+                queryParams: {
+                  transaction_id: response.preferenceId?.replace('GIFT_', ''),
+                  status: 'COMPLETED',
+                  type: 'gift'
+                }
+              });
             });
           });
           return;
@@ -591,19 +598,21 @@ export class TicketPurchaseComponent implements OnInit {
     modalObservable.subscribe(() => {
       // Redirigir siempre a payment/success pero con los parámetros correctos
       // El componente PaymentSuccessComponent se encargará de mostrar la UI apropiada
-      this.router.navigate(['/payment/success'], {
-        queryParams: {
-          payment_id: paymentId,
-          status: status,
-          status_code: statusCode,
-          amount: paymentResult.totalAmount || paymentResult.amount,
-          payment_method: paymentResult.paymentMethodInfo?.paymentMethodName || 'MercadoPago',
-          // Pasar información adicional para una mejor experiencia
-          should_deliver_tickets: shouldDeliverTickets.toString(),
-          can_retry: canRetry.toString(),
-          display_name: displayName,
-          user_message: encodeURIComponent(userMessage)
-        }
+      this.ngZone.run(() => {
+        this.router.navigate(['/payment/success'], {
+          queryParams: {
+            payment_id: paymentId,
+            status: status,
+            status_code: statusCode,
+            amount: paymentResult.totalAmount || paymentResult.amount,
+            payment_method: paymentResult.paymentMethodInfo?.paymentMethodName || 'MercadoPago',
+            // Pasar información adicional para una mejor experiencia
+            should_deliver_tickets: shouldDeliverTickets.toString(),
+            can_retry: canRetry.toString(),
+            display_name: displayName,
+            user_message: encodeURIComponent(userMessage)
+          }
+        });
       });
     });
   }
@@ -733,12 +742,14 @@ export class TicketPurchaseComponent implements OnInit {
            'Compra realizada exitosamente con billetera virtual', 
            'Compra Exitosa'
          ).subscribe(() => {
-                    this.router.navigate(['/payment/success'], {
-           queryParams: {
-             payment_id: response.preferenceId,
-             status: 'COMPLETED'
-           }
-         });
+           this.ngZone.run(() => {
+             this.router.navigate(['/payment/success'], {
+               queryParams: {
+                 payment_id: response.preferenceId,
+                 status: 'COMPLETED'
+               }
+             });
+           });
          });
        });
   }
