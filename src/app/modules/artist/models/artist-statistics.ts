@@ -6,6 +6,6 @@ export interface ArtistStatisticsDTO {
   totalEvents: number;
   upcomingEvents: number;
   pastEvents: number;
-  lastUpdateDate?: Date;
+  lastUpdateDate?: string;
   followerGrowthRate?: number;
 }

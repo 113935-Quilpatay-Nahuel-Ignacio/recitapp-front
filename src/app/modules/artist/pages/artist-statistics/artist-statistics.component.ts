@@ -66,16 +66,24 @@ export class ArtistStatisticsComponent implements OnInit {
     });
   }
 
-  formatDate(dateStr: string | Date | undefined): string {
+  formatDate(dateStr: string | undefined): string {
     if (!dateStr) return 'N/A';
 
-    const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
-
-    return date.toLocaleDateString('es-AR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return 'N/A';
+      
+      return date.toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      return 'N/A';
+    }
   }
 
   getGrowthRateClass(rate: number | undefined): string {
