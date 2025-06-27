@@ -252,21 +252,46 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
       return;
     }
     
-    // Process the payment through the backend
-    this.paymentService.processPayment(this.paymentData.paymentRequest).subscribe({
+    console.log('🎯 [BRICKS] Card form data received:', cardFormData);
+    
+    // ========================================
+    // 🚨 NUEVA LÓGICA: Usar Checkout API 🚨
+    // ========================================
+    
+    // Extraer cardholder_name del cardFormData para detección de códigos de prueba
+    const cardholderName = cardFormData?.additional_info?.cardholder?.name || 
+                          cardFormData?.cardholder_name || 
+                          cardFormData?.cardholder?.name || 
+                          '';
+    
+    console.log('🔍 [BRICKS] Extracted cardholder name:', cardholderName);
+    
+    // Construir el request para el endpoint /process-payment con información adicional
+    const paymentRequestWithCardInfo = {
+      // Datos básicos del PaymentRequest existente
+      ...this.paymentData.paymentRequest,
+      
+      // 🎯 CLAVE: Cardholder name para detección de códigos de prueba
+      cardholderName: cardholderName
+    };
+    
+    console.log('🚀 [BRICKS] Sending to /process-payment with cardholder name:', paymentRequestWithCardInfo);
+    
+    // Llamar al endpoint de /process-payment con información adicional de la tarjeta
+    this.paymentService.processCardPayment(paymentRequestWithCardInfo).subscribe({
       next: (response) => {
         this.isLoading = false;
-        console.log('Payment processed successfully:', response);
+        console.log('✅ [BRICKS] Payment processed successfully with cardholder name:', response);
         
         this.paymentSuccess.emit({
-          paymentId: response.preferenceId,
+          paymentId: response.paymentId || response.preferenceId,
           ...response,
           cardFormData
         });
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Payment processing failed:', error);
+        console.error('❌ [BRICKS] Payment processing failed:', error);
         
         this.paymentError.emit({
           error: 'Error procesando el pago',

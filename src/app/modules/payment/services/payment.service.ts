@@ -33,8 +33,37 @@ export interface PayerInfo {
   };
 }
 
+export interface PaymentRequestWithCardInfo extends PaymentRequest {
+  // Información adicional de la tarjeta para detección de códigos de prueba
+  cardholderName?: string; // Nombre del titular de la tarjeta
+}
+
+export interface CardPaymentRequest {
+  eventId: number;
+  userId: number;
+  totalAmount: number;
+  description: string;
+  cardToken: string;
+  paymentMethodId: string;
+  paymentTypeId: string;
+  installments: number;
+  payer: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    identificationType?: string;
+    identificationNumber?: string;
+    phone?: string;
+  };
+  cardInfo: {
+    cardholderName: string;
+    issuerId: string;
+  };
+}
+
 export interface PaymentResponse {
   preferenceId: string;
+  paymentId?: string;
   initPoint: string;
   sandboxInitPoint: string;
   publicKey: string;
@@ -100,6 +129,15 @@ export class PaymentService {
 
   processWalletPayment(paymentRequest: PaymentRequest): Observable<PaymentResponse> {
     return this.http.post<PaymentResponse>(`${this.apiUrl}/wallet-purchase`, paymentRequest);
+  }
+
+  /**
+   * Procesar pago con información adicional de la tarjeta (incluyendo cardholder name)
+   * Este método envía al mismo endpoint /process-payment pero con datos adicionales
+   * para permitir la detección de códigos de prueba por cardholder name
+   */
+  processCardPayment(paymentRequest: PaymentRequestWithCardInfo): Observable<PaymentResponse> {
+    return this.http.post<PaymentResponse>(`${this.apiUrl}/process-payment`, paymentRequest);
   }
 
   // =============================
