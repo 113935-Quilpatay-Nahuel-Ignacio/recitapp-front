@@ -532,14 +532,24 @@ export class TicketPurchaseComponent implements OnInit {
   }
 
   onPaymentSuccess(paymentResult: any): void {
+    console.log('🎉 Payment Success Result:', paymentResult);
+    
+    // Extraer paymentId correctamente
+    const paymentId = paymentResult.paymentId || paymentResult.transaction_id || paymentResult.id || 'N/A';
+    const status = paymentResult.status || 'unknown';
+    const statusCode = paymentResult.statusCode || status;
+    
     this.modalService.success(
-      `¡Pago exitoso! ID de pago: ${paymentResult.paymentId}`, 
+      `¡Pago exitoso! ID de pago: ${paymentId}`, 
       'Compra Exitosa'
     ).subscribe(() => {
       this.router.navigate(['/payment/success'], {
         queryParams: {
-          payment_id: paymentResult.paymentId,
-          status: paymentResult.status
+          payment_id: paymentId,
+          status: status,
+          status_code: statusCode,
+          amount: paymentResult.totalAmount || paymentResult.amount,
+          payment_method: paymentResult.paymentMethodInfo?.paymentMethodName || 'MercadoPago'
         }
       });
     });
