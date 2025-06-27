@@ -532,27 +532,120 @@ export class TicketPurchaseComponent implements OnInit {
   }
 
   onPaymentSuccess(paymentResult: any): void {
-    console.log('🎉 Payment Success Result:', paymentResult);
+    console.log('🎉 Payment Result (could be success, pending, or rejected):', paymentResult);
     
-    // Extraer paymentId correctamente
+    // Extraer información del resultado del pago
     const paymentId = paymentResult.paymentId || paymentResult.transaction_id || paymentResult.id || 'N/A';
     const status = paymentResult.status || 'unknown';
     const statusCode = paymentResult.statusCode || status;
+    const shouldDeliverTickets = paymentResult.shouldDeliverTickets || false;
+    const canRetry = paymentResult.canRetry || false;
+    const displayName = paymentResult.displayName || this.getDefaultDisplayName(statusCode);
+    const userMessage = paymentResult.userMessage || this.getDefaultUserMessage(statusCode);
     
-    this.modalService.success(
-      `¡Pago exitoso! ID de pago: ${paymentId}`, 
-      'Compra Exitosa'
-    ).subscribe(() => {
+    console.log('📊 Payment Status Analysis:', {
+      paymentId,
+      status,
+      statusCode,
+      shouldDeliverTickets,
+      canRetry,
+      displayName,
+      userMessage
+    });
+
+    // Determinar el tipo de modal y mensaje según el estado
+    let modalType: 'success' | 'warning' | 'error' = 'success';
+    let modalTitle = 'Resultado del Pago';
+    let modalMessage = userMessage;
+
+    // Analizar el estado para mostrar el modal correcto
+    if (shouldDeliverTickets || statusCode === 'APRO' || status === 'approved') {
+      // ✅ PAGO APROBADO
+      modalType = 'success';
+      modalTitle = 'Compra Exitosa';
+      modalMessage = `¡Pago aprobado! Tus entradas han sido generadas. ID: ${paymentId}`;
+    } else if (statusCode === 'CONT' || status === 'pending' || status === 'in_process') {
+      // ⏳ PAGO PENDIENTE
+      modalType = 'warning';
+      modalTitle = 'Pago Pendiente';
+      modalMessage = `Tu pago está siendo procesado. Te notificaremos cuando se complete. ID: ${paymentId}`;
+    } else if (canRetry || status === 'rejected' || statusCode === 'OTHE' || statusCode === 'FUND' || statusCode === 'SECU' || statusCode === 'EXPI' || statusCode === 'FORM' || statusCode === 'CALL') {
+      // ❌ PAGO RECHAZADO
+      modalType = 'error';
+      modalTitle = 'Pago Rechazado';
+      modalMessage = `${displayName}. ${userMessage} ID: ${paymentId}`;
+    } else {
+      // ❓ ESTADO DESCONOCIDO
+      modalType = 'warning';
+      modalTitle = 'Estado Desconocido';
+      modalMessage = `Estado del pago: ${displayName}. ID: ${paymentId}`;
+    }
+
+    // Mostrar el modal apropiado según el estado
+    const modalObservable = modalType === 'success' 
+      ? this.modalService.success(modalMessage, modalTitle)
+      : modalType === 'warning'
+      ? this.modalService.warning(modalMessage, modalTitle)
+      : this.modalService.error(modalMessage, modalTitle);
+
+    modalObservable.subscribe(() => {
+      // Redirigir siempre a payment/success pero con los parámetros correctos
+      // El componente PaymentSuccessComponent se encargará de mostrar la UI apropiada
       this.router.navigate(['/payment/success'], {
         queryParams: {
           payment_id: paymentId,
           status: status,
           status_code: statusCode,
           amount: paymentResult.totalAmount || paymentResult.amount,
-          payment_method: paymentResult.paymentMethodInfo?.paymentMethodName || 'MercadoPago'
+          payment_method: paymentResult.paymentMethodInfo?.paymentMethodName || 'MercadoPago',
+          // Pasar información adicional para una mejor experiencia
+          should_deliver_tickets: shouldDeliverTickets.toString(),
+          can_retry: canRetry.toString(),
+          display_name: displayName,
+          user_message: encodeURIComponent(userMessage)
         }
       });
     });
+  }
+
+  /**
+   * Obtiene el nombre para mostrar por defecto según el código de estado
+   */
+  private getDefaultDisplayName(statusCode: string): string {
+    switch (statusCode) {
+      case 'APRO': return 'Pago aprobado';
+      case 'CONT': return 'Pago pendiente';
+      case 'OTHE': return 'Pago rechazado';
+      case 'FUND': return 'Fondos insuficientes';
+      case 'SECU': return 'Código de seguridad inválido';
+      case 'EXPI': return 'Fecha de vencimiento inválida';
+      case 'FORM': return 'Error en formulario';
+      case 'CALL': return 'Validación requerida';
+      case 'approved': return 'Pago aprobado';
+      case 'pending': return 'Pago pendiente';
+      case 'rejected': return 'Pago rechazado';
+      default: return 'Estado desconocido';
+    }
+  }
+
+  /**
+   * Obtiene el mensaje para el usuario por defecto según el código de estado
+   */
+  private getDefaultUserMessage(statusCode: string): string {
+    switch (statusCode) {
+      case 'APRO': return 'Tu pago ha sido aprobado exitosamente';
+      case 'CONT': return 'Tu pago está siendo procesado';
+      case 'OTHE': return 'Tu pago fue rechazado. Verifica los datos o intenta con otra tarjeta';
+      case 'FUND': return 'Tu pago fue rechazado por fondos insuficientes';
+      case 'SECU': return 'Tu pago fue rechazado por código de seguridad inválido';
+      case 'EXPI': return 'Tu pago fue rechazado por fecha de vencimiento inválida';
+      case 'FORM': return 'Tu pago fue rechazado por datos incorrectos';
+      case 'CALL': return 'Tu pago fue rechazado. Contacta a tu banco para autorizar';
+      case 'approved': return 'Tu pago ha sido aprobado exitosamente';
+      case 'pending': return 'Tu pago está siendo procesado';
+      case 'rejected': return 'Tu pago fue rechazado';
+      default: return 'No se pudo determinar el estado del pago';
+    }
   }
 
   onPaymentError(error: any): void {

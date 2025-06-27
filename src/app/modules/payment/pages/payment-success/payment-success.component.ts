@@ -201,6 +201,13 @@ export class PaymentSuccessComponent implements OnInit {
       this.statusDetail = params['status_detail'] || params['statusDetail'] || null;
       this.amount = params['amount'] ? parseFloat(params['amount']) : null;
       this.paymentMethod = params['payment_method'] || null;
+      
+      // Procesar parámetros adicionales si están disponibles
+      const shouldDeliver = params['should_deliver_tickets'];
+      const canRetryParam = params['can_retry'];
+      const displayNameParam = params['display_name'];
+      const userMessageParam = params['user_message'];
+      
       this.isDataLoaded = true;
 
       console.log('💳 Payment Success - Processed Data:', {
@@ -209,7 +216,11 @@ export class PaymentSuccessComponent implements OnInit {
         statusCode: this.statusCode,
         statusDetail: this.statusDetail,
         amount: this.amount,
-        paymentMethod: this.paymentMethod
+        paymentMethod: this.paymentMethod,
+        shouldDeliver: shouldDeliver,
+        canRetry: canRetryParam,
+        displayName: displayNameParam,
+        userMessage: userMessageParam ? decodeURIComponent(userMessageParam) : null
       });
 
       // Si no tenemos información del estado, determinarlo basado en la URL
@@ -217,6 +228,37 @@ export class PaymentSuccessComponent implements OnInit {
         this.statusCode = this.determineStatusCode(this.status);
         console.log('🔄 Status Code determined from status:', this.status, '→', this.statusCode);
       }
+      
+      // Validar consistencia del estado
+      this.validatePaymentState();
+    });
+  }
+
+  /**
+   * Valida la consistencia del estado del pago y loggea cualquier inconsistencia
+   */
+  private validatePaymentState(): void {
+    const statusCode = this.getStatusCode();
+    const shouldDeliver = this.shouldDeliverTickets();
+    const canRetry = this.canRetryPayment();
+    const isPending = this.isPendingPayment();
+    
+    // Detectar posibles inconsistencias en el estado
+    if ((statusCode === 'OTHE' || statusCode === 'CONT') && shouldDeliver) {
+      console.warn('⚠️ Inconsistencia detectada: Estado rechazado/pendiente pero shouldDeliverTickets es true');
+    }
+    
+    if (statusCode === 'APRO' && (canRetry || isPending)) {
+      console.warn('⚠️ Inconsistencia detectada: Estado aprobado pero canRetry o isPending es true');
+    }
+    
+    console.log('✅ Estado del pago validado:', {
+      statusCode,
+      shouldDeliver,
+      canRetry,
+      isPending,
+      displayName: this.getDisplayName(),
+      userMessage: this.getUserMessage()
     });
   }
 

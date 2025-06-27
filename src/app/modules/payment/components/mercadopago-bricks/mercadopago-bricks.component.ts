@@ -221,8 +221,8 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
               console.log('MercadoPago Card Payment Brick ready');
               this.fixAccessibilityIssues();
             },
-            onSubmit: (cardFormData: any) => {
-              this.handlePaymentSubmission(cardFormData);
+            onSubmit: (cardFormData: any, additionalData: any) => {
+              this.handlePaymentSubmission(cardFormData, additionalData);
             },
             onError: (error: any) => {
               console.error('MercadoPago Brick error:', error);
@@ -242,7 +242,7 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
     renderCardPaymentBrick();
   }
 
-  private handlePaymentSubmission(cardFormData: any): void {
+  private handlePaymentSubmission(cardFormData: any, additionalData?: any): void {
     this.isLoading = true;
     
     if (!this.paymentData.paymentRequest) {
@@ -253,16 +253,29 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
     }
     
     console.log('🎯 [BRICKS] Card form data received:', cardFormData);
+    console.log('🎯 [BRICKS] Additional data received:', additionalData);
     
     // ========================================
-    // 🚨 NUEVA LÓGICA: Usar Checkout API 🚨
+    // 🚨 CORRECCIÓN: Usar additionalData para extraer cardholderName 🚨
     // ========================================
     
-    // Extraer cardholder_name del cardFormData para detección de códigos de prueba
-    const cardholderName = cardFormData?.additional_info?.cardholder?.name || 
-                          cardFormData?.cardholder_name || 
-                          cardFormData?.cardholder?.name || 
-                          '';
+    // Extraer cardholder_name del additionalData (método oficial según documentación de MercadoPago)
+    let cardholderName = '';
+    
+    if (additionalData) {
+      cardholderName = additionalData.cardholderName || 
+                      additionalData.cardholder_name || 
+                      additionalData.name || 
+                      '';
+    }
+    
+    // Fallback: si additionalData no tiene la información, intentar extraer de cardFormData
+    if (!cardholderName) {
+      cardholderName = cardFormData?.additional_info?.cardholder?.name || 
+                      cardFormData?.cardholder_name || 
+                      cardFormData?.cardholder?.name || 
+                      '';
+    }
     
     console.log('🔍 [BRICKS] Extracted cardholder name:', cardholderName);
     
@@ -286,7 +299,8 @@ export class MercadoPagoBricksComponent implements OnInit, OnDestroy {
         this.paymentSuccess.emit({
           paymentId: response.paymentId || response.preferenceId,
           ...response,
-          cardFormData
+          cardFormData,
+          additionalData
         });
       },
       error: (error) => {
