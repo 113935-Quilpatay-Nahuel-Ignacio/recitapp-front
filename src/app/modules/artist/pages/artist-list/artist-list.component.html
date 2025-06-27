@@ -1,7 +1,7 @@
 <div class="container py-4">
     <!-- Page Header -->
     <app-page-header title="Artistas" icon="bi-person-fill">
-        <div *ngIf="isAdmin">
+        <div *ngIf="isAdmin || isEventRegistrar">
             <button class="btn btn-primary" routerLink="/artists/new">
                 <i class="bi bi-plus-lg me-2"></i>Registrar Nuevo Artista
             </button>

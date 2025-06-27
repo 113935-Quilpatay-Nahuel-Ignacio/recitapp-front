@@ -152,7 +152,7 @@ export const routes: Routes = [
     path: 'venues/new', 
     component: VenueFormComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['ADMIN'] }
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
   },
   { path: 'venues/search-availability', component: VenueAvailabilitySearchComponent },
   { path: 'venues/:id', component: VenueDetailComponent },
@@ -160,7 +160,7 @@ export const routes: Routes = [
     path: 'venues/:id/edit', 
     component: VenueFormComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['ADMIN'] }
+    data: { roles: ['ADMIN', 'REGISTRADOR_EVENTO'] }
   },
 
   // Ticket routes
