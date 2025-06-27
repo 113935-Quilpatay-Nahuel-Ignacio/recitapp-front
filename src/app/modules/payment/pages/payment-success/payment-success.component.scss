@@ -101,6 +101,12 @@
   align-items: stretch;
   justify-content: center;
   gap: 1rem;
+  margin: 0;
+}
+
+.payment-details .row > [class*="col-"] {
+  padding: 0;
+  display: flex;
 }
 
 .detail-item {
@@ -113,6 +119,7 @@
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   min-height: 80px;
+  width: 100%;
 }
 
 .detail-item:last-child {
@@ -134,6 +141,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin-top: auto;
+  word-break: break-word;
 }
 
 /* ===== CONTENIDO ESPECÍFICO POR STATUS ===== */
@@ -321,8 +329,8 @@
   }
   
   .detail-item {
-    min-height: 60px;
-    padding: 0.75rem;
+    min-height: 70px;
+    padding: 0.875rem;
   }
   
   .d-md-flex .btn {

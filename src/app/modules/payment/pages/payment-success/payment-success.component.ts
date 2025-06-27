@@ -33,19 +33,19 @@ import {
               <!-- Información del pago -->
               <div class="payment-details mb-4" *ngIf="showPaymentDetails()">
                 <div class="row">
-                  <div class="col-md-6" *ngIf="paymentId">
+                  <div class="col-12 col-md-4" *ngIf="paymentId">
                     <div class="detail-item">
                       <strong>ID de Pago:</strong>
                       <span class="detail-value">{{ paymentId }}</span>
                     </div>
                   </div>
-                  <div class="col-md-6" *ngIf="amount">
+                  <div class="col-12 col-md-4" *ngIf="amount">
                     <div class="detail-item">
                       <strong>Monto:</strong>
                       <span class="detail-value">\${{ amount | number:'1.2-2' }}</span>
                     </div>
                   </div>
-                  <div class="col-12" *ngIf="paymentMethod">
+                  <div class="col-12 col-md-4" *ngIf="paymentMethod">
                     <div class="detail-item">
                       <strong>Método de pago:</strong>
                       <span class="detail-value">{{ paymentMethod }}</span>
