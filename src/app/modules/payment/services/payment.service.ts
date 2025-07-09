@@ -69,6 +69,11 @@ export interface PaymentResponse {
   publicKey: string;
   totalAmount: number;
   status: string;
+  statusCode?: string;
+  displayName?: string;
+  userMessage?: string;
+  shouldDeliverTickets?: boolean;
+  canRetry?: boolean;
   qrCodeData?: string;
   paymentMethodInfo?: PaymentMethodInfo;
   bricksConfig: BricksConfiguration;

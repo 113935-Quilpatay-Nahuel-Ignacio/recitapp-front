@@ -16,6 +16,7 @@ export type PaymentStatusCode =
   | 'SECU'   // Rechazado por código de seguridad inválido
   | 'EXPI'   // Rechazado por fecha de vencimiento inválida
   | 'FORM'   // Rechazado por error en formulario
+  | 'COMPLETED' // Pago completado (billetera virtual)
   | 'approved'
   | 'pending'
   | 'rejected'
@@ -83,6 +84,14 @@ export class MercadoPagoStatusHandler {
       status: 'approved',
       displayName: 'Pago aprobado',
       userMessage: 'Tu pago ha sido aprobado exitosamente',
+      shouldDeliverTickets: true,
+      canRetry: false
+    },
+    'COMPLETED': {
+      code: 'COMPLETED',
+      status: 'approved',
+      displayName: 'Pago completado',
+      userMessage: 'Tu pago con billetera virtual ha sido completado exitosamente. Recibirás tus entradas por email.',
       shouldDeliverTickets: true,
       canRetry: false
     },

@@ -255,11 +255,18 @@
                   <input 
                     id="dni-{{i}}" 
                     formControlName="attendeeDni" 
-                    placeholder="DNI del asistente" 
+                    placeholder="Solo números (ej: 12345678)" 
                     class="form-control"
+                    type="text"
+                    pattern="[0-9]*"
+                    inputmode="numeric"
+                    maxlength="10"
+                    (input)="onDniInput($event)"
                     [class.is-invalid]="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched">
                   <div *ngIf="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched" class="invalid-feedback">
-                    El DNI es requerido.
+                    <span *ngIf="ticketCtrl.get('attendeeDni')?.errors?.['required']">El DNI es requerido.</span>
+                    <span *ngIf="ticketCtrl.get('attendeeDni')?.errors?.['numbersOnly']">El DNI solo puede contener números.</span>
+                    <span *ngIf="ticketCtrl.get('attendeeDni')?.errors?.['uniqueDni']">Este DNI ya está asignado a otra entrada.</span>
                   </div>
                 </div>
               </div>
@@ -386,9 +393,15 @@
                   class="form-control" 
                   id="payerDocumentNumber" 
                   formControlName="documentNumber"
+                  placeholder="Solo números (ej: 12345678)"
+                  pattern="[0-9]*"
+                  inputmode="numeric"
+                  maxlength="11"
+                  (input)="onPayerDocumentInput($event)"
                   [class.is-invalid]="payerForm.get('documentNumber')?.invalid && payerForm.get('documentNumber')?.touched">
                 <div *ngIf="payerForm.get('documentNumber')?.invalid && payerForm.get('documentNumber')?.touched" class="invalid-feedback">
-                  El número de documento es requerido.
+                  <span *ngIf="payerForm.get('documentNumber')?.errors?.['required']">El número de documento es requerido.</span>
+                  <span *ngIf="payerForm.get('documentNumber')?.errors?.['numbersOnly']">El número de documento solo puede contener números.</span>
                 </div>
               </div>
             </div>

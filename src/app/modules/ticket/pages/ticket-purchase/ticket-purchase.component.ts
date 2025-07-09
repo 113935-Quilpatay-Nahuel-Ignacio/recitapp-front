@@ -1,6 +1,6 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Observable, EMPTY } from 'rxjs';
 import { map as rxjsMap, tap, catchError, finalize } from 'rxjs/operators';
@@ -20,6 +20,52 @@ import { TransactionService } from '../../../transaction/services/transaction.se
 // import { TicketTypeService } from '../../services/ticket-type.service'; // OLD
 // import { TicketType } from '../../models/ticket-type.model'; // OLD
 // import { BookingPayload, BookingDetailPayload } from '../../models/booking.model'; // OLD - BookingPayload is TicketPurchaseRequestDTO
+
+// Validadores personalizados para DNI
+class DniValidators {
+  /**
+   * Validador que solo permite números en el campo DNI
+   */
+  static numbersOnly(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null; // Si está vacío, lo maneja el validador required
+    }
+    
+    const dniString = control.value.toString();
+    const numbersOnlyRegex = /^\d+$/;
+    
+    if (!numbersOnlyRegex.test(dniString)) {
+      return { numbersOnly: { message: 'El DNI solo puede contener números' } };
+    }
+    
+    return null;
+  }
+
+  /**
+   * Validador que verifica que no se repitan DNI entre entradas
+   * Requiere acceso al FormArray completo
+   */
+  static uniqueDni(attendeeTicketsArray: FormArray): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null; // Si está vacío, lo maneja el validador required
+      }
+
+      const currentDni = control.value.toString();
+      const dniOccurrences = attendeeTicketsArray.controls.filter(ticketControl => {
+        const dniControl = ticketControl.get('attendeeDni');
+        return dniControl && dniControl.value && dniControl.value.toString() === currentDni;
+      });
+
+      // Si hay más de una ocurrencia del mismo DNI, es inválido
+      if (dniOccurrences.length > 1) {
+        return { uniqueDni: { message: 'Este DNI ya está asignado a otra entrada' } };
+      }
+
+      return null;
+    };
+  }
+}
 
 @Component({
   selector: 'app-ticket-purchase',
@@ -91,7 +137,10 @@ export class TicketPurchaseComponent implements OnInit {
       lastName: ['', Validators.required],
       phone: [''],
       documentType: ['DNI'],
-      documentNumber: ['', Validators.required]
+      documentNumber: ['', [
+        Validators.required,
+        DniValidators.numbersOnly
+      ]]
     });
   }
 
@@ -226,7 +275,11 @@ export class TicketPurchaseComponent implements OnInit {
         price: [firstTicketPrice.price, Validators.required], // Price per ticket for this section
         attendeeFirstName: ['', Validators.required],
         attendeeLastName: ['', Validators.required],
-        attendeeDni: ['', Validators.required],
+        attendeeDni: ['', [
+          Validators.required,
+          DniValidators.numbersOnly,
+          DniValidators.uniqueDni(this.attendeeTickets)
+        ]],
         // promotionId: [null] // If promotions are handled
       }));
     }
@@ -242,6 +295,9 @@ export class TicketPurchaseComponent implements OnInit {
         }
       });
     });
+    
+    // Update DNI validations for all tickets after adding new ones
+    this.updateDniValidations();
     
     // Trigger form update for total calculation, etc.
     this.purchaseForm.updateValueAndValidity();
@@ -294,7 +350,11 @@ export class TicketPurchaseComponent implements OnInit {
         price: [selectedTicketPrice.price, Validators.required], // Price per ticket for this section
         attendeeFirstName: ['', Validators.required],
         attendeeLastName: ['', Validators.required],
-        attendeeDni: ['', Validators.required],
+        attendeeDni: ['', [
+          Validators.required,
+          DniValidators.numbersOnly,
+          DniValidators.uniqueDni(this.attendeeTickets)
+        ]],
         // promotionId: [null] // If promotions are handled
       });
       
@@ -305,6 +365,9 @@ export class TicketPurchaseComponent implements OnInit {
       
       this.attendeeTickets.push(ticketFormGroup);
     }
+    
+    // Update DNI validations for all tickets after adding new ones
+    this.updateDniValidations();
     
     // Clear the form after adding
     ticketTypeSelect.value = '';
@@ -337,6 +400,71 @@ export class TicketPurchaseComponent implements OnInit {
     this.purchaseForm.updateValueAndValidity();
     this.updateWalletCalculations(); // Update wallet calculations after removing ticket
     this.updateProcessingCounter(); // Update processing counter
+    this.updateDniValidations(); // Update DNI validations after removing ticket
+  }
+
+  /**
+   * Actualiza las validaciones de DNI para todas las entradas
+   * Necesario cuando se agregan o quitan entradas para mantener la validación de DNI únicos
+   */
+  private updateDniValidations(): void {
+    this.attendeeTickets.controls.forEach((control, index) => {
+      const dniControl = control.get('attendeeDni');
+      if (dniControl) {
+        // Obtener los validadores actuales sin el uniqueDni
+        const currentValidators = [
+          Validators.required,
+          DniValidators.numbersOnly
+        ];
+        
+        // Agregar el validador uniqueDni actualizado
+        currentValidators.push(DniValidators.uniqueDni(this.attendeeTickets));
+        
+        // Actualizar los validadores
+        dniControl.setValidators(currentValidators);
+        dniControl.updateValueAndValidity({ emitEvent: false });
+      }
+    });
+  }
+
+  /**
+   * Filtrar input de DNI para solo permitir números
+   */
+  onDniInput(event: any): void {
+    const input = event.target;
+    let value = input.value;
+    
+    // Remover todos los caracteres que no sean números
+    const numbersOnly = value.replace(/[^0-9]/g, '');
+    
+    // Si el valor cambió, actualizar el input
+    if (numbersOnly !== value) {
+      input.value = numbersOnly;
+      
+      // Disparar evento de cambio para actualizar el FormControl
+      const changeEvent = new Event('input', { bubbles: true });
+      input.dispatchEvent(changeEvent);
+    }
+  }
+
+  /**
+   * Filtrar input del documento del pagador para solo permitir números
+   */
+  onPayerDocumentInput(event: any): void {
+    const input = event.target;
+    let value = input.value;
+    
+    // Remover todos los caracteres que no sean números
+    const numbersOnly = value.replace(/[^0-9]/g, '');
+    
+    // Si el valor cambió, actualizar el input
+    if (numbersOnly !== value) {
+      input.value = numbersOnly;
+      
+      // Disparar evento de cambio para actualizar el FormControl
+      const changeEvent = new Event('input', { bubbles: true });
+      input.dispatchEvent(changeEvent);
+    }
   }
 
   calculateTotal(): number {
@@ -743,12 +871,19 @@ export class TicketPurchaseComponent implements OnInit {
            'Compra Exitosa'
          ).subscribe(() => {
            this.ngZone.run(() => {
-             this.router.navigate(['/payment/success'], {
-               queryParams: {
-                 payment_id: response.preferenceId,
-                 status: 'COMPLETED'
-               }
-             });
+                        this.router.navigate(['/payment/success'], {
+             queryParams: {
+               payment_id: response.preferenceId || response.paymentId,
+               status: response.status,
+               status_code: response.statusCode,
+               display_name: encodeURIComponent(response.displayName || ''),
+               user_message: encodeURIComponent(response.userMessage || ''),
+               should_deliver_tickets: response.shouldDeliverTickets,
+               can_retry: response.canRetry,
+               amount: response.totalAmount,
+               payment_method: 'Billetera Virtual'
+             }
+           });
            });
          });
        });
@@ -795,6 +930,10 @@ export class TicketPurchaseComponent implements OnInit {
       if (dni?.invalid) {
         if (!dni.value || dni.value.trim() === '') {
           errors.push(`Entrada ${index + 1}: DNI es requerido`);
+        } else if (dni.errors?.['numbersOnly']) {
+          errors.push(`Entrada ${index + 1}: El DNI solo puede contener números`);
+        } else if (dni.errors?.['uniqueDni']) {
+          errors.push(`Entrada ${index + 1}: Este DNI ya está asignado a otra entrada`);
         }
       }
     });
@@ -807,29 +946,26 @@ export class TicketPurchaseComponent implements OnInit {
   }
 
   isFormValidForContinue(): boolean {
-    // Verificar que todos los campos requeridos estén completados
+    // Verificar que todos los campos estén válidos (no solo que tengan valores)
     const isValid = this.attendeeTickets.controls.every((control, index) => {
       const firstName = control.get('attendeeFirstName');
       const lastName = control.get('attendeeLastName');
       const dni = control.get('attendeeDni');
       
-      const hasFirstName = firstName?.value?.trim();
-      const hasLastName = lastName?.value?.trim();
-      const hasDni = dni?.value?.trim();
+      const isFirstNameValid = firstName?.valid && firstName?.value?.trim();
+      const isLastNameValid = lastName?.valid && lastName?.value?.trim();
+      const isDniValid = dni?.valid && dni?.value?.trim();
       
       // Debug log para identificar problemas
-      if (!hasFirstName || !hasLastName || !hasDni) {
-        console.log(`Entrada ${index + 1} incompleta:`, {
-          firstName: hasFirstName,
-          lastName: hasLastName,
-          dni: hasDni,
-          firstNameValue: firstName?.value,
-          lastNameValue: lastName?.value,
-          dniValue: dni?.value
+      if (!isFirstNameValid || !isLastNameValid || !isDniValid) {
+        console.log(`Entrada ${index + 1} inválida:`, {
+          firstName: { valid: firstName?.valid, value: firstName?.value, errors: firstName?.errors },
+          lastName: { valid: lastName?.valid, value: lastName?.value, errors: lastName?.errors },
+          dni: { valid: dni?.valid, value: dni?.value, errors: dni?.errors },
         });
       }
       
-      return hasFirstName && hasLastName && hasDni;
+      return isFirstNameValid && isLastNameValid && isDniValid;
     });
     
     console.log('Form validation result:', isValid, 'Total tickets:', this.attendeeTickets.controls.length);
