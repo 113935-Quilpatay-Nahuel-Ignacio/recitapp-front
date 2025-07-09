@@ -665,7 +665,7 @@ export class EventCalendarComponent implements OnInit {
   }
 
   formatDisplayDate(date: Date): string {
-    return date.toLocaleDateString('es-ES', {
+    return date.toLocaleDateString('es-AR', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -675,7 +675,7 @@ export class EventCalendarComponent implements OnInit {
 
   formatEventTime(dateTimeString: string): string {
     const date = new Date(dateTimeString);
-    return date.toLocaleTimeString('es-ES', {
+    return date.toLocaleTimeString('es-AR', {
       hour: '2-digit',
       minute: '2-digit'
     });

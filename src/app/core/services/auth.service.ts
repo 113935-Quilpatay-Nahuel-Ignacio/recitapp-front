@@ -174,8 +174,11 @@ export class AuthService {
    * Validar token de recuperación
    */
   validateResetToken(token: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.API_URL}/validate-reset-token?token=${token}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<any>(`${this.API_URL}/validate-reset-token?token=${token}`)
+      .pipe(
+        map(response => response.valid || false),
+        catchError(this.handleError)
+      );
   }
 
   /**
