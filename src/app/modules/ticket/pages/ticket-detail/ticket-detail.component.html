@@ -181,7 +181,7 @@
           </div>
           <div class="card-body">
             <div class="d-grid gap-2">
-              <button (click)="downloadTicket(ticket)" class="btn btn-success">
+              <button (click)="downloadTicket(ticket)" class="btn btn-success" [disabled]="ticket.status && ticket.status.toUpperCase() === 'CANCELADA'" [attr.title]="ticket.status && ticket.status.toUpperCase() === 'CANCELADA' ? 'No disponible para entradas canceladas o reembolsadas' : null">
                 <i class="bi bi-download me-2"></i>
                 Descargar PDF
               </button>

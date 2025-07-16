@@ -419,9 +419,6 @@
                   <p class="card-text mb-2" *ngIf="walletDiscountApplied > 0">
                     <strong>Descuento aplicado:</strong> {{ walletDiscountApplied | currency:'ARS':'symbol':'1.2-2' }}
                   </p>
-                  <p class="card-text mb-0" *ngIf="amountAfterWallet > 0">
-                    <strong>Restante a pagar:</strong> {{ amountAfterWallet | currency:'ARS':'symbol':'1.2-2' }}
-                  </p>
                   <p class="card-text mb-0 text-success" *ngIf="amountAfterWallet === 0">
                     <strong><i class="bi bi-check-circle me-1"></i>Compra completamente cubierta por billetera virtual</strong>
                   </p>
@@ -432,7 +429,15 @@
             <div class="alert alert-info">
               <i class="bi bi-info-circle me-2"></i>
               <strong>Total a pagar:</strong> {{ getTotal() | currency:'ARS':'symbol':'1.2-2' }}
-              <div *ngIf="showWalletOption && amountAfterWallet !== getTotal()" class="mt-1">
+              <div *ngIf="showWalletOption && walletDiscountApplied > 0" class="mt-2">
+                <span class="d-block text-success">
+                  <i class="bi bi-wallet2 me-1"></i> Descuento de billetera virtual: <strong>-{{ walletDiscountApplied | currency:'ARS':'symbol':'1.2-2' }}</strong>
+                </span>
+                <span class="d-block text-primary fs-5">
+                  <i class="bi bi-cash-coin me-1"></i> Monto real a pagar: <strong>{{ amountAfterWallet | currency:'ARS':'symbol':'1.2-2' }}</strong>
+                </span>
+              </div>
+              <div *ngIf="showWalletOption && amountAfterWallet !== getTotal() && walletDiscountApplied > 0" class="mt-1">
                 <small class="text-muted">
                   (Incluye descuento automático de billetera virtual)
                 </small>

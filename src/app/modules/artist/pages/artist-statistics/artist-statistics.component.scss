@@ -1,71 +1,101 @@
+.artist-statistics-bg {
+  background: #1A1A1A;
+  min-height: 100vh;
+}
+
+.artist-statistics-card {
+  background: #2D2D2D;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.artist-statistics-header {
+  background: transparent;
+  border-bottom: 1px solid #222;
+  padding: 1.5rem 2rem;
+}
+
+.artist-statistics-title {
+  color: #22C55E;
+  font-weight: 700;
+  font-size: 2.2rem;
+  letter-spacing: 0.5px;
+}
+
+.artist-statistics-body {
+  background: #2D2D2D;
+  color: #fff;
+  border-radius: 0 0 16px 16px;
+  padding: 2rem;
+}
+
 .statistics-container {
   .stats-card {
-    height: 100%;
+    background: #232323;
     border-radius: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    }
-
+    border: none;
+    box-shadow: 0 2px 8px rgba(34,197,94,0.08);
     .card-body {
       padding: 1.5rem;
     }
-
     .display-5 {
       font-size: 2.5rem;
       font-weight: 700;
+      color: #22C55E;
+    }
+    p {
+      color: #a3a3a3;
     }
   }
-
   .rounded-circle {
     width: 150px;
     height: 150px;
     object-fit: cover;
     margin: 0 auto;
+    border: 4px solid #22C55E;
+    background: #232323;
   }
-
   .card {
+    background: #232323;
     border-radius: 0.5rem;
     border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(34,197,94,0.05);
     margin-bottom: 1.5rem;
-
     .card-header {
-      background-color: rgba(0, 0, 0, 0.03);
-      border-bottom: none;
-      padding: 1rem 1.5rem;
+      background: #232323;
+      border-bottom: 1px solid #222;
+      color: #22C55E;
+      font-weight: 600;
+      font-size: 1.2rem;
     }
-
     .card-body {
       padding: 1.5rem;
+      color: #fff;
     }
   }
-
   .list-group-item {
+    background: #232323;
+    color: #fff;
+    border: none;
     padding: 1rem 1.5rem;
-    border-left: none;
-    border-right: none;
-
-    &:first-child {
-      border-top: none;
-    }
-
     .bi {
       font-size: 1.2rem;
+      color: #22C55E;
     }
   }
 }
 
 // Responsive adjustments
 @media (max-width: 767px) {
+  .artist-statistics-body {
+    padding: 1rem;
+  }
   .statistics-container {
     .rounded-circle {
       width: 120px;
       height: 120px;
     }
-
     .stats-card {
       .display-5 {
         font-size: 2rem;

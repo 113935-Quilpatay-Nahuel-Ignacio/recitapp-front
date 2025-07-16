@@ -26,6 +26,7 @@ export class ArtistDetailComponent implements OnInit {
   isModerador = false;
   isEventRegistrar = false;
   isVerificadorEntradas = false;
+  isComprador = false;
   defaultImage = 'assets/images/default-artist-avatar.svg'; // Default artist avatar
   imageError = false;
 
@@ -46,6 +47,7 @@ export class ArtistDetailComponent implements OnInit {
     this.isModerador = userRole === 'MODERADOR';
     this.isEventRegistrar = userRole === 'REGISTRADOR_EVENTO';
     this.isVerificadorEntradas = userRole === 'VERIFICADOR_ENTRADAS';
+    this.isComprador = userRole === 'COMPRADOR';
     
     this.route.params.subscribe((params) => {
       this.artistId = +params['id'];
