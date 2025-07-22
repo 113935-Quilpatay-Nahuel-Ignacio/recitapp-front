@@ -1,0 +1,242 @@
+<div class="container mt-4">
+  <h2>
+    <i class="bi bi-people me-2"></i>
+    Reporte de Estadísticas de Artistas
+  </h2>
+
+  <!-- Filtros -->
+  <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-funnel me-2"></i>
+          Filtros de Búsqueda
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Filtro por estado del artista -->
+          <div class="col-md-4 mb-3">
+            <label for="activeFilter" class="form-label">Estado del Artista:</label>
+            <select id="activeFilter" class="form-select" formControlName="activeFilter">
+              <option value="all">Todos</option>
+              <option value="active">Solo Activos</option>
+              <option value="inactive">Solo Inactivos</option>
+            </select>
+          </div>
+
+          <!-- Filtro por género -->
+          <div class="col-md-4 mb-3">
+            <label for="genreFilter" class="form-label">Género Musical:</label>
+            <select id="genreFilter" class="form-select" formControlName="genreFilter">
+              <option [ngValue]="null">Todos los géneros</option>
+              <option *ngFor="let genre of genres$ | async" [value]="genre.id">
+                {{ genre.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Ordenamiento -->
+          <div class="col-md-4 mb-3">
+            <label for="sortBy" class="form-label">Ordenar por:</label>
+            <select id="sortBy" class="form-select" formControlName="sortBy">
+              <option value="followers">Número de Seguidores</option>
+              <option value="events">Total de Eventos</option>
+              <option value="upcomingEvents">Eventos Próximos</option>
+              <option value="name">Nombre (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Límite de resultados -->
+          <div class="col-md-6 mb-3">
+            <label for="limit" class="form-label">Límite de Resultados:</label>
+            <select id="limit" class="form-select" formControlName="limit">
+              <option value="10">Top 10</option>
+              <option value="25">Top 25</option>
+              <option value="50">Top 50</option>
+              <option value="100">Top 100</option>
+              <option value="all">Todos</option>
+            </select>
+          </div>
+
+          <!-- Botón de generar reporte -->
+          <div class="col-md-6 mb-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+              <i class="bi bi-graph-up me-2"></i>
+              {{ isLoading ? 'Generando...' : 'Generar Reporte' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Estado de carga -->
+  <div *ngIf="isLoading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando reporte...</span>
+    </div>
+    <p class="mt-2">Generando reporte de estadísticas...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    <strong>Error:</strong> {{ errorMessage }}
+  </div>
+
+  <!-- Resultados del reporte -->
+  <div *ngIf="reportData && !isLoading && !errorMessage" class="card mt-4">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">
+          <i class="bi bi-bar-chart-line me-2"></i>
+          Resultados del Reporte
+        </h3>
+        <small class="text-muted">
+          Generado el: {{ reportGeneratedDate | date:'medium' }}
+        </small>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Resumen general -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="stat-card bg-primary text-white">
+            <div class="stat-icon">
+              <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-content">
+              <h4>{{ totalArtists }}</h4>
+              <p>Total de Artistas</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card bg-success text-white">
+            <div class="stat-icon">
+              <i class="bi bi-heart"></i>
+            </div>
+            <div class="stat-content">
+              <h4>{{ totalFollowers }}</h4>
+              <p>Total Seguidores</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card bg-info text-white">
+            <div class="stat-icon">
+              <i class="bi bi-calendar-event"></i>
+            </div>
+            <div class="stat-content">
+              <h4>{{ totalEvents }}</h4>
+              <p>Total Eventos</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card bg-warning text-white">
+            <div class="stat-icon">
+              <i class="bi bi-calendar-plus"></i>
+            </div>
+            <div class="stat-content">
+              <h4>{{ totalUpcomingEvents }}</h4>
+              <p>Eventos Próximos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de estadísticas detalladas -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>Posición</th>
+              <th>Artista</th>
+              <th class="text-center">Estado</th>
+              <th class="text-end">Seguidores</th>
+              <th class="text-end">Total Eventos</th>
+              <th class="text-end">Próximos</th>
+              <th class="text-end">Pasados</th>
+              <th class="text-center">Crecimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let artist of reportData; let i = index">
+              <td>
+                <span class="rank-badge">{{ i + 1 }}</span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <img *ngIf="artist.profileImage && !hasArtistImageError(artist.artistId)" 
+                       [src]="artist.profileImage" 
+                       class="rounded-circle me-3" 
+                       style="width: 40px; height: 40px; object-fit: cover;"
+                       [alt]="artist.artistName"
+                       (error)="onArtistImageError(artist.artistId)">
+                  <div *ngIf="!artist.profileImage || hasArtistImageError(artist.artistId)" 
+                       class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center"
+                       style="width: 40px; height: 40px;">
+                    <i class="bi bi-person text-white"></i>
+                  </div>
+                  <div>
+                    <div class="fw-bold">
+                      <a [routerLink]="['/artists', artist.artistId]" class="text-decoration-none">
+                        {{ artist.artistName }}
+                      </a>
+                    </div>
+                    <small class="text-muted">ID: {{ artist.artistId }}</small>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="badge" [class]="getStatusBadgeClass(artist.artistId)">
+                  {{ getArtistStatus(artist.artistId) }}
+                </span>
+              </td>
+              <td class="text-end">
+                <span class="fw-bold text-primary">{{ artist.totalFollowers | number }}</span>
+              </td>
+              <td class="text-end">
+                <span class="fw-bold">{{ artist.totalEvents | number }}</span>
+              </td>
+              <td class="text-end">
+                <span class="text-success">{{ artist.upcomingEvents | number }}</span>
+              </td>
+              <td class="text-end">
+                <span class="text-muted">{{ artist.pastEvents | number }}</span>
+              </td>
+              <td class="text-center">
+                <span *ngIf="artist.followerGrowthRate !== null && artist.followerGrowthRate !== undefined" 
+                      class="badge"
+                      [class]="getGrowthBadgeClass(artist.followerGrowthRate)">
+                  <i class="bi" [class]="getGrowthIcon(artist.followerGrowthRate)"></i>
+                  {{ artist.followerGrowthRate | percent:'1.1-1' }}
+                </span>
+                <span *ngIf="artist.followerGrowthRate === null || artist.followerGrowthRate === undefined" 
+                      class="text-muted">
+                  N/A
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="reportData.length === 0">
+              <td colspan="8" class="text-center py-4">
+                <i class="bi bi-person-x text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-2">No se encontraron artistas con los criterios seleccionados.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado inicial -->
+  <div *ngIf="!reportData && !isLoading && !errorMessage" class="alert alert-info mt-4 text-center">
+    <i class="bi bi-info-circle me-2"></i>
+    Configura los filtros y genera un reporte para ver las estadísticas de artistas.
+  </div>
+</div> 

@@ -8,6 +8,7 @@ import { UserManagementComponent } from './components/user-management/user-manag
 import { MusicGenreAdminComponent } from '../artist/pages/music-genre-admin/music-genre-admin.component';
 import { NotificationTestComponent } from './pages/notification-test/notification-test.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { ArtistReportsComponent } from './pages/artist-reports/artist-reports.component';
 import { RoleGuard } from '../../core/guards/role.guard';
 
 const routes: Routes = [
@@ -38,6 +39,12 @@ const routes: Routes = [
   {
     path: 'event-sales-report',
     component: EventSalesReportComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] }
+  },
+  {
+    path: 'artist-reports',
+    component: ArtistReportsComponent,
     canActivate: [RoleGuard],
     data: { roles: ['ADMIN'] }
   },

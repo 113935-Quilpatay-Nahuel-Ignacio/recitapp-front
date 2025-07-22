@@ -1,0 +1,427 @@
+.container {
+  max-width: 1200px;
+  background-color: #1A1A1A;
+  color: #ffffff;
+}
+
+.stat-card {
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  background-color: #2D2D2D;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(34, 197, 94, 0.4);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+    margin-right: 20px;
+    opacity: 0.9;
+  }
+
+  .stat-content {
+    h4 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+      color: #ffffff;
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  // Colores específicos para cada tarjeta
+  &.bg-primary {
+    background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
+    border-color: #22C55E;
+  }
+
+  &.bg-success {
+    background: linear-gradient(135deg, #22C55E 0%, #15803d 100%);
+    border-color: #22C55E;
+  }
+
+  &.bg-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    border-color: #3b82f6;
+  }
+
+  &.bg-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border-color: #f59e0b;
+  }
+}
+
+.rank-badge {
+  background: linear-gradient(45deg, #22C55E, #16a34a);
+  color: #1A1A1A;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+.table {
+  .rank-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+}
+
+.card {
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  background-color: #2D2D2D;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  color: #ffffff;
+
+  .card-header {
+    background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+    border-bottom: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 12px 12px 0 0 !important;
+    color: #ffffff;
+
+    h3, h5 {
+      color: #ffffff;
+    }
+
+    .text-muted {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+  }
+
+  .card-body {
+    background-color: #2D2D2D;
+  }
+}
+
+.table-responsive {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  background-color: #2D2D2D !important;
+}
+
+.table {
+  margin-bottom: 0;
+  background-color: #2D2D2D !important;
+  color: #ffffff !important;
+
+  th {
+    border-top: none !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 16px 14px;
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(34, 197, 94, 0.3) !important;
+    background-color: #1A1A1A !important;
+  }
+
+  td {
+    padding: 14px 14px;
+    vertical-align: middle;
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background-color: #2D2D2D !important;
+  }
+
+  .table-dark th {
+    background-color: #1A1A1A !important;
+    border-color: rgba(34, 197, 94, 0.4) !important;
+  }
+
+  tbody tr {
+    background-color: #2D2D2D !important;
+    
+    &:nth-child(even) {
+      background-color: rgba(26, 26, 26, 0.8) !important;
+    }
+
+    &:nth-child(odd) {
+      background-color: #2D2D2D !important;
+    }
+  }
+
+  // Asegurar que todos los elementos de la tabla tengan el fondo correcto
+  thead, tbody, tfoot {
+    background-color: #2D2D2D !important;
+  }
+
+  // Estilos específicos para el contenido de las celdas
+  .fw-bold {
+    color: #ffffff !important;
+  }
+
+  .text-primary {
+    color: #22C55E !important;
+  }
+
+  .text-success {
+    color: #22C55E !important;
+  }
+
+  .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  // Enlaces dentro de la tabla
+  a {
+    color: #22C55E !important;
+    
+    &:hover {
+      color: #16a34a !important;
+    }
+  }
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 8px 12px;
+  font-weight: 600;
+  border-radius: 8px;
+
+  &.bg-success {
+    background-color: #22C55E !important;
+    color: #1A1A1A !important;
+  }
+
+  &.bg-secondary {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+  }
+
+  &.bg-danger {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+  }
+}
+
+.spinner-border {
+  margin: 20px auto;
+  display: block;
+  color: #22C55E;
+}
+
+.alert {
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+  background-color: #2D2D2D;
+  color: #ffffff;
+
+  &.alert-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fecaca;
+  }
+
+  &.alert-info {
+    background-color: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #bbf7d0;
+  }
+}
+
+.form-select, .form-control {
+  border-radius: 8px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  background-color: #1A1A1A;
+  color: #ffffff;
+  transition: all 0.3s ease;
+
+  &:focus {
+    border-color: #22C55E;
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    background-color: #1A1A1A;
+    outline: none;
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  option {
+    background-color: #2D2D2D;
+    color: #ffffff;
+  }
+}
+
+.form-label {
+  color: #ffffff;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+
+  &.btn-primary {
+    background: linear-gradient(45deg, #22C55E, #16a34a);
+    border: 2px solid #22C55E;
+    color: #1A1A1A;
+
+    &:hover {
+      background: linear-gradient(45deg, #16a34a, #15803d);
+      border-color: #16a34a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0px);
+    }
+
+    &:disabled {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.5);
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+// Animaciones para el estado de carga
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card,
+.alert {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .stat-card {
+    margin-bottom: 15px;
+    padding: 15px;
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-right: 10px;
+    }
+
+    .stat-content h4 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .table {
+    font-size: 0.85rem;
+
+    th, td {
+      padding: 8px 6px;
+    }
+  }
+
+  .rank-badge {
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+  }
+}
+
+// Estados de hover para filas de tabla
+.table-hover tbody tr:hover {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+  transition: all 0.3s ease-in-out;
+  transform: translateX(4px);
+  
+  td {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+  }
+}
+
+// Mejoras para los enlaces
+a {
+  text-decoration: none !important;
+  color: #22C55E;
+  transition: all 0.3s ease-in-out;
+  font-weight: 600;
+
+  &:hover {
+    color: #16a34a !important;
+    text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+  }
+}
+
+// Estilos para texto
+h2 {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+h3, h4, h5, h6 {
+  color: #ffffff;
+}
+
+.text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.text-primary {
+  color: #22C55E !important;
+}
+
+.text-success {
+  color: #22C55E !important;
+}
+
+// Mejoras visuales adicionales
+.fw-bold {
+  font-weight: 700;
+}
+
+// Sobrescribir estilos de Bootstrap para asegurar tema oscuro
+::ng-deep {
+  .table-striped > tbody > tr:nth-of-type(odd) > td,
+  .table-striped > tbody > tr:nth-of-type(odd) > th {
+    background-color: #2D2D2D !important;
+  }
+
+  .table-striped > tbody > tr:nth-of-type(even) > td,
+  .table-striped > tbody > tr:nth-of-type(even) > th {
+    background-color: rgba(26, 26, 26, 0.8) !important;
+  }
+
+  .table > :not(caption) > * > * {
+    background-color: #2D2D2D !important;
+    color: #ffffff !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .table-hover > tbody > tr:hover > * {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+    color: #ffffff !important;
+  }
+} 
