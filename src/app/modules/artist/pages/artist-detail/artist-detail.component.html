@@ -138,7 +138,8 @@
                                 <a [routerLink]="['/artists', artistId, 'events']" class="btn btn-outline-primary">
                                     <i class="bi bi-calendar-event me-1"></i> Ver eventos
                                 </a>
-                                <a [routerLink]="['/artists', artistId, 'statistics']" class="btn btn-outline-info">
+                                <a [routerLink]="['/artists', artistId, 'statistics']" class="btn btn-outline-info"
+                                   *ngIf="!isComprador && !isVerificadorEntradas">
                                     <i class="bi bi-graph-up me-1"></i> Ver estadísticas
                                 </a>
                             </div>

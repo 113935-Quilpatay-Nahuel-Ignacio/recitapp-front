@@ -255,11 +255,18 @@
                   <input 
                     id="dni-{{i}}" 
                     formControlName="attendeeDni" 
-                    placeholder="DNI del asistente" 
+                    placeholder="Solo números (ej: 12345678)" 
                     class="form-control"
+                    type="text"
+                    pattern="[0-9]*"
+                    inputmode="numeric"
+                    maxlength="10"
+                    (input)="onDniInput($event)"
                     [class.is-invalid]="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched">
                   <div *ngIf="ticketCtrl.get('attendeeDni')?.invalid && ticketCtrl.get('attendeeDni')?.touched" class="invalid-feedback">
-                    El DNI es requerido.
+                    <span *ngIf="ticketCtrl.get('attendeeDni')?.errors?.['required']">El DNI es requerido.</span>
+                    <span *ngIf="ticketCtrl.get('attendeeDni')?.errors?.['numbersOnly']">El DNI solo puede contener números.</span>
+                    <span *ngIf="ticketCtrl.get('attendeeDni')?.errors?.['uniqueDni']">Este DNI ya está asignado a otra entrada.</span>
                   </div>
                 </div>
               </div>
@@ -386,9 +393,15 @@
                   class="form-control" 
                   id="payerDocumentNumber" 
                   formControlName="documentNumber"
+                  placeholder="Solo números (ej: 12345678)"
+                  pattern="[0-9]*"
+                  inputmode="numeric"
+                  maxlength="11"
+                  (input)="onPayerDocumentInput($event)"
                   [class.is-invalid]="payerForm.get('documentNumber')?.invalid && payerForm.get('documentNumber')?.touched">
                 <div *ngIf="payerForm.get('documentNumber')?.invalid && payerForm.get('documentNumber')?.touched" class="invalid-feedback">
-                  El número de documento es requerido.
+                  <span *ngIf="payerForm.get('documentNumber')?.errors?.['required']">El número de documento es requerido.</span>
+                  <span *ngIf="payerForm.get('documentNumber')?.errors?.['numbersOnly']">El número de documento solo puede contener números.</span>
                 </div>
               </div>
             </div>
@@ -406,9 +419,6 @@
                   <p class="card-text mb-2" *ngIf="walletDiscountApplied > 0">
                     <strong>Descuento aplicado:</strong> {{ walletDiscountApplied | currency:'ARS':'symbol':'1.2-2' }}
                   </p>
-                  <p class="card-text mb-0" *ngIf="amountAfterWallet > 0">
-                    <strong>Restante a pagar:</strong> {{ amountAfterWallet | currency:'ARS':'symbol':'1.2-2' }}
-                  </p>
                   <p class="card-text mb-0 text-success" *ngIf="amountAfterWallet === 0">
                     <strong><i class="bi bi-check-circle me-1"></i>Compra completamente cubierta por billetera virtual</strong>
                   </p>
@@ -419,7 +429,15 @@
             <div class="alert alert-info">
               <i class="bi bi-info-circle me-2"></i>
               <strong>Total a pagar:</strong> {{ getTotal() | currency:'ARS':'symbol':'1.2-2' }}
-              <div *ngIf="showWalletOption && amountAfterWallet !== getTotal()" class="mt-1">
+              <div *ngIf="showWalletOption && walletDiscountApplied > 0" class="mt-2">
+                <span class="d-block text-success">
+                  <i class="bi bi-wallet2 me-1"></i> Descuento de billetera virtual: <strong>-{{ walletDiscountApplied | currency:'ARS':'symbol':'1.2-2' }}</strong>
+                </span>
+                <span class="d-block text-primary fs-5">
+                  <i class="bi bi-cash-coin me-1"></i> Monto real a pagar: <strong>{{ amountAfterWallet | currency:'ARS':'symbol':'1.2-2' }}</strong>
+                </span>
+              </div>
+              <div *ngIf="showWalletOption && amountAfterWallet !== getTotal() && walletDiscountApplied > 0" class="mt-1">
                 <small class="text-muted">
                   (Incluye descuento automático de billetera virtual)
                 </small>

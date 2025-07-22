@@ -178,15 +178,23 @@ export class EventFormComponent implements OnInit {
     this.eventService.getEventForEdit(id).subscribe({
       next: (event) => {
         // Formatear fechas para datetime-local input
-        // El backend devuelve ISO string (e.g., "2025-06-15T18:00:00Z" o similar)
+        // El backend devuelve LocalDateTime como string (e.g., "2025-06-15T18:00:00")
         // datetime-local espera "yyyy-MM-ddTHH:mm"
         const formatForInput = (dateString: string | Date | undefined): string | null => {
           if (!dateString) return null;
+          
+          // Si viene como string del backend (LocalDateTime), ya está en hora argentina
+          if (typeof dateString === 'string') {
+            // Formato esperado: "2025-06-15T18:00:00" -> "2025-06-15T18:00"
+            if (dateString.includes('T')) {
+              const [datePart, timePart] = dateString.split('T');
+              const [hours, minutes] = timePart.split(':');
+              return `${datePart}T${hours}:${minutes}`;
+            }
+          }
+          
+          // Fallback para casos edge
           const date = new Date(dateString);
-          // Ajustar por zona horaria local si es necesario, o asegurarse que el backend envíe en UTC
-          // y el input lo interprete como local. El pipe transform con 'yyyy-MM-ddTHH:mm' lo hace.
-          // Pero DatePipe no está disponible aquí fácilmente sin inyectarlo como servicio en el constructor de DatePipe
-          // Manera manual más simple y directa para formato de input type='datetime-local'
           const year = date.getFullYear();
           const month = ('0' + (date.getMonth() + 1)).slice(-2);
           const day = ('0' + date.getDate()).slice(-2);
@@ -264,9 +272,9 @@ export class EventFormComponent implements OnInit {
 
     const eventData: EventCreateDTO = {
       ...this.eventForm.value,
-      startDateTime: new Date(this.eventForm.value.startDateTime).toISOString(),
+      startDateTime: this.formatDateTimeForBackend(this.eventForm.value.startDateTime),
       endDateTime: this.eventForm.value.endDateTime
-        ? new Date(this.eventForm.value.endDateTime).toISOString()
+        ? this.formatDateTimeForBackend(this.eventForm.value.endDateTime)
         : undefined,
       ticketPrices: this.ticketPrices.value.map((tp: any) => ({
         sectionId: tp.sectionId,
@@ -526,5 +534,22 @@ export class EventFormComponent implements OnInit {
   getTicketTypeDescription(ticketType: string): string {
     const option = this.ticketTypeOptions.find(opt => opt.value === ticketType);
     return option ? option.description : '';
+  }
+
+  /**
+   * Formatea una fecha/hora para el backend manteniendo la hora local argentina
+   * Sin conversión a UTC para evitar problemas de zona horaria
+   */
+  private formatDateTimeForBackend(dateTimeValue: string): string {
+    if (!dateTimeValue) return '';
+    
+    // El input datetime-local nos da "2025-07-21T21:00"
+    // El backend espera LocalDateTime en formato "2025-07-21T21:00:00"
+    // Agregamos ":00" si no tiene segundos
+    if (dateTimeValue.length === 16) { // "yyyy-MM-ddTHH:mm"
+      return dateTimeValue + ':00';
+    }
+    
+    return dateTimeValue;
   }
 }

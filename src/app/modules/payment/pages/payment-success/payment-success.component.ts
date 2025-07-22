@@ -202,7 +202,7 @@ export class PaymentSuccessComponent implements OnInit, OnDestroy {
         
         this.paymentId = params['payment_id'] || params['transaction_id'] || params['id'] || null;
         this.status = params['status'] || null;
-        this.statusCode = params['status_code'] || params['statusCode'] || (this.status as PaymentStatusCode) || null;
+        this.statusCode = params['status_code'] || params['statusCode'] || null;
         this.statusDetail = params['status_detail'] || params['statusDetail'] || null;
         this.amount = params['amount'] ? parseFloat(params['amount']) : null;
         this.paymentMethod = params['payment_method'] || null;
@@ -228,10 +228,35 @@ export class PaymentSuccessComponent implements OnInit, OnDestroy {
           userMessage: userMessageParam ? decodeURIComponent(userMessageParam) : null
         });
 
-        // Si no tenemos información del estado, determinarlo basado en la URL
+        // Si no tenemos statusCode pero sí status, determinarlo basado en el status
         if (!this.statusCode && this.status) {
+          console.log('🔄 No statusCode found, determining from status:', this.status);
           this.statusCode = this.determineStatusCode(this.status);
           console.log('🔄 Status Code determined from status:', this.status, '→', this.statusCode);
+        } 
+        // Si tenemos statusCode pero no está en el handler, también intentar mapear desde status
+        else if (this.statusCode && this.status && !MercadoPagoStatusHandler.getStatusInfo(this.statusCode).displayName) {
+          console.log('🔄 StatusCode provided but not found in handler, trying to map from status:', this.status);
+          const mappedFromStatus = this.determineStatusCode(this.status);
+          if (mappedFromStatus !== 'unknown') {
+            this.statusCode = mappedFromStatus;
+            console.log('🔄 StatusCode remapped from status:', this.status, '→', this.statusCode);
+          }
+        } 
+        else if (this.statusCode) {
+          console.log('🎯 StatusCode already provided:', this.statusCode);
+        } else {
+          console.log('⚠️ No status or statusCode provided');
+        }
+
+        // Log adicional para debugging de billetera virtual
+        if (this.paymentId && this.paymentId.startsWith('WALLET_')) {
+          console.log('💰 [WALLET DEBUG] Procesando pago de billetera virtual:', {
+            paymentId: this.paymentId,
+            originalStatus: this.status,
+            finalStatusCode: this.statusCode,
+            shouldExecuteMapping: !this.statusCode && this.status
+          });
         }
         
         // Validar consistencia del estado
@@ -263,6 +288,18 @@ export class PaymentSuccessComponent implements OnInit, OnDestroy {
     const canRetry = this.canRetryPayment();
     const isPending = this.isPendingPayment();
     
+    // Log adicional para debugging
+    console.log('🔍 [VALIDATION DEBUG] Estado actual:', {
+      inputStatusCode: this.statusCode,
+      computedStatusCode: statusCode,
+      inputStatus: this.status,
+      paymentId: this.paymentId
+    });
+    
+    // Verificar si el handler encuentra el estado
+    const handlerInfo = MercadoPagoStatusHandler.getStatusInfo(statusCode);
+    console.log('🎮 [HANDLER DEBUG] Información del handler:', handlerInfo);
+    
     // Detectar posibles inconsistencias en el estado
     if ((statusCode === 'OTHE' || statusCode === 'CONT') && shouldDeliver) {
       console.warn('⚠️ Inconsistencia detectada: Estado rechazado/pendiente pero shouldDeliverTickets es true');
@@ -283,6 +320,8 @@ export class PaymentSuccessComponent implements OnInit, OnDestroy {
   }
 
   private determineStatusCode(status: string): PaymentStatusCode {
+    console.log('🗺️ [DETERMINE_STATUS] Mapeando estado:', status);
+    
     // Mapear estados tradicionales a los nuevos códigos
     const statusMap: { [key: string]: PaymentStatusCode } = {
       'COMPLETED': 'APRO',
@@ -293,11 +332,15 @@ export class PaymentSuccessComponent implements OnInit, OnDestroy {
       'in_process': 'CONT'
     };
     
-    return statusMap[status] || 'unknown';
+    const mapped = statusMap[status] || 'unknown';
+    console.log('🗺️ [DETERMINE_STATUS] Resultado:', status, '→', mapped);
+    return mapped;
   }
 
   getStatusCode(): PaymentStatusCode {
-    return this.statusCode || 'unknown';
+    const code = this.statusCode || 'unknown';
+    console.log('🆔 [GET_STATUS_CODE] Retornando:', code, 'desde this.statusCode:', this.statusCode);
+    return code;
   }
 
   getDisplayName(): string {

@@ -1,368 +1,105 @@
-// Variables de colores de la nueva estética
-$primary-bg: #1A1A1A;
-$secondary-bg: #2D2D2D;
-$accent-color: #22C55E;
-$text-light: #ffffff;
-$text-muted: rgba(255, 255, 255, 0.7);
-$text-secondary: rgba(255, 255, 255, 0.5);
-
-// Aplicar fondo principal al contenedor
-.container {
-  background-color: $primary-bg;
+.artist-statistics-bg {
+  background: #1A1A1A;
   min-height: 100vh;
-  color: $text-light;
+}
+
+.artist-statistics-card {
+  background: #2D2D2D;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.artist-statistics-header {
+  background: transparent;
+  border-bottom: 1px solid #222;
+  padding: 1.5rem 2rem;
+}
+
+.artist-statistics-title {
+  color: #22C55E;
+  font-weight: 700;
+  font-size: 2.2rem;
+  letter-spacing: 0.5px;
+}
+
+.artist-statistics-body {
+  background: #2D2D2D;
+  color: #fff;
+  border-radius: 0 0 16px 16px;
+  padding: 2rem;
 }
 
 .statistics-container {
   .stats-card {
-    height: 100%;
-    border-radius: 12px;
-    background-color: $secondary-bg;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(34, 197, 94, 0.2);
-      border-color: rgba(34, 197, 94, 0.3);
-    }
-
+    background: #232323;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(34,197,94,0.08);
     .card-body {
-      padding: 2rem 1.5rem;
-      color: $text-light;
+      padding: 1.5rem;
     }
-
     .display-5 {
-      font-size: 2.8rem;
+      font-size: 2.5rem;
       font-weight: 700;
-      background: linear-gradient(135deg, $accent-color, #16a34a);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #22C55E;
     }
-
     p {
-      color: $text-muted;
-      font-weight: 500;
+      color: #a3a3a3;
     }
   }
-
   .rounded-circle {
     width: 150px;
     height: 150px;
     object-fit: cover;
     margin: 0 auto;
-    border: 3px solid $accent-color;
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    border: 4px solid #22C55E;
+    background: #232323;
   }
-
   .card {
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: $secondary-bg;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    margin-bottom: 2rem;
-    color: $text-light;
-
+    background: #232323;
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 4px 6px rgba(34,197,94,0.05);
+    margin-bottom: 1.5rem;
     .card-header {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
-      border-bottom: 1px solid rgba(34, 197, 94, 0.2);
-      padding: 1.5rem 2rem;
-      border-radius: 16px 16px 0 0;
-
-      h2, h4 {
-        color: $text-light;
-        font-weight: 600;
-      }
-
-      .btn-outline-secondary {
-        background-color: transparent;
-        border-color: $accent-color;
-        color: $accent-color;
-        font-weight: 500;
-        transition: all 0.3s ease;
-
-        &:hover {
-          background-color: $accent-color;
-          border-color: $accent-color;
-          color: $primary-bg;
-          transform: translateY(-2px);
-        }
-      }
-    }
-
-    .card-body {
-      padding: 2rem;
-      background-color: $secondary-bg;
-    }
-
-    .card-title {
-      color: $text-light;
+      background: #232323;
+      border-bottom: 1px solid #222;
+      color: #22C55E;
       font-weight: 600;
+      font-size: 1.2rem;
+    }
+    .card-body {
+      padding: 1.5rem;
+      color: #fff;
     }
   }
-
   .list-group-item {
-    padding: 1.5rem 2rem;
+    background: #232323;
+    color: #fff;
     border: none;
-    background-color: rgba(255, 255, 255, 0.05);
-    color: $text-light;
-    margin-bottom: 0.5rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background-color: rgba(34, 197, 94, 0.1);
-      transform: translateX(5px);
-    }
-
-    &:first-child {
-      border-top: none;
-    }
-
+    padding: 1rem 1.5rem;
     .bi {
       font-size: 1.2rem;
-      color: $accent-color;
+      color: #22C55E;
     }
-
-    // Colores específicos para diferentes tipos de iconos
-    .text-warning {
-      color: #f59e0b !important;
-    }
-    
-    .text-primary {
-      color: #3b82f6 !important;
-    }
-    
-    .text-info {
-      color: #06b6d4 !important;
-    }
-    
-    .text-success {
-      color: $accent-color !important;
-    }
-  }
-
-  // Estilos para las métricas de crecimiento
-  .text-success {
-    color: $accent-color !important;
-  }
-
-  .text-danger {
-    color: #ef4444 !important;
-  }
-
-  .text-secondary {
-    color: $text-secondary !important;
-  }
-
-  .text-muted {
-    color: $text-muted !important;
-  }
-
-  .h3 {
-    font-weight: 700;
-  }
-
-  .h5 {
-    color: $text-light;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-
-  // Nuevos estilos para elementos agregados
-  .artist-profile-section {
-    .h4 {
-      color: $text-light;
-      font-weight: 600;
-    }
-  }
-
-  .stat-icon {
-    opacity: 0.8;
-    transition: all 0.3s ease;
-  }
-
-  .metric-card {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    transition: all 0.3s ease;
-
-    &:hover {
-      background-color: rgba(34, 197, 94, 0.08);
-      border-color: rgba(34, 197, 94, 0.4);
-      transform: translateY(-2px);
-    }
-  }
-
-  .recommendations-list {
-    .list-group-item {
-      &:hover {
-        .bi {
-          transform: scale(1.1);
-        }
-      }
-
-      strong {
-        color: $text-light;
-        font-weight: 600;
-      }
-
-      p {
-        color: $text-muted;
-        font-size: 0.9rem;
-      }
-    }
-  }
-}
-
-// Estados de carga y error
-.alert-danger {
-  background-color: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
-  border-radius: 12px;
-}
-
-.spinner-border {
-  color: $accent-color;
-  width: 3rem;
-  height: 3rem;
-}
-
-// Placeholder para cuando no hay imagen
-.bg-secondary {
-  background-color: $secondary-bg !important;
-  border: 2px solid $accent-color;
-}
-
-// Estado vacío
-.empty-state {
-  padding: 3rem 2rem;
-  
-  .display-1 {
-    font-size: 4rem;
-    opacity: 0.5;
-  }
-  
-  h4 {
-    color: $text-muted;
-    font-weight: 500;
-    margin-bottom: 1rem;
   }
 }
 
 // Responsive adjustments
 @media (max-width: 767px) {
+  .artist-statistics-body {
+    padding: 1rem;
+  }
   .statistics-container {
     .rounded-circle {
       width: 120px;
       height: 120px;
     }
-
     .stats-card {
       .display-5 {
-        font-size: 2.2rem;
+        font-size: 2rem;
       }
     }
-
-    .card {
-      .card-header {
-        padding: 1rem 1.5rem;
-      }
-
-      .card-body {
-        padding: 1.5rem;
-      }
-    }
-
-    .list-group-item {
-      padding: 1rem 1.5rem;
-    }
-  }
-}
-
-// Animaciones adicionales
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.statistics-container {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-// Efectos de gradiente para elementos destacados
-.stats-summary {
-  .row > .col-sm-6:nth-child(1) .stats-card .display-5 {
-    background: linear-gradient(135deg, $accent-color, #059669);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .row > .col-sm-6:nth-child(2) .stats-card .display-5 {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .row > .col-sm-6:nth-child(3) .stats-card .display-5 {
-    background: linear-gradient(135deg, $accent-color, #16a34a);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .row > .col-sm-6:nth-child(4) .stats-card .display-5 {
-    background: linear-gradient(135deg, #6b7280, #4b5563);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-}
-
-// Mejoras de accesibilidad y experiencia de usuario
-.card-header {
-  .btn-outline-secondary {
-    &:focus {
-      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
-    }
-  }
-}
-
-.stats-card {
-  &:focus-within {
-    outline: 2px solid $accent-color;
-    outline-offset: 2px;
-  }
-}
-
-// Animación de entrada para las tarjetas de estadísticas
-.stats-card {
-  animation: slideInUp 0.6s ease-out;
-  animation-fill-mode: both;
-
-  &:nth-child(1) { animation-delay: 0.1s; }
-  &:nth-child(2) { animation-delay: 0.2s; }
-  &:nth-child(3) { animation-delay: 0.3s; }
-  &:nth-child(4) { animation-delay: 0.4s; }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

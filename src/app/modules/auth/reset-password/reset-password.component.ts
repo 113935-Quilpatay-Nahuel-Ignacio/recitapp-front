@@ -37,14 +37,18 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   private validateToken(): void {
+    this.isLoading = true;
     this.authService.validateResetToken(this.token).subscribe({
       next: (isValid) => {
         if (!isValid) {
           this.errorMessage = 'El enlace de recuperación ha expirado o no es válido';
         }
+        this.isLoading = false;
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error validating token:', error);
         this.errorMessage = 'El enlace de recuperación ha expirado o no es válido';
+        this.isLoading = false;
       }
     });
   }

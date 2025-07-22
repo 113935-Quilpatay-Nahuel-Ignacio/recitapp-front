@@ -248,7 +248,9 @@
                     Ver Detalles
                   </button>
                   <button class="btn btn-outline-secondary btn-sm" 
-                          (click)="downloadTicket(ticket)">
+                          (click)="downloadTicket(ticket)"
+                          [disabled]="ticket.status && ticket.status.toUpperCase() === 'CANCELADA'"
+                          [attr.title]="ticket.status && ticket.status.toUpperCase() === 'CANCELADA' ? 'No disponible para entradas canceladas o reembolsadas' : null">
                     <i class="bi bi-download me-1"></i>
                     Descargar
                   </button>

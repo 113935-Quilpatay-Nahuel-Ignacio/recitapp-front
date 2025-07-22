@@ -178,7 +178,7 @@ export class UserDetailDialogComponent implements OnInit {
   formatDate(date: Date | string | undefined): string {
     if (!date) return 'No disponible';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('es-ES', {
+    return dateObj.toLocaleDateString('es-AR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
