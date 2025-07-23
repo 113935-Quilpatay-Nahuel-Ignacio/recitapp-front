@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ReservationAdminService, EventSalesReportDTO } from '../../services/reservation-admin.service';
 import { EventService } from '../../../event/services/event.service';
 import { EventDTO } from '../../../event/models/event';
+import { ExportService } from '../../../../shared/services/export.service';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, switchMap, tap, startWith } from 'rxjs/operators';
 
@@ -17,6 +18,7 @@ import { catchError, switchMap, tap, startWith } from 'rxjs/operators';
 export class EventSalesReportComponent implements OnInit {
   private reservationAdminService = inject(ReservationAdminService);
   private eventService = inject(EventService);
+  private exportService = inject(ExportService);
 
   events$: Observable<EventDTO[]> = of([]);
   selectedEventId: number | null = null;
@@ -28,6 +30,7 @@ export class EventSalesReportComponent implements OnInit {
   isLoadingReport = false;
   loadEventsError: string | null = null;
   loadReportError: string | null = null;
+  currentReport: EventSalesReportDTO | null = null;
 
   constructor() {
     this.report$ = this.loadReportSubject.pipe(
@@ -45,7 +48,10 @@ export class EventSalesReportComponent implements OnInit {
           })
         );
       }),
-      tap(() => this.isLoadingReport = false)
+      tap((report) => {
+        this.isLoadingReport = false;
+        this.currentReport = report;
+      })
     );
   }
 
@@ -72,6 +78,82 @@ export class EventSalesReportComponent implements OnInit {
       this.loadReportSubject.next(this.selectedEventId);
     } else {
       this.report$ = of(null); // Clear report if no event is selected
+    }
+  }
+
+  async exportToPDF(): Promise<void> {
+    if (!this.currentReport) {
+      console.warn('No hay reporte disponible para exportar');
+      return;
+    }
+
+    try {
+      const exportData = {
+        title: 'Reporte de Ventas por Evento',
+        subtitle: `${this.currentReport.eventName} (ID: ${this.currentReport.eventId})`,
+        metadata: {
+          'Fecha de Generación': new Date(this.currentReport.generatedDate).toLocaleDateString('es-AR'),
+          'Período': this.currentReport.periodStartDate && this.currentReport.periodEndDate 
+            ? `${new Date(this.currentReport.periodStartDate).toLocaleDateString('es-AR')} - ${new Date(this.currentReport.periodEndDate).toLocaleDateString('es-AR')}`
+            : 'No especificado'
+        },
+        columns: [
+          { header: 'Sección', key: 'sectionName', width: 25 },
+          { header: 'ID Sección', key: 'sectionId', width: 15, type: 'number' as const },
+          { header: 'Tickets Vendidos', key: 'ticketsSold', width: 20, type: 'number' as const },
+          { header: 'Ingresos', key: 'revenue', width: 20, type: 'currency' as const }
+        ],
+        data: this.currentReport.items,
+        summary: {
+          'Total Entradas Vendidas': this.currentReport.soldTickets,
+          'Ingresos Totales': new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(this.currentReport.totalRevenue),
+          'Entradas Promocionales': this.currentReport.promotionalTicketsCount || 'N/A',
+          'Tasa de Ocupación': this.currentReport.occupancyRateOverall 
+            ? new Intl.NumberFormat('es-AR', { style: 'percent', minimumFractionDigits: 2 }).format(this.currentReport.occupancyRateOverall)
+            : 'N/A'
+        }
+      };
+
+      await this.exportService.exportToPDF(exportData);
+    } catch (error) {
+      console.error('Error al exportar PDF:', error);
+      alert('Error al generar el archivo PDF. Por favor, inténtelo de nuevo.');
+    }
+  }
+
+  async exportToExcel(): Promise<void> {
+    if (!this.currentReport) {
+      console.warn('No hay reporte disponible para exportar');
+      return;
+    }
+
+    try {
+      const exportData = {
+        title: 'Reporte de Ventas por Evento',
+        subtitle: `${this.currentReport.eventName} (ID: ${this.currentReport.eventId})`,
+        metadata: {
+          'Fecha de Generación': new Date(this.currentReport.generatedDate).toLocaleDateString('es-AR'),
+          'Período': this.currentReport.periodStartDate && this.currentReport.periodEndDate 
+            ? `${new Date(this.currentReport.periodStartDate).toLocaleDateString('es-AR')} - ${new Date(this.currentReport.periodEndDate).toLocaleDateString('es-AR')}`
+            : 'No especificado',
+          'Total Entradas Vendidas': this.currentReport.soldTickets,
+          'Ingresos Totales': this.currentReport.totalRevenue,
+          'Entradas Promocionales': this.currentReport.promotionalTicketsCount || 0,
+          'Tasa de Ocupación': this.currentReport.occupancyRateOverall || 0
+        },
+        columns: [
+          { header: 'Sección', key: 'sectionName', width: 25 },
+          { header: 'ID Sección', key: 'sectionId', width: 15, type: 'number' as const },
+          { header: 'Tickets Vendidos', key: 'ticketsSold', width: 20, type: 'number' as const },
+          { header: 'Ingresos', key: 'revenue', width: 20, type: 'currency' as const }
+        ],
+        data: this.currentReport.items
+      };
+
+      await this.exportService.exportToExcel(exportData);
+    } catch (error) {
+      console.error('Error al exportar Excel:', error);
+      alert('Error al generar el archivo Excel. Por favor, inténtelo de nuevo.');
     }
   }
 } 

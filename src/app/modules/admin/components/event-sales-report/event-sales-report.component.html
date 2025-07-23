@@ -39,8 +39,30 @@
   <div *ngIf="(report$ | async) as report; else noReportTemplate">
     <div class="card mt-4">
       <div class="card-header">
-        <h3 class="mb-3">Reporte de Ventas para {{ report.eventName }} (ID: {{ report.eventId }})</h3>
-        <small class="text-muted">Generado el: {{ report.generatedDate | date:'medium' }}</small>
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h3 class="mb-2">Reporte de Ventas para {{ report.eventName }} (ID: {{ report.eventId }})</h3>
+            <small class="text-muted">Generado el: {{ report.generatedDate | date:'medium' }}</small>
+          </div>
+          <div class="export-buttons">
+            <button type="button" 
+                    class="btn btn-outline-danger btn-sm me-2" 
+                    (click)="exportToPDF()"
+                    [disabled]="!currentReport"
+                    title="Descargar como PDF">
+              <i class="bi bi-file-earmark-pdf me-1"></i>
+              PDF
+            </button>
+            <button type="button" 
+                    class="btn btn-outline-success btn-sm" 
+                    (click)="exportToExcel()"
+                    [disabled]="!currentReport"
+                    title="Descargar como Excel">
+              <i class="bi bi-file-earmark-excel me-1"></i>
+              Excel
+            </button>
+          </div>
+        </div>
       </div>
       <div class="card-body">
         <div class="row mb-3">

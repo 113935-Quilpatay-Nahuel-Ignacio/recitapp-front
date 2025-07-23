@@ -90,14 +90,34 @@
   <!-- Resultados del reporte -->
   <div *ngIf="reportData && !isLoading && !errorMessage" class="card mt-4">
     <div class="card-header">
-      <div class="d-flex justify-content-between align-items-center">
-        <h3 class="mb-0">
-          <i class="bi bi-bar-chart-line me-2"></i>
-          Resultados del Reporte
-        </h3>
-        <small class="text-muted">
-          Generado el: {{ reportGeneratedDate | date:'medium' }}
-        </small>
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h3 class="mb-1">
+            <i class="bi bi-bar-chart-line me-2"></i>
+            Resultados del Reporte
+          </h3>
+          <small class="text-muted">
+            Generado el: {{ reportGeneratedDate | date:'medium' }}
+          </small>
+        </div>
+        <div class="export-buttons">
+          <button type="button" 
+                  class="btn btn-outline-danger btn-sm me-2" 
+                  (click)="exportToPDF()"
+                  [disabled]="!reportData || reportData.length === 0"
+                  title="Descargar como PDF">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            PDF
+          </button>
+          <button type="button" 
+                  class="btn btn-outline-success btn-sm" 
+                  (click)="exportToExcel()"
+                  [disabled]="!reportData || reportData.length === 0"
+                  title="Descargar como Excel">
+            <i class="bi bi-file-earmark-excel me-1"></i>
+            Excel
+          </button>
+        </div>
       </div>
     </div>
     <div class="card-body">

@@ -9,6 +9,7 @@ import { ArtistService } from '../../../artist/services/artist.service';
 import { ArtistStatisticsDTO } from '../../../artist/models/artist-statistics';
 import { Artist } from '../../../artist/models/artist';
 import { MusicGenre } from '../../../artist/models/music-genre';
+import { ExportService } from '../../../../shared/services/export.service';
 
 @Component({
   selector: 'app-artist-reports',
@@ -20,6 +21,7 @@ import { MusicGenre } from '../../../artist/models/music-genre';
 export class ArtistReportsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private artistService = inject(ArtistService);
+  private exportService = inject(ExportService);
 
   reportForm: FormGroup;
   reportData: ArtistStatisticsDTO[] | null = null;
@@ -214,5 +216,110 @@ export class ArtistReportsComponent implements OnInit {
     if (growthRate > 0) return 'bi-arrow-up';
     if (growthRate < 0) return 'bi-arrow-down';
     return 'bi-dash';
+  }
+
+  async exportToPDF(): Promise<void> {
+    if (!this.reportData || this.reportData.length === 0) {
+      console.warn('No hay datos de reporte disponibles para exportar');
+      return;
+    }
+
+    try {
+      const exportData = {
+        title: 'Reporte de Estadísticas de Artistas',
+        subtitle: `Filtros aplicados: ${this.getAppliedFiltersDescription()}`,
+        metadata: {
+          'Fecha de Generación': this.reportGeneratedDate?.toLocaleDateString('es-AR') || new Date().toLocaleDateString('es-AR'),
+          'Total de Artistas': this.totalArtists,
+          'Total Seguidores': this.totalFollowers,
+          'Total Eventos': this.totalEvents
+        },
+        columns: [
+          { header: 'Artista', key: 'artistName', width: 25 },
+          { header: 'Estado', key: 'status', width: 15 },
+          { header: 'Seguidores', key: 'totalFollowers', width: 15, type: 'number' as const },
+          { header: 'Eventos Totales', key: 'totalEvents', width: 15, type: 'number' as const },
+          { header: 'Eventos Futuros', key: 'upcomingEvents', width: 15, type: 'number' as const },
+          { header: 'Eventos Pasados', key: 'pastEvents', width: 15, type: 'number' as const },
+          { header: 'Crecimiento', key: 'followerGrowthRate', width: 15, type: 'percentage' as const }
+        ],
+        data: this.reportData.map(artist => ({
+          ...artist,
+          status: this.getArtistStatus(artist.artistId),
+          followerGrowthRate: artist.followerGrowthRate || 0
+        })),
+        summary: {
+          'Total de Artistas': this.totalArtists,
+          'Total Seguidores': this.totalFollowers.toLocaleString('es-AR'),
+          'Total Eventos': this.totalEvents.toLocaleString('es-AR'),
+          'Eventos Próximos': this.totalUpcomingEvents.toLocaleString('es-AR')
+        }
+      };
+
+      await this.exportService.exportToPDF(exportData);
+    } catch (error) {
+      console.error('Error al exportar PDF:', error);
+      alert('Error al generar el archivo PDF. Por favor, inténtelo de nuevo.');
+    }
+  }
+
+  async exportToExcel(): Promise<void> {
+    if (!this.reportData || this.reportData.length === 0) {
+      console.warn('No hay datos de reporte disponibles para exportar');
+      return;
+    }
+
+    try {
+      const exportData = {
+        title: 'Reporte de Estadísticas de Artistas',
+        subtitle: `Filtros aplicados: ${this.getAppliedFiltersDescription()}`,
+        metadata: {
+          'Fecha de Generación': this.reportGeneratedDate?.toLocaleDateString('es-AR') || new Date().toLocaleDateString('es-AR'),
+          'Total de Artistas': this.totalArtists,
+          'Total Seguidores': this.totalFollowers,
+          'Total Eventos': this.totalEvents,
+          'Eventos Próximos': this.totalUpcomingEvents
+        },
+        columns: [
+          { header: 'ID Artista', key: 'artistId', width: 15, type: 'number' as const },
+          { header: 'Artista', key: 'artistName', width: 25 },
+          { header: 'Estado', key: 'status', width: 15 },
+          { header: 'Seguidores', key: 'totalFollowers', width: 15, type: 'number' as const },
+          { header: 'Eventos Totales', key: 'totalEvents', width: 15, type: 'number' as const },
+          { header: 'Eventos Futuros', key: 'upcomingEvents', width: 15, type: 'number' as const },
+          { header: 'Eventos Pasados', key: 'pastEvents', width: 15, type: 'number' as const },
+          { header: 'Crecimiento Seguidores', key: 'followerGrowthRate', width: 20, type: 'number' as const },
+          { header: 'Última Actualización', key: 'lastUpdateDate', width: 20, type: 'date' as const }
+        ],
+        data: this.reportData.map(artist => ({
+          ...artist,
+          status: this.getArtistStatus(artist.artistId),
+          followerGrowthRate: artist.followerGrowthRate || 0
+        }))
+      };
+
+      await this.exportService.exportToExcel(exportData);
+    } catch (error) {
+      console.error('Error al exportar Excel:', error);
+      alert('Error al generar el archivo Excel. Por favor, inténtelo de nuevo.');
+    }
+  }
+
+  private getAppliedFiltersDescription(): string {
+    const filters = [];
+    const formValues = this.reportForm.value;
+    
+    if (formValues.activeFilter !== 'all') {
+      filters.push(`Estado: ${formValues.activeFilter === 'active' ? 'Activos' : 'Inactivos'}`);
+    }
+    
+    if (formValues.genreFilter) {
+      filters.push('Género específico');
+    }
+    
+    filters.push(`Ordenado por: ${formValues.sortBy === 'followers' ? 'Seguidores' : 'Eventos'}`);
+    filters.push(`Límite: ${formValues.limit} registros`);
+    
+    return filters.length > 0 ? filters.join(', ') : 'Ninguno';
   }
 } 

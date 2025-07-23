@@ -77,7 +77,27 @@
   <!-- Mostrando TransactionStatisticsDTO -->
   <div *ngIf="reportData$ | async as stats; else noReportOrLoading">
     <div *ngIf="stats; else noResults" class="report-results">
-      <h3>Resultados del Reporte</h3>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Resultados del Reporte</h3>
+        <div class="export-buttons">
+          <button type="button" 
+                  class="btn btn-outline-danger btn-sm me-2" 
+                  (click)="exportToPDF()"
+                  [disabled]="!currentReportData"
+                  title="Descargar como PDF">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            PDF
+          </button>
+          <button type="button" 
+                  class="btn btn-outline-success btn-sm" 
+                  (click)="exportToExcel()"
+                  [disabled]="!currentReportData"
+                  title="Descargar como Excel">
+            <i class="bi bi-file-earmark-excel me-1"></i>
+            Excel
+          </button>
+        </div>
+      </div>
       <div class="stats-overview">
         <p><strong>Tipo de Reporte:</strong> {{ getReportTypeLabel(stats.reportType) }}</p>
         <p><strong>Período:</strong> {{ stats.startDate | date:'shortDate' }} - {{ stats.endDate | date:'shortDate' }}</p>
@@ -136,26 +156,57 @@
         </table>
       </div>
 
-      <div class="stats-group" *ngIf="stats.timeSegmentStatistics && stats.timeSegmentStatistics.length > 0">
-        <h4>Estadísticas por Segmento de Tiempo:</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Inicio del Segmento</th>
-              <th>Fin del Segmento</th>
-              <th>Cantidad de Transacciones</th>
-              <th>Monto Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let segment of stats.timeSegmentStatistics">
-              <td>{{ segment.segmentStart | date:'short' }}</td>
-              <td>{{ segment.segmentEnd | date:'short' }}</td>
-              <td>{{ segment.transactionCount }}</td>
-              <td>{{ segment.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="stats-group chart-container" *ngIf="stats.timeSegmentStatistics && stats.timeSegmentStatistics.length > 0">
+        <h4>Transacciones por Día:</h4>
+        
+        <!-- Gráfico de barras principal -->
+        <div class="chart-wrapper">
+          <canvas #timeSegmentChart 
+                  id="timeSegmentChart"
+                  width="800" 
+                  height="400">
+          </canvas>
+        </div>
+        
+        <!-- Leyenda del gráfico -->
+        <div class="chart-legend">
+          <p><span class="legend-color" style="background-color: #22C55E;"></span> Cantidad de Transacciones (eje izquierdo)</p>
+          <p><span class="legend-color" style="background-color: #3B82F6;"></span> Monto Total en ARS (eje derecho)</p>
+        </div>
+
+        <!-- Tabla de fallback (solo si Chart.js no está disponible) -->
+        <div class="daily-stats-table fallback-table" style="display: none;" id="fallbackTable">
+          <h5>📊 Datos por Día (Vista de Fallback):</h5>
+          <table>
+            <thead>
+              <tr>
+                <th>Día</th>
+                <th>Cantidad de Transacciones</th>
+                <th>Monto Total</th>
+                <th>Visualización</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let segment of stats.timeSegmentStatistics; let i = index">
+                <td>{{ segment.segmentStart | date:'dd/MM/yyyy' }}</td>
+                <td class="number-cell">{{ segment.transactionCount }}</td>
+                <td class="currency-cell">{{ segment.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</td>
+                <td class="bar-visualization">
+                  <div class="mini-bar-container">
+                    <div class="mini-bar transactions" 
+                         [style.width.%]="(segment.transactionCount / getMaxTransactions(stats.timeSegmentStatistics)) * 100"
+                         [title]="'Transacciones: ' + segment.transactionCount">
+                    </div>
+                    <div class="mini-bar amount" 
+                         [style.width.%]="(segment.totalAmount / getMaxAmount(stats.timeSegmentStatistics)) * 100"
+                         [title]="'Monto: ' + (segment.totalAmount | currency:'ARS':'symbol':'1.2-2':'es-AR')">
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <ng-template #noResults>

@@ -10,6 +10,7 @@ import { EnhancedRefundRequestDTO } from '../../models/dto/enhanced-refund-reque
 import { EnhancedRefundResponseDTO } from '../../models/dto/enhanced-refund-response.dto';
 import { TransactionReceiptModalComponent } from '../../components/transaction-receipt-modal/transaction-receipt-modal.component';
 import { ModalService } from '../../../../shared/services/modal.service';
+import { ExportService } from '../../../../shared/services/export.service';
 import { catchError, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -38,7 +39,8 @@ export class TransactionHistoryComponent implements OnInit {
   constructor(
     private transactionService: TransactionService,
     private sessionService: SessionService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -359,5 +361,119 @@ export class TransactionHistoryComponent implements OnInit {
   private processEnhancedRefund(transactionId: number, reason: string, fullRefund: boolean, ticketIds?: number[]): void {
     // Método obsoleto - usar processSimplifiedRefund en su lugar
     this.processSimplifiedRefund(transactionId, fullRefund, ticketIds);
+  }
+
+  async exportToPDF(): Promise<void> {
+    if (!this.transactions || this.transactions.length === 0) {
+      console.warn('No hay transacciones disponibles para exportar');
+      return;
+    }
+
+    try {
+      const exportData = {
+        title: 'Historial de Transacciones',
+        subtitle: `Usuario ID: ${this.userId} | Total: ${this.transactions.length} transacciones`,
+        metadata: {
+          'Fecha de Generación': new Date().toLocaleDateString('es-AR'),
+          'Usuario ID': this.userId?.toString() || 'N/A',
+          'Total de Transacciones': this.transactions.length
+        },
+        columns: [
+          { header: 'ID', key: 'id', width: 10, type: 'number' as const },
+          { header: 'Fecha', key: 'transactionDate', width: 20, type: 'date' as const },
+          { header: 'Descripción', key: 'description', width: 35 },
+          { header: 'Estado', key: 'status', width: 15 },
+          { header: 'Monto', key: 'totalAmount', width: 15, type: 'currency' as const },
+          { header: 'Método de Pago', key: 'paymentMethodName', width: 20 }
+        ],
+        data: this.transactions.map(transaction => ({
+          ...transaction,
+          paymentMethodName: this.getPaymentMethodName(transaction.paymentMethodId?.toString() || 'UNKNOWN')
+        })),
+        summary: {
+          'Total de Transacciones': this.transactions.length,
+          'Transacciones Completadas': this.transactions.filter(t => t.statusName === 'COMPLETADA').length,
+          'Transacciones Pendientes': this.transactions.filter(t => t.statusName === 'PENDIENTE').length,
+          'Transacciones Fallidas': this.transactions.filter(t => t.statusName === 'FALLIDA').length,
+          'Monto Total': new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(
+            this.transactions.filter(t => t.statusName === 'COMPLETADA').reduce((sum, t) => sum + t.totalAmount, 0)
+          )
+        }
+      };
+
+      await this.exportService.exportToPDF(exportData);
+    } catch (error) {
+      console.error('Error al exportar PDF:', error);
+      this.modalService.error('Error al generar el archivo PDF. Por favor, inténtelo de nuevo.', 'Error de Exportación');
+    }
+  }
+
+  async exportToExcel(): Promise<void> {
+    if (!this.transactions || this.transactions.length === 0) {
+      console.warn('No hay transacciones disponibles para exportar');
+      return;
+    }
+
+    try {
+      // Preparar datos principales
+      const mainData = this.transactions.map(transaction => ({
+        id: transaction.id,
+        fecha: transaction.transactionDate,
+        descripcion: transaction.description,
+        estado: transaction.statusName,
+        monto: transaction.totalAmount,
+        metodoPago: this.getPaymentMethodName(transaction.paymentMethodId?.toString() || 'UNKNOWN'),
+        esReembolso: transaction.isRefund ? 'Sí' : 'No',
+        referenciaExterna: transaction.externalReference || 'N/A'
+      }));
+
+      // Preparar datos de detalles si existen
+      const detailsData: any[] = [];
+      this.transactions.forEach(transaction => {
+        if (transaction.details && transaction.details.length > 0) {
+          transaction.details.forEach(detail => {
+            detailsData.push({
+              transactionId: transaction.id,
+              ticketId: detail.ticketId,
+              eventName: detail.eventName,
+              ticketCode: detail.ticketCode,
+              unitPrice: detail.unitPrice,
+              ticketStatus: detail.ticketStatus,
+              isRefunded: detail.isRefunded ? 'Sí' : 'No'
+            });
+          });
+        }
+      });
+
+      const exportData = {
+        title: 'Historial de Transacciones',
+        subtitle: `Usuario ID: ${this.userId}`,
+        metadata: {
+          'Fecha de Generación': new Date().toLocaleDateString('es-AR'),
+          'Usuario ID': this.userId?.toString() || 'N/A',
+          'Total de Transacciones': this.transactions.length,
+          'Completadas': this.transactions.filter(t => t.statusName === 'COMPLETADA').length,
+          'Pendientes': this.transactions.filter(t => t.statusName === 'PENDIENTE').length,
+          'Fallidas': this.transactions.filter(t => t.statusName === 'FALLIDA').length,
+          'Monto Total Completado': this.transactions.filter(t => t.statusName === 'COMPLETADA').reduce((sum, t) => sum + t.totalAmount, 0)
+        },
+        columns: [
+          { header: 'ID Transacción', key: 'id', width: 15, type: 'number' as const },
+          { header: 'Fecha', key: 'fecha', width: 20, type: 'date' as const },
+          { header: 'Descripción', key: 'descripcion', width: 40 },
+          { header: 'Estado', key: 'estado', width: 15 },
+          { header: 'Monto', key: 'monto', width: 15, type: 'currency' as const },
+          { header: 'Método de Pago', key: 'metodoPago', width: 20 },
+          { header: 'Es Reembolso', key: 'esReembolso', width: 15 },
+          { header: 'Referencia Externa', key: 'referenciaExterna', width: 25 }
+        ],
+        data: mainData
+      };
+
+      await this.exportService.exportToExcel(exportData);
+    } catch (error) {
+      console.error('Error al exportar Excel:', error);
+      this.modalService.error('Error al generar el archivo Excel. Por favor, inténtelo de nuevo.', 'Error de Exportación');
+    }
   }
 }

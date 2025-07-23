@@ -175,4 +175,164 @@ th {
 .status-refunded {
   color: #94a3b8;
   font-style: italic;
+}
+
+// Estilos para el gráfico de barras
+.chart-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #3a3a3a;
+  border-radius: 8px;
+  border: 1px solid #404040;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin-bottom: 1rem;
+  background-color: #ffffff;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.chart-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.chart-legend p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+// Estilos para la interfaz temporal
+.chart-installation-notice {
+  background: linear-gradient(135deg, #22C55E20, #3B82F620);
+  border: 2px dashed #22C55E;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.notice-content h5 {
+  color: #22C55E;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.notice-content code {
+  background-color: #1A1A1A;
+  color: #22C55E;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  display: inline-block;
+  margin: 0.5rem 0;
+  border: 1px solid #404040;
+}
+
+.notice-content p {
+  margin: 0.5rem 0;
+  color: #ffffff;
+}
+
+.notice-content small {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+// Estilos para la tabla temporal con mini-barras
+.daily-stats-table {
+  margin-top: 2rem;
+}
+
+.daily-stats-table h5 {
+  color: #ffffff;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.number-cell {
+  text-align: center;
+  font-weight: bold;
+  color: #22C55E;
+}
+
+.currency-cell {
+  text-align: right;
+  font-weight: bold;
+  color: #3B82F6;
+}
+
+.bar-visualization {
+  width: 150px;
+  padding: 0.5rem;
+}
+
+.mini-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.mini-bar {
+  height: 8px;
+  border-radius: 2px;
+  min-width: 2px;
+  transition: all 0.3s ease;
+}
+
+.mini-bar.transactions {
+  background: linear-gradient(90deg, #22C55E, #16A34A);
+}
+
+.mini-bar.amount {
+  background: linear-gradient(90deg, #3B82F6, #2563EB);
+}
+
+.mini-bar:hover {
+  transform: scaleY(1.2);
+  cursor: pointer;
+}
+
+// Responsive para dispositivos móviles
+@media (max-width: 768px) {
+  .daily-stats-table table {
+    font-size: 0.9rem;
+  }
+  
+  .bar-visualization {
+    width: 100px;
+  }
+  
+  .chart-installation-notice {
+    padding: 1rem;
+  }
+  
+  .notice-content code {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
 } 

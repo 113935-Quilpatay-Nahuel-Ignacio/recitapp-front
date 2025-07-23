@@ -1,9 +1,29 @@
 <div class="transaction-history-container">
-  <h2>Historial de Transacciones</h2>
-
-  <button (click)="loadTransactions()" class="refresh-button">
-    Actualizar Historial
-  </button>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Historial de Transacciones</h2>
+    <div class="header-actions">
+      <button (click)="loadTransactions()" class="btn btn-outline-primary btn-sm me-2">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Actualizar Historial
+      </button>
+      <button type="button" 
+              class="btn btn-outline-danger btn-sm me-2" 
+              (click)="exportToPDF()"
+              [disabled]="!transactions || transactions.length === 0"
+              title="Descargar como PDF">
+        <i class="bi bi-file-earmark-pdf me-1"></i>
+        PDF
+      </button>
+      <button type="button" 
+              class="btn btn-outline-success btn-sm" 
+              (click)="exportToExcel()"
+              [disabled]="!transactions || transactions.length === 0"
+              title="Descargar como Excel">
+        <i class="bi bi-file-earmark-excel me-1"></i>
+        Excel
+      </button>
+    </div>
+  </div>
 
   <div *ngIf="error" class="error-message-banner">
     {{ error }}
