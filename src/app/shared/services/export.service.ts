@@ -7,11 +7,18 @@ interface ExportColumn {
   type?: 'text' | 'number' | 'currency' | 'percentage' | 'date';
 }
 
+interface ExportTable {
+  title?: string;
+  columns: ExportColumn[];
+  data: any[];
+}
+
 interface ExportData {
   title: string;
   subtitle?: string;
   columns: ExportColumn[];
   data: any[];
+  additionalTables?: ExportTable[]; // Tablas adicionales
   summary?: { [key: string]: any };
   metadata?: { [key: string]: any };
   chartImage?: string | null; // Imagen del gráfico en base64
@@ -96,10 +103,16 @@ export class ExportService {
         tableLineWidth: 0.5
       });
       
+      // === TABLAS ADICIONALES ===
+      let finalTablesY = (doc as any).lastAutoTable?.finalY || yPosition + 100;
+      if (exportData.additionalTables && exportData.additionalTables.length > 0) {
+        finalTablesY = await this.addAdditionalTables(doc, exportData.additionalTables, finalTablesY + 15, colors);
+      }
+      
       // === SECCIÓN DE RESUMEN ===
       let finalSummaryY = 0;
       if (exportData.summary) {
-        const finalY = (doc as any).lastAutoTable?.finalY || yPosition + 100;
+        const finalY = finalTablesY;
         finalSummaryY = this.addPDFSummary(doc, exportData.summary, finalY + 15, colors);
       }
 
@@ -244,6 +257,17 @@ export class ExportService {
    * Añade sección de resumen estilizada
    */
   private addPDFSummary(doc: any, summary: any, startY: number, colors: any): number {
+    // Validar que los parámetros sean válidos
+    if (!summary || typeof summary !== 'object') {
+      console.warn('Summary es inválido:', summary);
+      return startY + 20;
+    }
+
+    if (typeof startY !== 'number' || isNaN(startY)) {
+      console.warn('startY es inválido:', startY);
+      startY = 100; // Valor por defecto
+    }
+
     // Título del resumen
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
@@ -267,6 +291,12 @@ export class ExportService {
     yPosition += 6; // Espacio adicional entre el borde verde y el primer elemento
     
     Object.entries(summary).forEach(([key, value], index) => {
+      // Validar que key no sea null o undefined
+      if (!key || typeof key !== 'string') {
+        console.warn('Key inválida en summary:', key);
+        return; // Saltar esta entrada
+      }
+
       const yPos = yPosition + (index * 8);
       
       // Bullet point con símbolo ASCII
@@ -282,7 +312,9 @@ export class ExportService {
       
       doc.setFont('helvetica', 'normal');
       const keyWidth = doc.getTextWidth(labelText);
-      doc.text(String(value), 25 + keyWidth + 6, yPos); // +6 para mejor espaciado
+      // Validar que el valor no sea null o undefined
+      const valueText = value != null ? String(value) : 'N/A';
+      doc.text(valueText, 25 + keyWidth + 6, yPos); // +6 para mejor espaciado
     });
     
     // Retornar la posición Y final del resumen
@@ -962,6 +994,94 @@ export class ExportService {
     }
 
     return yPosition + 10; // Espacio adicional después del gráfico
+  }
+
+  /**
+   * Agrega tablas adicionales al PDF
+   */
+  private async addAdditionalTables(doc: any, tables: ExportTable[], startY: number, colors: any): Promise<number> {
+    // Validar parámetros
+    if (!tables || !Array.isArray(tables) || tables.length === 0) {
+      console.warn('Tables es inválido:', tables);
+      return startY;
+    }
+
+    if (typeof startY !== 'number' || isNaN(startY)) {
+      console.warn('startY es inválido en addAdditionalTables:', startY);
+      startY = 100;
+    }
+
+    let yPosition = startY;
+    
+    // Importar autoTable dinámicamente
+    const autoTableModule = await import('jspdf-autotable');
+    const autoTable = autoTableModule.default;
+
+    for (const table of tables) {
+      // Verificar si necesitamos una nueva página
+      if (yPosition > 180) {
+        doc.addPage();
+        yPosition = 50;
+      }
+
+      // Título de la tabla (si existe)
+      if (table.title) {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...colors.primary);
+        doc.text(table.title, 20, yPosition);
+        yPosition += 15;
+      }
+
+      // Preparar datos de la tabla
+      const tableColumns = table.columns.map(col => col.header);
+      const tableData = table.data.map(row => 
+        table.columns.map(col => {
+          const value = row[col.key];
+          if (col.type === 'currency' && typeof value === 'number') {
+            return new Intl.NumberFormat('es-AR', { 
+              style: 'currency', 
+              currency: 'ARS' 
+            }).format(value);
+          }
+          return value;
+        })
+      );
+
+      // Renderizar tabla
+      autoTable(doc, {
+        head: [tableColumns],
+        body: tableData,
+        startY: yPosition,
+        styles: {
+          fontSize: 9,
+          cellPadding: { top: 4, right: 6, bottom: 4, left: 6 },
+          textColor: colors.darkText,
+          lineColor: colors.darkCard,
+          lineWidth: 0.5,
+          halign: 'left'
+        },
+        headStyles: {
+          fillColor: colors.primary,
+          textColor: colors.white,
+          fontStyle: 'bold',
+          halign: 'center',
+          fontSize: 10
+        },
+        alternateRowStyles: {
+          fillColor: colors.lightGray
+        },
+        margin: { top: yPosition, left: 14, right: 14 },
+        theme: 'grid',
+        tableLineColor: colors.darkCard,
+        tableLineWidth: 0.5
+      });
+
+      // Actualizar posición Y después de la tabla
+      yPosition = (doc as any).lastAutoTable?.finalY + 15 || yPosition + 50;
+    }
+
+    return yPosition;
   }
 
   /**

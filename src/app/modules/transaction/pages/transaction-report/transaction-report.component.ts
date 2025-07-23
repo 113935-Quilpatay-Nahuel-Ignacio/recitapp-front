@@ -188,32 +188,44 @@ export class TransactionReportComponent implements OnInit, AfterViewInit {
 
       // Combinar todos los datos disponibles
       let allData = [...mainData];
-      
       // Agregar separador y datos por estado si existen
+
+      const additionalTables = [];
+
       if (stats.transactionsByStatus && this.objectKeys(stats.transactionsByStatus).length > 0) {
-        allData.push({ label: '=== DISTRIBUCIÓN POR ESTADO ===', value: 0 });
-        this.objectKeys(stats.transactionsByStatus).forEach(status => {
-          allData.push({ label: `${status} - Cantidad`, value: stats.transactionsByStatus[status] });
-          allData.push({ label: `${status} - Monto`, value: stats.amountByStatus[status] });
+        const statusData = this.objectKeys(stats.transactionsByStatus).map(status => ({
+          estado: status,
+          cantidad: stats.transactionsByStatus[status],
+          monto: stats.amountByStatus[status]
+        }));
+
+        additionalTables.push({
+          title: 'Distribución por Estado',
+          columns: [
+            { header: 'Estado', key: 'estado', width: 25 },
+            { header: 'Cantidad', key: 'cantidad', width: 15, type: 'number' as const },
+            { header: 'Monto Total', key: 'monto', width: 20, type: 'currency' as const }
+          ],
+          data: statusData
         });
       }
-      
-      // Agregar separador y datos por método de pago si existen
+
+      // Tabla de distribución por método de pago
       if (stats.transactionsByPaymentMethod && this.objectKeys(stats.transactionsByPaymentMethod).length > 0) {
-        allData.push({ label: '=== DISTRIBUCIÓN POR MÉTODO DE PAGO ===', value: 0 });
-        this.objectKeys(stats.transactionsByPaymentMethod).forEach(method => {
-          allData.push({ label: `${method} - Cantidad`, value: stats.transactionsByPaymentMethod[method] });
-          allData.push({ label: `${method} - Monto`, value: stats.amountByPaymentMethod[method] });
-        });
-      }
-      
-      // Agregar datos de segmentos de tiempo si existen
-      if (stats.timeSegmentStatistics && stats.timeSegmentStatistics.length > 0) {
-        allData.push({ label: '=== ANÁLISIS TEMPORAL ===', value: 0 });
-        stats.timeSegmentStatistics.forEach((segment, index) => {
-          const segmentLabel = `Período ${index + 1}`;
-          allData.push({ label: `${segmentLabel} - Transacciones`, value: segment.transactionCount });
-          allData.push({ label: `${segmentLabel} - Monto Total`, value: segment.totalAmount });
+        const paymentMethodData = this.objectKeys(stats.transactionsByPaymentMethod).map(method => ({
+          metodo: method,
+          cantidad: stats.transactionsByPaymentMethod[method],
+          monto: stats.amountByPaymentMethod[method]
+        }));
+
+        additionalTables.push({
+          title: 'Distribución por Método de Pago',
+          columns: [
+            { header: 'Método de Pago', key: 'metodo', width: 25 },
+            { header: 'Cantidad', key: 'cantidad', width: 15, type: 'number' as const },
+            { header: 'Monto Total', key: 'monto', width: 20, type: 'currency' as const }
+          ],
+          data: paymentMethodData
         });
       }
 
@@ -235,6 +247,7 @@ export class TransactionReportComponent implements OnInit, AfterViewInit {
           { header: 'Valor', key: 'value', width: 20, type: 'currency' as const }
         ],
         data: allData,
+        additionalTables: additionalTables.length > 0 ? additionalTables : undefined, // Tablas adicionales
         chartImage: chartImage, // Incluir imagen del gráfico
         chartTitle: 'Gráfico de Transacciones por Día',
         summary: {
